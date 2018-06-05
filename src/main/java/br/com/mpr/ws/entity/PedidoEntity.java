@@ -22,6 +22,7 @@ public class PedidoEntity {
     private List<ProdutoEntity> produtos;
     private CupomEntity cupom;
     private Double valor;
+    private Double valorFrete;
 
 
 
