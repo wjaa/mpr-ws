@@ -21,8 +21,10 @@ public class PedidoEntity {
     private Integer idEndereco;
     private List<ProdutoEntity> produtos;
     private CupomEntity cupom;
+    //soma dos produtos.
     private Double valor;
     private Double valorFrete;
+
 
 
 

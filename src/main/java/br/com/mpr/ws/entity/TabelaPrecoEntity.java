@@ -14,6 +14,7 @@ public class TabelaPrecoEntity {
     private Long id;
     private Double preco;
     private Date dataVigencia;
+    private Long idProdutoBase;
     private String descricao;
 
 
