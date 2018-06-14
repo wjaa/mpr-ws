@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class ClienteEntity {
     private String cpf;
     private List<EnderecoEntity> enderecos;
     private String celular;
+    private Date aniversario;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +30,7 @@ public class ClienteEntity {
         this.id = id;
     }
 
-    @Column(name = "NOME", nullable = false, length = 100)
+    @Column(name = "NOME", nullable = false, length = 60)
     public String getNome() {
         return nome;
     }
@@ -37,7 +39,7 @@ public class ClienteEntity {
         this.nome = nome;
     }
 
-    @Column(name = "EMAIL", nullable = false, length = 150)
+    @Column(name = "EMAIL", nullable = false, length = 100)
     public String getEmail() {
         return email;
     }
@@ -71,5 +73,14 @@ public class ClienteEntity {
 
     public void setCelular(String celular) {
         this.celular = celular;
+    }
+
+    @Column(name = "ANIVERSARIO")
+    public Date getAniversario() {
+        return aniversario;
+    }
+
+    public void setAniversario(Date aniversario) {
+        this.aniversario = aniversario;
     }
 }
