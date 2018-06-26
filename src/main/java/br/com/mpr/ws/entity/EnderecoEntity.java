@@ -20,19 +20,19 @@ public class EnderecoEntity {
     @Column(name = "LOGRADOURO", nullable = false, length = 80)
     private String logradouro;
 
-    @Column(name = "LOGRADOURO", length = 10)
+    @Column(name = "NUMERO", length = 10, nullable = false)
     private String numero;
 
-    @Column(name = "COMPLEMENTO", length = 50)
+    @Column(name = "COMPLEMENTO", length = 60)
     private String complemento;
 
-    @Column(name = "COMPLEMENTO", length = 60, nullable = false)
+    @Column(name = "BAIRRO", length = 60, nullable = false)
     private String bairro;
 
-    @Column(name = "COMPLEMENTO", length = 40, nullable = false)
+    @Column(name = "CIDADE", length = 60, nullable = false)
     private String cidade;
 
-    @Column(name = "COMPLEMENTO", length = 2, nullable = false)
+    @Column(name = "UF", length = 2, nullable = false)
     private String uf;
 
 

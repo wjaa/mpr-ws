@@ -11,17 +11,30 @@ import java.util.List;
 @Table(name = "CLIENTE")
 public class ClienteEntity {
 
-    private Long id;
-    private String nome;
-    private String email;
-    private String cpf;
-    private List<EnderecoEntity> enderecos;
-    private String celular;
-    private Date aniversario;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
+    private Long id;
+
+    @Column(name = "NOME", nullable = false, length = 60)
+    private String nome;
+
+    @Column(name = "EMAIL", nullable = false, length = 100)
+    private String email;
+
+    @Column(name = "CPF", nullable = false, length = 11)
+    private String cpf;
+
+    @Transient
+    private List<EnderecoEntity> enderecos;
+
+    @Column(name = "CELULAR", nullable = false, length = 13)
+    private String celular;
+
+    @Column(name = "ANIVERSARIO")
+    private Date aniversario;
+
+
     public Long getId() {
         return id;
     }
@@ -30,7 +43,7 @@ public class ClienteEntity {
         this.id = id;
     }
 
-    @Column(name = "NOME", nullable = false, length = 60)
+
     public String getNome() {
         return nome;
     }
@@ -39,7 +52,7 @@ public class ClienteEntity {
         this.nome = nome;
     }
 
-    @Column(name = "EMAIL", nullable = false, length = 100)
+
     public String getEmail() {
         return email;
     }
@@ -48,7 +61,7 @@ public class ClienteEntity {
         this.email = email;
     }
 
-    @Column(name = "CPF", nullable = false, length = 11)
+
     public String getCpf() {
         return cpf;
     }
@@ -57,7 +70,7 @@ public class ClienteEntity {
         this.cpf = cpf;
     }
 
-    @Transient
+
     public List<EnderecoEntity> getEnderecos() {
         return enderecos;
     }
@@ -66,7 +79,7 @@ public class ClienteEntity {
         this.enderecos = enderecos;
     }
 
-    @Column(name = "CELULAR", nullable = false, length = 13)
+
     public String getCelular() {
         return celular;
     }
@@ -75,7 +88,7 @@ public class ClienteEntity {
         this.celular = celular;
     }
 
-    @Column(name = "ANIVERSARIO")
+
     public Date getAniversario() {
         return aniversario;
     }

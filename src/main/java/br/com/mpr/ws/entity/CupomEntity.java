@@ -10,19 +10,30 @@ import java.util.Date;
 @Table(name = "CUPOM_DESCONTO")
 public class CupomEntity {
 
-    private Long id;
-    private String descricao;
-    private String hash;
-    private Date dataInicio;
-    private Date dataFim;
-    private Boolean promocao;
-    //se nao for promocao essa quantidade tem que ter no maximo 1x
-    private Integer qtdeUtilizada;
-    private Double porcentagem;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
+    private Long id;
+
+    @Column(name = "DESCRICAO", nullable = false, length = 50)
+    private String descricao;
+
+    @Column(name = "HASH", nullable = false, length = 8)
+    private String hash;
+
+    @Column(name = "DATA_INICIO", nullable = false)
+    private Date dataInicio;
+
+    @Column(name = "DATA_FIM", nullable = false)
+    private Date dataFim;
+
+    @Column(name = "PROMOCAO", nullable = false)
+    private Boolean promocao;
+
+    @Column(name = "PORCENTAGEM", nullable = false, scale = 3, precision = 2)
+    private Double porcentagem;
+
+
     public Long getId() {
         return id;
     }
@@ -31,7 +42,7 @@ public class CupomEntity {
         this.id = id;
     }
 
-    @Column(name = "DESCRICAO", nullable = false, length = 50)
+
     public String getDescricao() {
         return descricao;
     }
@@ -40,7 +51,7 @@ public class CupomEntity {
         this.descricao = descricao;
     }
 
-    @Column(name = "HASH", nullable = false, length = 8)
+
     public String getHash() {
         return hash;
     }
@@ -49,7 +60,7 @@ public class CupomEntity {
         this.hash = hash;
     }
 
-    @Column(name = "DATA_INICIO", nullable = false)
+
     public Date getDataInicio() {
         return dataInicio;
     }
@@ -58,7 +69,7 @@ public class CupomEntity {
         this.dataInicio = dataInicio;
     }
 
-    @Column(name = "DATA_FIM", nullable = false)
+
     public Date getDataFim() {
         return dataFim;
     }
@@ -67,7 +78,7 @@ public class CupomEntity {
         this.dataFim = dataFim;
     }
 
-    @Column(name = "PROMOCAO", nullable = false)
+
     public Boolean getPromocao() {
         return promocao;
     }
@@ -76,17 +87,7 @@ public class CupomEntity {
         this.promocao = promocao;
     }
 
-    @Column(name = "QTDE_UTILIZADA")
-    public Integer getQtdeUtilizada() {
-        return qtdeUtilizada;
-    }
 
-    public void setQtdeUtilizada(Integer qtdeUtilizada) {
-        this.qtdeUtilizada = qtdeUtilizada;
-    }
-
-
-    @Column(name = "PORCENTAGEM", nullable = false, scale = 5, precision = 2)
     public Double getPorcentagem() {
         return porcentagem;
     }
