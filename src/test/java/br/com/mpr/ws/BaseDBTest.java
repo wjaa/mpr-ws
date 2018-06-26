@@ -1,5 +1,6 @@
 package br.com.mpr.ws;
 
+import br.com.mpr.ws.config.TestsConfiguration;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

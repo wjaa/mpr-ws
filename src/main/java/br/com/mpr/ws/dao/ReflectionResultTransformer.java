@@ -6,6 +6,9 @@ import org.hibernate.transform.ResultTransformer;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,12 +33,22 @@ public class ReflectionResultTransformer implements ResultTransformer {
         try {
             Object o  = clazzVo.newInstance();
             for (int i = 0; i < aliases.length; i ++){
-                Field field = getField(aliases[i]);
+                Method method = getMethod(aliases[i]);
 
-                if (field == null){
+                if (method == null){
                     LOG.error("Nao encontramos um field para a coluna " + aliases[i] + " na classe " + clazzVo.getName());
                 }else{
-                    ReflectionUtils.setField(field, o, tuple[i]);
+
+                    try{
+                        Object value = getValue(tuple[i],method);
+                        ReflectionUtils.invokeMethod(method,o,value);
+                    }catch(Exception ex){
+                        LOG.error("Erro ao invocar o metodo: " + method.getName() + " com parametro: " + tuple[i] +
+                                " e tipo = " + tuple[i].getClass(), ex);
+                        throw ex;
+                    }
+
+
                 }
             }
             return o;
@@ -43,17 +56,36 @@ public class ReflectionResultTransformer implements ResultTransformer {
             LOG.error("Erro na tentativa de inserir um valor no POJO:", e);
         }
 
+
         return null;
     }
 
-    private Field getField(String aliase) {
-        String fieldName = aliase.replace("_","").replace(" ","").trim().toLowerCase();
-        Field findField = Arrays.asList(clazzVo.getDeclaredFields())
-                .stream()
-                .filter(field -> field.getName().equalsIgnoreCase(fieldName))
-                .findFirst().orElse(null);
-        return findField;
+    private Object getValue(Object o, Method method) {
+        Class<?> typeParam = method.getParameterTypes()[0];
+        if (o instanceof Number && typeParam == Long.class){
+            return ((Number)o).longValue();
+        }
+        if (o instanceof Number && typeParam.isInstance(Integer.class)){
+            return ((Number)o).intValue();
+        }
+        if (o instanceof Number && typeParam.isInstance(Double.class)){
+            return ((Number)o).doubleValue();
+        }
+        if (o instanceof Number && typeParam.isInstance(Boolean.class)){
+            return new Boolean(((Number)o).intValue() == 1) ;
+        }
+        return o;
     }
+
+    private Method getMethod(String aliase) {
+        String methodName = "set" + aliase.replace("_","").replace(" ","").trim().toLowerCase();
+        Method method = Arrays.asList(clazzVo.getDeclaredMethods())
+                .stream()
+                .filter(m -> m.getName().equalsIgnoreCase(methodName))
+                .findFirst().orElse(null);
+        return method;
+    }
+
 
     @Override
     public List transformList(List collection) {

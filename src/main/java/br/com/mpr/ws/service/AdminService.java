@@ -1,5 +1,6 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.FornecedorEntity;
 import br.com.mpr.ws.entity.TabelaPrecoEntity;
 import br.com.mpr.ws.exception.AdminServiceException;
@@ -14,4 +15,6 @@ public interface AdminService {
 
 
     TabelaPrecoEntity savePreco(TabelaPrecoEntity preco) throws AdminServiceException;
+
+    ClienteEntity saveCliente(ClienteEntity cliente) throws AdminServiceException;
 }

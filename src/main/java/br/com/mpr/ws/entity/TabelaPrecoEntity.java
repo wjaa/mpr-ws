@@ -1,6 +1,8 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Date;
 
 /**
@@ -15,12 +17,17 @@ public class TabelaPrecoEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
+    @NotNull(message = "Produto é obrigatório!")
     @Column(name = "ID_PRODUTO", nullable = false)
     private Long idProduto;
 
+    @NotNull(message = "Data da vigência é obrigatório!")
     @Column(name = "DATA_VIGENCIA", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dataVigencia;
 
+    @NotNull(message = "Preco é obrigatório!")
+    @Positive(message = "Preço precisa ser maior que zero!")
     @Column(name = "PRECO", nullable = false, scale = 6, precision = 2)
     private Double preco;
 

@@ -13,6 +13,7 @@ import org.springframework.util.Assert;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import java.util.stream.IntStream;
 @Repository
 public class CommonDaoImpl implements CommonDao {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
 
@@ -94,7 +95,8 @@ public class CommonDaoImpl implements CommonDao {
         Arrays.asList(params).forEach(p -> sql.append(" and e." + p + " = :" + p ));
 
         Session session = (Session) entityManager.getDelegate();
-        Query query = session.createQuery(sql.toString());
+        Session s = session.getSessionFactory().openSession();
+        Query query = s.createQuery(sql.toString());
 
         for (int i = 0 ; i < values.length ; i++){
             query.setParameter(params[i],values[i]);
@@ -117,8 +119,9 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    public void remove(Object o) {
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public <T>void remove(Class<T> clazz, Serializable id) {
+        entityManager.remove(get(clazz,id));
     }
 
     @Override

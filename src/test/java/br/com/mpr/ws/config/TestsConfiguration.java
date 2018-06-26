@@ -1,4 +1,4 @@
-package br.com.mpr.ws;
+package br.com.mpr.ws.config;
 
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
