@@ -19,7 +19,7 @@ import java.sql.SQLException;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Import(TestsConfiguration.class)
-public class BaseDBTest {
+public abstract class BaseDBTest {
 
     @Autowired
     private LocalContainerEntityManagerFactoryBean factoryBean;
