@@ -34,6 +34,10 @@ public class ClienteEntity {
     @Column(name = "ANIVERSARIO")
     private Date aniversario;
 
+    @Column(name = "KEY_DEVICE", length = 255)
+    private String keyDevice ;
+
+
 
     public Long getId() {
         return id;

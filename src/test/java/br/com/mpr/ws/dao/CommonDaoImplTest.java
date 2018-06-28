@@ -163,13 +163,37 @@ public class CommonDaoImplTest extends BaseDBTest {
     }
 
     @Test
-    public void findByNativeQuery1() throws Exception {
-        //commonDao.find
+    public void findByNativeQueryWithParam() throws Exception {
+        LOG.info("test.findByNativeQueryWithParam");
+        List<TestEntity> listResult = commonDao.findByNativeQuery("Select * from TABLE_TEST where TEST_INT = ? ",
+                TestEntity.class, 1234567890);
+        Assert.assertTrue(listResult.size() > 0);
+        for(TestEntity e : listResult){
+            Assert.assertNotNull(e.getId());
+            Assert.assertNotNull(e.getTestBoolean());
+            Assert.assertNotNull(e.getTestDate());
+            Assert.assertNotNull(e.getTestDateTime());
+            Assert.assertNotNull(e.getTestDouble());
+            Assert.assertNotNull(e.getTestInt());
+            Assert.assertTrue(e.getTestInt() == 1234567890);
+            Assert.assertNotNull(e.getTestLong());
+            Assert.assertNotNull(e.getTestVarchar());
+        }
     }
 
     @Test
     public void executeUpdate() throws Exception {
         LOG.info("test.executeUpdate");
+        int exec = commonDao.executeUpdate("UPDATE TABLE_TEST SET TEST_INT = ? where TEST_INT = ?",
+                123, 99999999);
+        Assert.assertTrue(exec > 1);
+        List<TestEntity> resultList = commonDao.findByNativeQuery("Select * from TABLE_TEST where TEST_INT = ?",
+                TestEntity.class, 123);
+        Assert.assertTrue(resultList.size() > 1);
+        resultList = commonDao.findByNativeQuery("Select * from TABLE_TEST where TEST_INT = ?",
+                TestEntity.class, 99999999);
+
+        Assert.assertTrue(resultList.size() == 0);
     }
 
 }

@@ -113,7 +113,7 @@ public class AdminServiceImplTest extends BaseDBTest {
      *
      */
     @Test
-    public void save() throws Exception {
+    public void saveCliente() throws Exception {
         LOG.info("test.save");
         ClienteEntity cliente = new ClienteEntity();
         cliente.setNome("Philipe Coutinho");
