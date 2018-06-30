@@ -1,15 +1,15 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
-import br.com.mpr.ws.entity.ClienteEntity;
-import br.com.mpr.ws.entity.FornecedorEntity;
-import br.com.mpr.ws.entity.TabelaPrecoEntity;
+import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
+import br.com.mpr.ws.utils.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +26,13 @@ public class AdminServiceImpl implements AdminService {
     public FornecedorEntity saveFornecedor(FornecedorEntity fe) throws AdminServiceException {
 
         if (fe.getId() == null){
+            List<FornecedorEntity> listFornec = commonDao.findByProperties(FornecedorEntity.class,
+                    new String[]{"cnpj"}, new Object[]{fe.getCnpj()});
+
+            if (listFornec.size() > 0){
+                throw new AdminServiceException("Já existe um fornecedor cadastrado com esse cnpj!");
+            }
+
             fe = commonDao.save(fe);
         }else{
             FornecedorEntity fornecedorMerge = commonDao.get(FornecedorEntity.class, fe.getId());
@@ -58,9 +65,16 @@ public class AdminServiceImpl implements AdminService {
 
         }
 
+        if (DateUtils.isLesserEqual(tabPreco.getDataVigencia(), new Date())) {
+            throw new AdminServiceException("Você não pode " + tabPreco.getId() == null ? "criar" : "alterar" +
+                    " uma tabela de preço retroativa!");
+        }
+
+
         if (tabPreco.getId() == null){
             tabPreco = commonDao.save(tabPreco);
         }else{
+
             TabelaPrecoEntity tabMerged = commonDao.get(TabelaPrecoEntity.class, tabPreco.getId());
             BeanUtils.copyProperties(tabPreco,tabMerged);
             commonDao.update(tabMerged);
@@ -75,10 +89,40 @@ public class AdminServiceImpl implements AdminService {
         if (cliente.getId() == null){
             cliente = commonDao.save(cliente);
         }else{
-            FornecedorEntity fornecedorMerge = commonDao.get(FornecedorEntity.class, cliente.getId());
-            BeanUtils.copyProperties(cliente,fornecedorMerge);
-            commonDao.update(cliente);
+            ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());
+            BeanUtils.copyProperties(cliente,clienteMerged);
+            commonDao.update(clienteMerged);
         }
         return cliente;
+    }
+
+    @Override
+    public void removeFornecedorById(long id) throws AdminServiceException {
+        EstoqueEntity estoqueEntity = commonDao
+                .findByPropertiesSingleResult(EstoqueEntity.class,
+                        new String[]{"idFornecedor"}, new Object[]{id});
+        if (estoqueEntity != null){
+            throw new AdminServiceException("Esse fornecedor tem produtos em estoque e não pode ser removido!");
+        }
+
+        FornecedorEntity entity = commonDao.get(FornecedorEntity.class, id);
+        if (entity == null){
+            throw new AdminServiceException("Fornecedor não existe com id = #" +id);
+        }
+
+        commonDao.remove(FornecedorEntity.class,id);
+    }
+
+    @Override
+    public void removeTabelaPrecoById(long id) throws AdminServiceException {
+        TabelaPrecoEntity tabelaPrecoEntity = commonDao.get(TabelaPrecoEntity.class, id);
+        if (tabelaPrecoEntity == null){
+            throw new AdminServiceException("Tabela de preço não existe com id = #" + id);
+        }
+
+        if (DateUtils.isLesserEqual(tabelaPrecoEntity.getDataVigencia(), new Date())) {
+            throw new AdminServiceException("Tabela de preço retroativa, não pode ser removida!");
+        }
+
     }
 }

@@ -17,4 +17,8 @@ public interface AdminService {
     TabelaPrecoEntity savePreco(TabelaPrecoEntity preco) throws AdminServiceException;
 
     ClienteEntity saveCliente(ClienteEntity cliente) throws AdminServiceException;
+
+    void removeFornecedorById(long id) throws AdminServiceException;
+
+    void removeTabelaPrecoById(long id) throws AdminServiceException;;
 }
