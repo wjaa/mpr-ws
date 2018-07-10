@@ -4,6 +4,7 @@ import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.utils.DateUtils;
+import br.com.mpr.ws.utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -86,6 +87,30 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public ClienteEntity saveCliente(ClienteEntity cliente) throws AdminServiceException {
+
+        if ( !Utils.validateCpf(cliente.getCpf()) ){
+            throw new AdminServiceException("Cpf inválido!");
+        }
+
+        if ( !Utils.validateEmail(cliente.getEmail()) ){
+            throw new AdminServiceException("Email inválido!");
+        }
+
+
+        ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
+                new Object[]{cliente.getCpf()});
+
+        if (!cliCpf.getId().equals(cliente.getId())){
+            throw new AdminServiceException("Já existe um cliente cadastrado com esse CPF.");
+        }
+
+        ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
+                new Object[]{cliente.getEmail()});
+
+        if (!cliEmail.getId().equals(cliente.getId())){
+            throw new AdminServiceException("Já existe um cliente cadastrado com esse EMAIL.");
+        }
+
         if (cliente.getId() == null){
             cliente = commonDao.save(cliente);
         }else{
@@ -123,6 +148,20 @@ public class AdminServiceImpl implements AdminService {
         if (DateUtils.isLesserEqual(tabelaPrecoEntity.getDataVigencia(), new Date())) {
             throw new AdminServiceException("Tabela de preço retroativa, não pode ser removida!");
         }
+        commonDao.remove(TabelaPrecoEntity.class,id);
 
     }
+
+    @Override
+    public void removeClienteById(Long id) throws AdminServiceException {
+        ClienteEntity cliente = commonDao.get(ClienteEntity.class, id);
+        if (cliente == null){
+            throw new AdminServiceException("Cliente não existe com id = #" + id);
+        }
+        commonDao.remove(ClienteEntity.class, id);
+
+    }
+
+
+    //TODO NAO EXISTE REMOVER REGISTROS E SIM DESATIVAR.
 }

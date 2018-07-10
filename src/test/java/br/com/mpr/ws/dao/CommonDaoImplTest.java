@@ -37,8 +37,8 @@ public class CommonDaoImplTest extends BaseDBTest {
         Assert.assertTrue(testEntity.getId() == 1l);
         Assert.assertTrue(testEntity.getTestBoolean());
         Assert.assertTrue(testEntity.getTestVarchar().equals("123456789012345678901234512345678901234567890123451234567890123456789012345123456789012345678901234512345678901234567890123451234567890123456789012345123456789012345678901234512345678901234567890123451234567890123456789012345123456789012345678901234567890"));
-        Assert.assertTrue(DateUtils.formatFullDateTime(testEntity.getTestDate()).equals("30/09/1983 00:00:00"));
-        Assert.assertTrue(DateUtils.formatFullDateTime(testEntity.getTestDateTime()).equals("30/09/1983 19:10:02"));
+        Assert.assertTrue(DateUtils.formatyyyyMMddTHHmmss(testEntity.getTestDate()).equals("30/09/1983 00:00:00"));
+        Assert.assertTrue(DateUtils.formatyyyyMMddTHHmmss(testEntity.getTestDateTime()).equals("30/09/1983 19:10:02"));
         Assert.assertTrue(testEntity.getTestDouble() == 123456.12);
         Assert.assertTrue(testEntity.getTestInt() == 1234567890);
         Assert.assertTrue(testEntity.getTestLong() == 12345678901234l);

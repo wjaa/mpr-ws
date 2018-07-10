@@ -20,5 +20,7 @@ public interface AdminService {
 
     void removeFornecedorById(long id) throws AdminServiceException;
 
-    void removeTabelaPrecoById(long id) throws AdminServiceException;;
+    void removeTabelaPrecoById(long id) throws AdminServiceException;
+
+    void removeClienteById(Long id) throws AdminServiceException;
 }

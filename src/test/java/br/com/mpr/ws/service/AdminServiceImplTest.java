@@ -36,8 +36,6 @@ public class AdminServiceImplTest extends BaseDBTest {
      * TESTES NO CADASTRO DE FORNECEDOR.
      *
      */
-
-
     @Test
     public void criarFornecedor(){
         FornecedorEntity fe = new FornecedorEntity();
@@ -109,13 +107,12 @@ public class AdminServiceImplTest extends BaseDBTest {
 
     }
 
+
     /**
      *
      * TESTES NO CADASTRO DE PRECO.
      *
      */
-
-
     @Test
     public void criarTabelaPreco(){
         TabelaPrecoEntity preco = new TabelaPrecoEntity();
@@ -154,6 +151,8 @@ public class AdminServiceImplTest extends BaseDBTest {
 
     }
 
+
+    @Test
     public void removerTabelaPreco(){
         try {
             TabelaPrecoEntity tabPreco = commonDao.get(TabelaPrecoEntity.class,1l);
@@ -176,6 +175,7 @@ public class AdminServiceImplTest extends BaseDBTest {
     }
 
     /*REGRA1: NAO PODE REMOVER UMA TABELA DE PRECO COM DATA <= DATA_HOJE*/
+    @Test
     public void removerTabelaPrecoDataRetroativaException(){
         try {
             adminService.removeTabelaPrecoById(2);
@@ -243,7 +243,7 @@ public class AdminServiceImplTest extends BaseDBTest {
      *
      */
     @Test
-    public void saveCliente() throws Exception {
+    public void saveCliente(){
         LOG.info("test.save");
         ClienteEntity cliente = new ClienteEntity();
         cliente.setNome("Philipe Coutinho");
@@ -253,13 +253,66 @@ public class AdminServiceImplTest extends BaseDBTest {
         c.set(Calendar.YEAR,1992);
         cliente.setAniversario(c.getTime());
         cliente.setCelular("111111111111");
-        cliente.setCpf("11111111111");
+        cliente.setCpf("89249345038");
         cliente.setEmail("email@email.com");
-        cliente = adminService.saveCliente(cliente);
-        Assert.assertNotNull(cliente.getId());
-        Assert.assertTrue(cliente.getNome().equals("Philipe Coutinho"));
+        try{
+            cliente = adminService.saveCliente(cliente);
+            Assert.assertNotNull(cliente.getId());
+            Assert.assertTrue(cliente.getNome().equals("Philipe Coutinho"));
+        }catch (Exception ex){
+            Assert.assertTrue(ex.getMessage(), false);
+        }
     }
 
 
+    @Test
+    //REGRA1
+    public void saveClienteCpfInvalido(){
+
+    }
+
+    @Test
+    //REGRA2
+    public void saveClienteCpfJaExiste(){
+
+    }
+
+    @Test
+    //REGRA3
+    public void saveClienteEmailInvalido(){
+
+    }
+
+    @Test
+    //REGRA4
+    public void saveClienteEmailJaExiste(){
+
+    }
+
+    @Test
+    public void alterarCliente(){
+        ClienteEntity clienteEntity = commonDao.get(ClienteEntity.class,1l);
+        clienteEntity.setNome("NOVO NOME");
+        try{
+            clienteEntity = adminService.saveCliente(clienteEntity);
+            Assert.assertTrue(clienteEntity.getNome().equals("NOVO NOME"));
+        }catch (Exception ex){
+            Assert.assertTrue(ex.getMessage(), false);
+        }
+    }
+
+
+    @Test
+    public void deleteCliente(){
+        ClienteEntity clienteEntity = commonDao.get(ClienteEntity.class,4l);
+        Assert.assertNotNull(clienteEntity);
+        try{
+            adminService.removeClienteById(clienteEntity.getId());
+            clienteEntity = commonDao.get(ClienteEntity.class,4l);
+            Assert.assertNull(clienteEntity);
+        }catch (Exception ex){
+            Assert.assertTrue(ex.getMessage(), false);
+        }
+    }
 
 }
