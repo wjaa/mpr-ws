@@ -24,6 +24,20 @@ public class AdminServiceImpl implements AdminService {
     private CommonDao commonDao;
 
     @Override
+    public FornecedorEntity getFornecedorById(long id) {
+        return commonDao.findByPropertiesSingleResult(FornecedorEntity.class,
+                new String[]{"id","ativo"},
+                new Object[]{id,true});
+    }
+
+    @Override
+    public List<FornecedorEntity> listAllFornecedor() {
+        return commonDao.findByProperties(FornecedorEntity.class,
+                new String[]{"ativo"},
+                new Object[]{true});
+    }
+
+    @Override
     public FornecedorEntity saveFornecedor(FornecedorEntity fe) throws AdminServiceException {
 
         if (fe.getId() == null){
@@ -42,6 +56,22 @@ public class AdminServiceImpl implements AdminService {
         }
         return fe;
     }
+
+
+    @Override
+    public void removeFornecedorById(long id) throws AdminServiceException {
+
+        FornecedorEntity entity = commonDao.get(FornecedorEntity.class, id);
+        if (entity == null){
+            throw new AdminServiceException("Fornecedor não existe com id = #" +id);
+        }
+
+        entity.setAtivo(false);
+
+        commonDao.update(entity);
+    }
+
+
 
     @Override
     public TabelaPrecoEntity savePreco(TabelaPrecoEntity tabPreco) throws AdminServiceException {
@@ -85,58 +115,8 @@ public class AdminServiceImpl implements AdminService {
         return tabPreco;
     }
 
-    @Override
-    public ClienteEntity saveCliente(ClienteEntity cliente) throws AdminServiceException {
-
-        if ( !Utils.validateCpf(cliente.getCpf()) ){
-            throw new AdminServiceException("Cpf inválido!");
-        }
-
-        if ( !Utils.validateEmail(cliente.getEmail()) ){
-            throw new AdminServiceException("Email inválido!");
-        }
 
 
-        ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
-                new Object[]{cliente.getCpf()});
-
-        if (!cliCpf.getId().equals(cliente.getId())){
-            throw new AdminServiceException("Já existe um cliente cadastrado com esse CPF.");
-        }
-
-        ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
-                new Object[]{cliente.getEmail()});
-
-        if (!cliEmail.getId().equals(cliente.getId())){
-            throw new AdminServiceException("Já existe um cliente cadastrado com esse EMAIL.");
-        }
-
-        if (cliente.getId() == null){
-            cliente = commonDao.save(cliente);
-        }else{
-            ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());
-            BeanUtils.copyProperties(cliente,clienteMerged);
-            commonDao.update(clienteMerged);
-        }
-        return cliente;
-    }
-
-    @Override
-    public void removeFornecedorById(long id) throws AdminServiceException {
-        EstoqueEntity estoqueEntity = commonDao
-                .findByPropertiesSingleResult(EstoqueEntity.class,
-                        new String[]{"idFornecedor"}, new Object[]{id});
-        if (estoqueEntity != null){
-            throw new AdminServiceException("Esse fornecedor tem produtos em estoque e não pode ser removido!");
-        }
-
-        FornecedorEntity entity = commonDao.get(FornecedorEntity.class, id);
-        if (entity == null){
-            throw new AdminServiceException("Fornecedor não existe com id = #" +id);
-        }
-
-        commonDao.remove(FornecedorEntity.class,id);
-    }
 
     @Override
     public void removeTabelaPrecoById(long id) throws AdminServiceException {
@@ -152,15 +132,7 @@ public class AdminServiceImpl implements AdminService {
 
     }
 
-    @Override
-    public void removeClienteById(Long id) throws AdminServiceException {
-        ClienteEntity cliente = commonDao.get(ClienteEntity.class, id);
-        if (cliente == null){
-            throw new AdminServiceException("Cliente não existe com id = #" + id);
-        }
-        commonDao.remove(ClienteEntity.class, id);
 
-    }
 
 
     //TODO NAO EXISTE REMOVER REGISTROS E SIM DESATIVAR.

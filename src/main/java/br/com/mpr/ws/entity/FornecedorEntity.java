@@ -34,6 +34,8 @@ public class FornecedorEntity {
     @Column(name = "TELEFONE_SECUNDARIO", length = 13)
     private String telefoneSecundario;
 
+    @Column(name = "ATIVO")
+    private Boolean ativo;
 
     public Long getId() {
         return id;
@@ -89,5 +91,13 @@ public class FornecedorEntity {
 
     public void setTelefoneSecundario(String telefoneSecundario) {
         this.telefoneSecundario = telefoneSecundario;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }
