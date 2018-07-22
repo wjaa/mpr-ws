@@ -18,6 +18,7 @@ public class DateUtils {
     private static final Locale locale = new Locale("pt", "BR");
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat sdfddMMyyyy = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat sdfddMMyyyyHHmmss = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     private static SimpleDateFormat sdfyyyyMMddTHHmmss = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     private static SimpleDateFormat sdfyyyyMMddHHmm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private static SimpleDateFormat sdfyyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
@@ -41,6 +42,10 @@ public class DateUtils {
 
     public static String formatyyyyMMddTHHmmss(Date date){
         return sdfyyyyMMddTHHmmss.format(date);
+    }
+
+    public static String formatddMMyyyyHHmmss(Date date){
+        return sdfddMMyyyyHHmmss.format(date);
     }
 
     public static Date getFirstDayActualWeek() {

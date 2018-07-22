@@ -35,6 +35,12 @@ public class EnderecoEntity {
     @Column(name = "UF", length = 2, nullable = false)
     private String uf;
 
+    @Column(name = "ID_CLIENTE", nullable = false)
+    private Long idCliente;
+
+    @Column(name = "ATIVO", nullable = false)
+    private Boolean ativo;
+
 
     public Long getId() {
         return id;
@@ -98,5 +104,21 @@ public class EnderecoEntity {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public Long getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(Long idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

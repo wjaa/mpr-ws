@@ -44,6 +44,7 @@ public class ClienteServiceImpl implements ClienteService{
         }
 
         if (cliente.getId() == null){
+            cliente.setAtivo(true);
             cliente = commonDao.save(cliente);
         }else{
             ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());

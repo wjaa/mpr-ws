@@ -1,11 +1,11 @@
-insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME)
-values (null, '1983-09-30', '11999999999', '11111111111', 'wag182@gmail.com', 'Wagner');
-insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME)
-values (null, '1983-09-30', '11999999999', '22222222222', 'wag183@gmail.com', 'Wagner');
-insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME)
-values (null, '1983-09-30', '11999999999', '33333333333', 'wag184@gmail.com', 'Wagner');
-insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME)
-values (null, '1983-09-30', '11999999999', '44444444444', 'wag185@gmail.com', 'CLIENTE REMOVER');
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO)
+values (null, '1983-09-30', '11999999999', '11111111111', 'wag182@gmail.com', 'Wagner', 1);
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO)
+values (null, '1983-09-30', '11999999999', '22222222222', 'wag183@gmail.com', 'Wagner', 1);
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO)
+values (null, '1983-09-30', '11999999999', '33333333333', 'wag184@gmail.com', 'Wagner', 1);
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO)
+values (null, '1983-09-30', '11999999999', '44444444444', 'wag185@gmail.com', 'CLIENTE REMOVER', 1);
 
 
 insert into FORNECEDOR (ID, NOME, EMAIL, CNPJ, ENDERECO, TELEFONE_PRINCIPAL, TELEFONE_SECUNDARIO, ATIVO)

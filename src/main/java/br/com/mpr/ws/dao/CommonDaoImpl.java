@@ -38,7 +38,7 @@ public class CommonDaoImpl implements CommonDao {
     @Override
     public <T> List<T> listAll(Class<T> clazz) {
         return entityManager
-                .createQuery("select e from " + clazz.getSimpleName() + " e")
+                .createQuery("select e from " + clazz.getName() + " e")
                 .getResultList();
     }
 
@@ -90,7 +90,7 @@ public class CommonDaoImpl implements CommonDao {
 
 
         final StringBuilder sql = new StringBuilder();
-        sql.append("Select e from " + clazzEntity.getName() + " e ");
+        sql.append("Select e from " + clazzEntity.getSimpleName() + " e ");
         sql.append(" where 1 = 1 ");
         Arrays.asList(params).forEach(p -> sql.append(" and e." + p + " = :" + p ));
 

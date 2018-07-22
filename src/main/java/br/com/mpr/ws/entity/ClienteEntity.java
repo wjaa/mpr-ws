@@ -37,6 +37,9 @@ public class ClienteEntity {
     @Column(name = "KEY_DEVICE", length = 255)
     private String keyDevice ;
 
+    @Column(name = "ATIVO", nullable = false)
+    private Boolean ativo;
+
 
 
     public Long getId() {
@@ -99,5 +102,21 @@ public class ClienteEntity {
 
     public void setAniversario(Date aniversario) {
         this.aniversario = aniversario;
+    }
+
+    public String getKeyDevice() {
+        return keyDevice;
+    }
+
+    public void setKeyDevice(String keyDevice) {
+        this.keyDevice = keyDevice;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

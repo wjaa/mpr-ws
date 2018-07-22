@@ -1,6 +1,8 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -17,18 +19,23 @@ public class FornecedorEntity {
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 60)
+    @NotNull(message = "Nome do fornecedor não pode ser vazio.")
     private String nome;
 
     @Column(name = "EMAIL", nullable = false, length = 100)
+    @Email
+    @NotNull(message = "Email do fornecedor não pode ser vazio.")
     private String email;
 
     @Column(name = "CNPJ", length = 14)
     private String cnpj;
 
     @Column(name = "ENDERECO", nullable = false, length = 200)
+    @NotNull(message = "Endereço do fornecedor não pode ser vazio.")
     private String endereco;
 
     @Column(name = "TELEFONE_PRINCIPAL", nullable = false, length = 13)
+    @NotNull(message = "Telefone principal do fornecedor não pode ser vazio.")
     private String telefonePrincipal;
 
     @Column(name = "TELEFONE_SECUNDARIO", length = 13)

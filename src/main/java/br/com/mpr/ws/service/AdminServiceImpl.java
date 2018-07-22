@@ -48,6 +48,7 @@ public class AdminServiceImpl implements AdminService {
                 throw new AdminServiceException("Já existe um fornecedor cadastrado com esse cnpj!");
             }
 
+            fe.setAtivo(true);
             fe = commonDao.save(fe);
         }else{
             FornecedorEntity fornecedorMerge = commonDao.get(FornecedorEntity.class, fe.getId());

@@ -3,11 +3,11 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.dao.CommonDaoImplTest;
-import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.FornecedorEntity;
 import br.com.mpr.ws.entity.TabelaPrecoEntity;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.utils.DateUtils;
+import br.com.mpr.ws.utils.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -60,6 +60,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         fe.setTelefonePrincipal("11983777633");
         fe.setTelefoneSecundario("11983777633");
         try {
+            System.out.println(ObjectUtils.toJson(fe));
             fe = adminService.saveFornecedor(fe);
             Assert.assertNotNull(fe.getId());
         } catch (AdminServiceException e) {

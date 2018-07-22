@@ -1,0 +1,53 @@
+server:
+  port: 8181
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    tomcat:
+      max-wait: 10000
+      max-active: 20
+      test-on-borrow: true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: true
+
+  profiles:
+    active: "dev"
+---
+
+spring:
+  profiles: "dev"
+  datasource:
+    url: jdbc:mysql://localhost:3306/mpr?autoReconnect=true&useSSL=false
+    username: root
+    password: 753951
+
+logging:
+  level:
+    org:
+      springframework: INFO
+      hibernate: INFO
+    br:
+      com:
+        braspress: DEBUG
+
+---
+
+spring:
+  profiles: "prd"
+  datasource:
+    url: jdbc:mysql://<server>:3306/ranchucrutes
+    username: mpr
+    password: senha
+logging:
+  level:
+    org:
+      springframework: ERROR
+      hibernate: ERROR
+    br:
+      com:
+        braspress: DEBUG

@@ -9,9 +9,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,7 +44,7 @@ public class AdminRest extends BaseRest{
     @RequestMapping(value = "/fornecedor/save",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
-    public FornecedorEntity saveFornecedor(@RequestBody FornecedorEntity fornecedorEntity) throws AdminServiceException {
+    public FornecedorEntity saveFornecedor(@RequestBody @Valid FornecedorEntity fornecedorEntity) throws AdminServiceException {
         return this.adminService.saveFornecedor(fornecedorEntity);
     }
 
@@ -51,17 +53,6 @@ public class AdminRest extends BaseRest{
             method = RequestMethod.DELETE)
     public FornecedorEntity removeFornecedor(@RequestBody FornecedorEntity fornecedorEntity) throws AdminServiceException {
         return this.adminService.saveFornecedor(fornecedorEntity);
-    }
-
-
-
-    @ExceptionHandler(AdminServiceException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    ErrorMessageVo handleException(AdminServiceException e, HttpServletResponse response) {
-        LOG.error("handleException, error=" + e.getMessage());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
-        return new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage());
     }
 
 }

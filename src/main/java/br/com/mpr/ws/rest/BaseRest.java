@@ -15,14 +15,4 @@ public abstract class BaseRest {
 
     private static final Log LOG = LogFactory.getLog(BaseRest.class);
 
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    ErrorMessageVo handleException(Exception e, HttpServletResponse response) {
-        LOG.error("handleException, error=" + e.getMessage());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
-        return new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage());
-    }
-
 }
