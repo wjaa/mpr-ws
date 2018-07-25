@@ -1,6 +1,8 @@
 package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.entity.FornecedorEntity;
+import br.com.mpr.ws.entity.ProdutoEntity;
+import br.com.mpr.ws.entity.TipoProdutoEntity;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.service.AdminService;
 import br.com.mpr.ws.vo.ErrorMessageVo;
@@ -27,6 +29,7 @@ public class AdminRest extends BaseRest{
     private AdminService adminService;
 
 
+    /** FORNECEDOR */
     @RequestMapping(value = "/fornecedor/all",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
@@ -48,11 +51,57 @@ public class AdminRest extends BaseRest{
         return this.adminService.saveFornecedor(fornecedorEntity);
     }
 
-    @RequestMapping(value = "/fornecedor/delete",
+    /***************/
+
+
+    /** TIPO DE PRODUTO */
+    @RequestMapping(value = "/tipoProduto/all",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
-            method = RequestMethod.DELETE)
-    public FornecedorEntity removeFornecedor(@RequestBody FornecedorEntity fornecedorEntity) throws AdminServiceException {
-        return this.adminService.saveFornecedor(fornecedorEntity);
+            method = RequestMethod.GET)
+    public List<TipoProdutoEntity> getAllTipoProduto(){
+        return this.adminService.listAllTipoProduto();
     }
+
+    @RequestMapping(value = "/tipoProduto/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public TipoProdutoEntity getTipoProdutoById(@PathVariable Long id){
+        return this.adminService.getTipoProdutoById(id);
+    }
+
+    @RequestMapping(value = "/tipoProduto/save",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public TipoProdutoEntity saveTipProduto(@RequestBody @Valid TipoProdutoEntity tipoProduto) throws AdminServiceException {
+        return this.adminService.saveTipoProduto(tipoProduto);
+    }
+
+    /***************/
+
+
+    /** PRODUTO */
+    @RequestMapping(value = "/produto/all",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<ProdutoEntity> getAllProduto(){
+        return this.adminService.listAllProduto();
+    }
+
+    @RequestMapping(value = "/tipoProduto/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public ProdutoEntity getProdutoById(@PathVariable Long id){
+        return this.adminService.getProdutoById(id);
+    }
+
+    @RequestMapping(value = "/tipoProduto/save",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public ProdutoEntity saveProduto(@RequestBody @Valid ProdutoEntity produto) throws AdminServiceException {
+        return this.adminService.saveProduto(produto);
+    }
+
+    /***************/
+
 
 }

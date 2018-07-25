@@ -1,8 +1,6 @@
 package br.com.mpr.ws.service;
 
-import br.com.mpr.ws.entity.ClienteEntity;
-import br.com.mpr.ws.entity.FornecedorEntity;
-import br.com.mpr.ws.entity.TabelaPrecoEntity;
+import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 
 import java.util.List;
@@ -26,4 +24,17 @@ public interface AdminService {
     void removeTabelaPrecoById(long id) throws AdminServiceException;
 
 
+    List<TipoProdutoEntity> listAllTipoProduto();
+
+    TipoProdutoEntity getTipoProdutoById(Long id);
+
+    TipoProdutoEntity saveTipoProduto(TipoProdutoEntity tipoProduto) throws AdminServiceException;
+
+    List<ProdutoEntity> listAllProduto();
+
+    ProdutoEntity getProdutoById(Long id);
+
+    ProdutoEntity saveProduto(ProdutoEntity produto) throws AdminServiceException;
+
+    void removeProdutoById(Long id) throws AdminServiceException;
 }
