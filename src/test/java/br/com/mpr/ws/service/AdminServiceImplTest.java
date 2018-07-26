@@ -39,6 +39,7 @@ public class AdminServiceImplTest extends BaseDBTest {
     @Test
     public void getFornecedorById() {
         FornecedorEntity fornecedorEntity = adminService.getFornecedorById(1l);
+        System.out.println(ObjectUtils.toJson(fornecedorEntity));
         Assert.assertNotNull(fornecedorEntity);
     }
 
@@ -123,7 +124,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         preco.setPreco(50.50);
         preco.setDescricao("valor inicial");
         try {
-            preco = adminService.savePreco(preco);
+            preco = adminService.saveTabelaPreco(preco);
             Assert.assertNotNull(preco.getId());
         } catch (AdminServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
@@ -142,7 +143,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         tabPreco.setDataVigencia(c.getTime());
         tabPreco.setPreco(555.40);
         try {
-            tabPreco = adminService.savePreco(tabPreco);
+            tabPreco = adminService.saveTabelaPreco(tabPreco);
             Assert.assertNotNull(tabPreco.getId());
             Assert.assertTrue(tabPreco.getPreco().equals(555.40));
 
@@ -164,7 +165,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             c.set(Calendar.YEAR, c.get(Calendar.YEAR) + 1);
             tabPreco.setDataVigencia(c.getTime());
             tabPreco.setPreco(50.40);
-            tabPreco = adminService.savePreco(tabPreco);
+            tabPreco = adminService.saveTabelaPreco(tabPreco);
             Assert.assertNotNull(tabPreco.getId());
             adminService.removeTabelaPrecoById(tabPreco.getId());
             Assert.assertTrue(true);
@@ -195,7 +196,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         tabPreco.setId(null);
         tabPreco.setPreco(50.40);
         try {
-            tabPreco = adminService.savePreco(tabPreco);
+            tabPreco = adminService.saveTabelaPreco(tabPreco);
             Assert.assertTrue(false);
         } catch (AdminServiceException e) {
             Assert.assertNotNull(e);
@@ -215,7 +216,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         tabPreco.setDataVigencia(c.getTime());
         tabPreco.setPreco(50.40);
         try {
-            tabPreco = adminService.savePreco(tabPreco);
+            tabPreco = adminService.saveTabelaPreco(tabPreco);
             Assert.assertTrue(false);
         } catch (AdminServiceException e) {
             Assert.assertNotNull(e);
@@ -230,7 +231,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         tabPreco.setDescricao("alterar");
         tabPreco.setPreco(50.40);
         try {
-            tabPreco = adminService.savePreco(tabPreco);
+            tabPreco = adminService.saveTabelaPreco(tabPreco);
             Assert.assertTrue(false);
         } catch (AdminServiceException e) {
             Assert.assertNotNull(e);

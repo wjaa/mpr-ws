@@ -1,13 +1,19 @@
 package br.com.mpr.ws.entity;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by wagner on 04/06/18.
  */
 @Entity
 @Table(name = "PRODUTO")
-public class ProdutoEntity {
+public class ProdutoEntity implements Serializable {
+
+    private static final long serialVersionUID = -7906534671283904514L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,15 +21,19 @@ public class ProdutoEntity {
     private Long id;
 
     @Column(name = "ID_TIPO_PRODUTO", nullable = false)
+    @NotNull(message = "Tipo de produto é obrigatório!")
     private Long idTipoProduto;
 
     @Transient
     private TipoProdutoEntity tipo;
 
+    @NotNull(message = "Descrição do produto é obrigatória!")
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 
 
+    @NotNull(message = "Peso do produto é obrigatória!")
+    @Range(min = 0, max = 99999)
     @Column(name = "PESO", nullable = false, scale = 5, precision = 2)
     private Double peso;
 

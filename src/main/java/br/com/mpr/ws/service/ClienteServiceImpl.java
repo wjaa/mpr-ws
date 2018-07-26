@@ -2,11 +2,15 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.ClienteEntity;
+import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.exception.ClienteServiceException;
 import br.com.mpr.ws.utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 /**
  *
@@ -51,12 +55,48 @@ public class ClienteServiceImpl implements ClienteService{
             BeanUtils.copyProperties(cliente,clienteMerged);
             commonDao.update(clienteMerged);
         }
+
+        saveEnderecos(cliente);
+
         return cliente;
     }
 
     @Override
     public ClienteEntity getClienteById(long id) {
-        return commonDao.get(ClienteEntity.class,id);
+        ClienteEntity clienteEntity = commonDao.get(ClienteEntity.class,id);
+
+        if (clienteEntity != null){
+            clienteEntity.setEnderecos(this.getEnderecosByIdCliente(clienteEntity.getId()));
+        }
+        return clienteEntity;
+    }
+
+    @Override
+    public List<ClienteEntity> listAllCliente() {
+        return commonDao.listAll(ClienteEntity.class);
+    }
+
+
+    private List<EnderecoEntity> getEnderecosByIdCliente(Long idCliente) {
+        return commonDao.findByProperties(EnderecoEntity.class,
+                new String[]{"idCliente"},
+                new Object[]{idCliente});
+    }
+
+
+
+    private void saveEnderecos(ClienteEntity cliente) {
+        if (CollectionUtils.isEmpty(cliente.getEnderecos())){
+            for (EnderecoEntity enderecoEntity: cliente.getEnderecos()) {
+                if (enderecoEntity.getId() == null){
+                    enderecoEntity.setIdCliente(cliente.getId());
+                    enderecoEntity.setAtivo(true);
+                    commonDao.save(enderecoEntity);
+                }else{
+                    commonDao.update(enderecoEntity);
+                }
+            }
+        }
     }
 
 }

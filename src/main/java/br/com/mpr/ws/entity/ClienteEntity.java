@@ -1,6 +1,8 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "CLIENTE")
-public class ClienteEntity {
+public class ClienteEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,18 +19,22 @@ public class ClienteEntity {
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 60)
+    @NotNull(message = "Nome é obrigatório!")
     private String nome;
 
     @Column(name = "EMAIL", nullable = false, length = 100)
+    @NotNull(message = "Email é obrigatório!")
     private String email;
 
     @Column(name = "CPF", nullable = false, length = 11)
+    @NotNull(message = "Cpf é obrigatório!")
     private String cpf;
 
     @Transient
     private List<EnderecoEntity> enderecos;
 
     @Column(name = "CELULAR", nullable = false, length = 13)
+    @NotNull(message = "Celular é obrigatório!")
     private String celular;
 
     @Column(name = "ANIVERSARIO")
@@ -39,8 +45,6 @@ public class ClienteEntity {
 
     @Column(name = "ATIVO", nullable = false)
     private Boolean ativo;
-
-
 
     public Long getId() {
         return id;

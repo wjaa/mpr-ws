@@ -4,7 +4,6 @@ import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.FornecedorEntity;
 import br.com.mpr.ws.service.AdminService;
 import br.com.mpr.ws.utils.ObjectUtils;
-import br.com.mpr.ws.vo.ErrorMessageVo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,19 +1,25 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by wagner on 04/06/18.
  */
 @Entity
 @Table(name = "TIPO_PRODUTO")
-public class TipoProdutoEntity {
+public class TipoProdutoEntity implements Serializable {
+
+    private static final long serialVersionUID = -1975242527583241235L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Long id;
 
+    @NotNull(message = "Descrição do tipo de produto não pode ser vazia.")
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 

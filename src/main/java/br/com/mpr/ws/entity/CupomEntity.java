@@ -1,6 +1,8 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "CUPOM_DESCONTO")
-public class CupomEntity {
+public class CupomEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,15 +18,18 @@ public class CupomEntity {
     private Long id;
 
     @Column(name = "DESCRICAO", nullable = false, length = 50)
+    @NotNull(message = "Descrição é obrigatório!")
     private String descricao;
 
     @Column(name = "HASH", nullable = false, length = 8)
     private String hash;
 
     @Column(name = "DATA_INICIO", nullable = false)
+    @NotNull(message = "Data inicial é obrigatório!")
     private Date dataInicio;
 
     @Column(name = "DATA_FIM", nullable = false)
+    @NotNull(message = "Data final é obrigatório!")
     private Date dataFim;
 
     @Column(name = "PROMOCAO", nullable = false)

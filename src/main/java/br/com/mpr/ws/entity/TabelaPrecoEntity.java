@@ -3,6 +3,7 @@ package br.com.mpr.ws.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,12 +11,15 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "TABELA_PRECO")
-public class TabelaPrecoEntity {
+public class TabelaPrecoEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Long id;
+
+    @Transient
+    private ProdutoEntity produto;
 
     @NotNull(message = "Produto é obrigatório!")
     @Column(name = "ID_PRODUTO", nullable = false)
@@ -73,5 +77,13 @@ public class TabelaPrecoEntity {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public ProdutoEntity getProduto() {
+        return produto;
+    }
+
+    public void setProduto(ProdutoEntity produto) {
+        this.produto = produto;
     }
 }

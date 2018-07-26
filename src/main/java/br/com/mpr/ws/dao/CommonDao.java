@@ -1,5 +1,7 @@
 package br.com.mpr.ws.dao;
 
+import br.com.mpr.ws.entity.FornecedorEntity;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,4 +29,5 @@ public interface CommonDao{
     <T> T findByPropertiesSingleResult(Class<T> clazzEntity, String[] params, Object[] values);
 
     <T>void remove(Class<T> clazz, Serializable id);
+
 }

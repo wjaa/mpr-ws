@@ -91,4 +91,10 @@ public class DateUtils {
         c.add(Calendar.DATE, days);
         return c.getTime();
     }
+
+    public static long getDiffInDays(Date d1, Date d2) {
+       long time = d2.getTime() - d1.getTime();
+       return time / 1000 / 60 / 60 / 24;
+    }
+
 }

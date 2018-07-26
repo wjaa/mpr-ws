@@ -3,6 +3,7 @@ package br.com.mpr.ws.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
  */
 @Entity
 @Table(name = "FORNECEDOR")
-public class FornecedorEntity {
+public class FornecedorEntity implements Serializable {
+
+    private static final long serialVersionUID = -8102000405120233227L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
