@@ -6,6 +6,7 @@ import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.exception.ClienteServiceException;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
+import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -324,9 +325,32 @@ public class AdminServiceImpl implements AdminService {
             throw new AdminServiceException("Periodo do Cupom não pode ser maior que " + MAX_DAYS_CUPOM);
         }
 
+        if (cupomEntity.getId() == null){
+            boolean cupomExiste = false;
 
-        //TODO CONTINUAR AQUI
-        /****************AQUI*****************/
+            //evitando duplicidade com o código do cupom.
+            do {
+                String hash = StringUtils.createRandomHash();
+                List<?> result = commonDao.findByProperties(CupomEntity.class,new String[]{"hash"}, new Object[]{hash});
+                if (result.size() == 0){
+                    commonDao.save(cupomEntity);
+                    cupomExiste = false;
+                }else{
+                    cupomExiste = true;
+                }
+
+            }while(cupomExiste);
+
+        }else{
+
+            //TODO CONTINUAR AQUI.
+
+            commonDao.update(cupomEntity);
+        }
+
+
+
+
         return null;
     }
 
