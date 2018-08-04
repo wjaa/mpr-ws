@@ -1,7 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 /**
@@ -19,7 +19,7 @@ public class TipoProdutoEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @NotNull(message = "Descrição do tipo de produto não pode ser vazia.")
+    @NotEmpty(message = "Descrição do tipo de produto não pode ser vazia.")
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 

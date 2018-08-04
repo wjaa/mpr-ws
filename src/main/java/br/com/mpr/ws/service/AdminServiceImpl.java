@@ -39,7 +39,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public FornecedorEntity getFornecedorById(long id) {
-        return commonDao.get(FornecedorEntity.class,id);
+        FornecedorEntity entity = commonDao.get(FornecedorEntity.class,id);
+        return entity;
     }
 
     @Override
@@ -134,7 +135,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public FornecedorEntity saveFornecedor(FornecedorEntity fe) throws AdminServiceException {
 
-        if (fe.getId() == null){
+        if (this.isNew(fe.getId())){
             List<FornecedorEntity> listFornec = commonDao.findByProperties(FornecedorEntity.class,
                     new String[]{"cnpj"}, new Object[]{fe.getCnpj()});
 
@@ -164,7 +165,7 @@ public class AdminServiceImpl implements AdminService {
                     new AdminServiceException("Já existe um tipo de produto com essa descrição ['" +
                     tipoProduto.getDescricao() + "']");
 
-            if (tipoProduto.getId() == null){
+            if (this.isNew(tipoProduto.getId())){
                 throw exception;
             }
 
@@ -174,7 +175,7 @@ public class AdminServiceImpl implements AdminService {
 
         }
 
-        if (tipoProduto.getId() == null){
+        if (this.isNew(tipoProduto.getId())){
             tipoProduto = commonDao.save(tipoProduto);
         }else{
 
@@ -186,7 +187,6 @@ public class AdminServiceImpl implements AdminService {
 
         return tipoProduto;
     }
-
 
 
     @Override
@@ -201,7 +201,7 @@ public class AdminServiceImpl implements AdminService {
                     new AdminServiceException("Já existe um produto com essa descrição ['" +
                     produtoDuplicado.getDescricao() + "']");
 
-            if (produto.getId() == null ){
+            if (this.isNew(produto.getId())){
                 throw exception;
             }
 
@@ -211,7 +211,7 @@ public class AdminServiceImpl implements AdminService {
 
         }
 
-        if (produto.getId() == null){
+        if (this.isNew(produto.getId())){
             produto = commonDao.save(produto);
 
         }else{
@@ -250,7 +250,7 @@ public class AdminServiceImpl implements AdminService {
 
         }
 
-        if (tabPreco.getId() == null){
+        if (this.isNew(tabPreco.getId())){
             tabPreco = commonDao.save(tabPreco);
         }else{
 
@@ -266,7 +266,7 @@ public class AdminServiceImpl implements AdminService {
     public EstoqueEntity saveEstoque(EstoqueEntity estoque) throws AdminServiceException {
 
         estoque.setDataAtualizacao(new Date());
-        if (estoque.getId() == null){
+        if (this.isNew(estoque.getId())){
 
             //Facilitador para o usuário cadastrar o mesmo item varias vezes.
             if (estoque.getQuantidade() != null && estoque.getQuantidade() > 1){
@@ -325,34 +325,58 @@ public class AdminServiceImpl implements AdminService {
             throw new AdminServiceException("Periodo do Cupom não pode ser maior que " + MAX_DAYS_CUPOM);
         }
 
-        if (cupomEntity.getId() == null){
-            boolean cupomExiste = false;
+        //se for um novo cupom
+        if (this.isNew(cupomEntity.getId())){
 
-            //evitando duplicidade com o código do cupom.
-            do {
-                String hash = StringUtils.createRandomHash();
-                List<?> result = commonDao.findByProperties(CupomEntity.class,new String[]{"hash"}, new Object[]{hash});
-                if (result.size() == 0){
-                    commonDao.save(cupomEntity);
-                    cupomExiste = false;
-                }else{
-                    cupomExiste = true;
+            //não é promocional, então geramos um código aleatório.
+            if (!cupomEntity.getPromocao()){
+                boolean cupomExiste = false;
+
+                //evitando duplicidade com o código do cupom.
+                do {
+                    String hash = StringUtils.createRandomHash();
+                    List<?> result = commonDao.findByProperties(CupomEntity.class,new String[]{"hash"}, new Object[]{hash});
+                    if (result.size() == 0){
+                        commonDao.save(cupomEntity);
+                        cupomExiste = false;
+                    }else{
+                        cupomExiste = true;
+                    }
+
+                }while(cupomExiste);
+            }else{
+                if (org.springframework.util.StringUtils.isEmpty(cupomEntity.getHash())){
+                    throw new AdminServiceException("É obrigatório o preenchimento do código do cupom promocional.");
                 }
 
-            }while(cupomExiste);
+                if (cupomEntity.getHash().matches("[a-zA-Z0-9]{8}")){
+                    throw new AdminServiceException("Código do cupom promocional precisa ter 8 caracteres, " +
+                            "respeitando letras, maiúsculas ou minúsculas [a-zA-Z] e números [0-9]");
+                }
+            }
+
+            cupomEntity = commonDao.save(cupomEntity);
+
 
         }else{
 
-            //TODO CONTINUAR AQUI.
+            PedidoEntity pedido = commonDao.findByPropertiesSingleResult(PedidoEntity.class, new String[]{"idCupom"},
+                    new Object[]{cupomEntity.getId()});
 
-            commonDao.update(cupomEntity);
+            if (pedido != null){
+                throw new AdminServiceException("Você não pode alterar esse cupom, porque ele está vinculado com um pedido.");
+            }
+
+            cupomEntity = commonDao.update(cupomEntity);
         }
 
-
-
-
-        return null;
+        return cupomEntity;
     }
+
+    private boolean isNew(Long id) {
+        return id == null || id < 1;
+    }
+
 
 
     @Override
@@ -389,6 +413,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Serializable getEntityById(String entity, Long id) throws AdminServiceException {
+
         switch (entity) {
             case "FornecedorEntity": return getFornecedorById(id);
             case "TipoProdutoEntity": return getTipoProdutoById(id);
@@ -432,11 +457,11 @@ public class AdminServiceImpl implements AdminService {
             case "EstoqueEntity": return saveEstoque(ObjectUtils.fromJSON(jsonEntity, EstoqueEntity.class));
             case "CupomEntity": return saveCupom(ObjectUtils.fromJSON(jsonEntity, CupomEntity.class));
             case "ClienteEntity": return saveCliente(ObjectUtils.fromJSON(jsonEntity, ClienteEntity.class));
-            default: throw new AdminServiceException("Argumento [entity] inválido!");
+            default: throw new AdminServiceException("Argumento [entity] {" +
+                    "inválido!");
 
         }
     }
-
 
 
     //TODO NAO EXISTE REMOVER REGISTROS E SIM DESATIVAR.

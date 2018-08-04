@@ -31,7 +31,7 @@ public class AdminRestTest extends BaseDBTest {
     @Test
     public void getAllFornecedor() {
         try{
-            ResultActions ra = mvc.perform(get("/api/v1/admin/fornecedor/all")
+            ResultActions ra = mvc.perform(get("/api/v1/admin/FornecedorEntity/all")
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content()
@@ -52,7 +52,7 @@ public class AdminRestTest extends BaseDBTest {
     public void getFornecedorById() {
 
         try{
-            ResultActions ra = mvc.perform(get("/api/v1/admin/fornecedor/1")
+            ResultActions ra = mvc.perform(get("/api/v1/admin/FornecedorEntity/1")
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content()
@@ -77,7 +77,7 @@ public class AdminRestTest extends BaseDBTest {
         fornecedorEntity.setCnpj("50800040000196");
         fornecedorEntity.setTelefonePrincipal("11 5555555");
         try{
-            ResultActions ra = mvc.perform(post("/api/v1/admin/fornecedor/save")
+            ResultActions ra = mvc.perform(post("/api/v1/admin/FornecedorEntity/save")
                     .content(ObjectUtils.toJson(fornecedorEntity))
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
@@ -104,7 +104,7 @@ public class AdminRestTest extends BaseDBTest {
         fornecedorEntity.setCnpj("11111111111111");
         fornecedorEntity.setTelefonePrincipal("11 5555555");
         try{
-            ResultActions ra = mvc.perform(post("/api/v1/admin/fornecedor/save")
+            ResultActions ra = mvc.perform(post("/api/v1/admin/FornecedorEntity/save")
                     .content(ObjectUtils.toJson(fornecedorEntity))
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))

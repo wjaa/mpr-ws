@@ -32,22 +32,20 @@ public class ClienteServiceImpl implements ClienteService{
             throw new ClienteServiceException("Email inválido!");
         }
 
+        if (cliente.getId() == null || cliente.getId() < 1){
+            ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
+                    new Object[]{cliente.getCpf()});
 
-        ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
-                new Object[]{cliente.getCpf()});
+            if (cliCpf != null && !cliCpf.getId().equals(cliente.getId())){
+                throw new ClienteServiceException("Já existe um cliente cadastrado com esse CPF.");
+            }
 
-        if (cliCpf != null && !cliCpf.getId().equals(cliente.getId())){
-            throw new ClienteServiceException("Já existe um cliente cadastrado com esse CPF.");
-        }
+            ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
+                    new Object[]{cliente.getEmail()});
 
-        ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
-                new Object[]{cliente.getEmail()});
-
-        if (cliEmail != null && !cliEmail.getId().equals(cliente.getId())){
-            throw new ClienteServiceException("Já existe um cliente cadastrado com esse EMAIL.");
-        }
-
-        if (cliente.getId() == null){
+            if (cliEmail != null && !cliEmail.getId().equals(cliente.getId())){
+                throw new ClienteServiceException("Já existe um cliente cadastrado com esse EMAIL.");
+            }
             cliente.setAtivo(true);
             cliente = commonDao.save(cliente);
         }else{

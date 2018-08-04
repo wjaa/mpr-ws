@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -18,7 +19,7 @@ public class CupomEntity implements Serializable {
     private Long id;
 
     @Column(name = "DESCRICAO", nullable = false, length = 50)
-    @NotNull(message = "Descrição é obrigatório!")
+    @NotEmpty(message = "Descrição é obrigatório!")
     private String descricao;
 
     @Column(name = "HASH", nullable = false, length = 8)

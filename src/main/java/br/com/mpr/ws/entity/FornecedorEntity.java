@@ -2,10 +2,10 @@ package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by wagner on 04/06/18.
@@ -22,26 +22,32 @@ public class FornecedorEntity implements Serializable {
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 60)
-    @NotNull(message = "Nome do fornecedor não pode ser vazio.")
+    @NotEmpty(message = "Nome do fornecedor não pode ser vazio.")
+    @Size(max = 60, message = "Nome só permite 60 caracteres")
     private String nome;
 
     @Column(name = "EMAIL", nullable = false, length = 100)
     @Email
-    @NotNull(message = "Email do fornecedor não pode ser vazio.")
+    @NotEmpty(message = "Email do fornecedor não pode ser vazio.")
+    @Size(max = 100, message = "Email só permite 100 caracteres")
     private String email;
 
     @Column(name = "CNPJ", length = 14)
+    @Size(max = 14, message = "Cnpj inválido")
     private String cnpj;
 
     @Column(name = "ENDERECO", nullable = false, length = 200)
-    @NotNull(message = "Endereço do fornecedor não pode ser vazio.")
+    @NotEmpty(message = "Endereço do fornecedor não pode ser vazio.")
+    @Size(max = 200, message = "Endereço só permite 200 caracteres")
     private String endereco;
 
     @Column(name = "TELEFONE_PRINCIPAL", nullable = false, length = 13)
-    @NotNull(message = "Telefone principal do fornecedor não pode ser vazio.")
+    @NotEmpty(message = "Telefone principal do fornecedor não pode ser vazio.")
+    @Size(max = 13, message = "Telefone só permite 13 caracteres")
     private String telefonePrincipal;
 
     @Column(name = "TELEFONE_SECUNDARIO", length = 13)
+    @Size(max = 13, message = "Telefone só permite 13 caracteres")
     private String telefoneSecundario;
 
     @Column(name = "ATIVO")

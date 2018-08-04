@@ -1,7 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Created by wagner on 04/06/18.
@@ -16,30 +16,30 @@ public class EnderecoEntity {
     private Long id;
 
     @Column(name = "CEP", nullable = false, length = 8)
-    @NotNull(message = "Cep é obrigatório!")
+    @NotEmpty(message = "Cep é obrigatório!")
     private String cep;
 
     @Column(name = "LOGRADOURO", nullable = false, length = 80)
-    @NotNull(message = "Logradouro é obrigatório!")
+    @NotEmpty(message = "Logradouro é obrigatório!")
     private String logradouro;
 
     @Column(name = "NUMERO", length = 10, nullable = false)
-    @NotNull(message = "Número é obrigatório!")
+    @NotEmpty(message = "Número é obrigatório!")
     private String numero;
 
     @Column(name = "COMPLEMENTO", length = 60)
     private String complemento;
 
     @Column(name = "BAIRRO", length = 60, nullable = false)
-    @NotNull(message = "Bairro é obrigatório!")
+    @NotEmpty(message = "Bairro é obrigatório!")
     private String bairro;
 
     @Column(name = "CIDADE", length = 60, nullable = false)
-    @NotNull(message = "Cidade é obrigatório!")
+    @NotEmpty(message = "Cidade é obrigatório!")
     private String cidade;
 
     @Column(name = "UF", length = 2, nullable = false)
-    @NotNull(message = "UF é obrigatório!")
+    @NotEmpty(message = "UF é obrigatório!")
     private String uf;
 
     @Column(name = "ID_CLIENTE", nullable = false)

@@ -3,6 +3,7 @@ package br.com.mpr.ws.entity;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -27,7 +28,7 @@ public class ProdutoEntity implements Serializable {
     @Transient
     private TipoProdutoEntity tipo;
 
-    @NotNull(message = "Descrição do produto é obrigatória!")
+    @NotEmpty(message = "Descrição do produto é obrigatória!")
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 
