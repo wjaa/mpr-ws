@@ -182,3 +182,32 @@ CREATE TABLE BAIXA_ESTOQUE(
           REFERENCES ITEM_PEDIDO(ID),
     PRIMARY KEY (ID)
 );
+
+
+/*SYSTEM TABLES*/
+CREATE TABLE USERS(
+    USERNAME VARCHAR(64) NOT NULL,
+    PASSWORD VARCHAR(64) NOT NULL,
+    ENABLED TINYINT NOT NULL DEFAULT 1,
+    PRIMARY KEY (USERNAME)
+);
+
+CREATE TABLE USER_ROLES(
+  USER_ROLE_ID INT(10) NOT NULL AUTO_INCREMENT,
+  USERNAME VARCHAR(64) NOT NULL,
+  ROLE VARCHAR(64) NOT NULL,
+  PRIMARY KEY (USER_ROLE_ID),
+  UNIQUE KEY UNI_USERNAME_ROLE (ROLE,USERNAME),
+  KEY FK_USERNAME_IDX (USERNAME),
+  CONSTRAINT FK_USERNAME FOREIGN KEY (USERNAME) REFERENCES USERS (USERNAME)
+);
+
+INSERT INTO users(username,password,enabled)
+VALUES ('cliente.admin@meuportaretrato.com','759e7ae7dd6be35207f59bfe5fa46c13', true);
+INSERT INTO users(username,password,enabled)
+VALUES ('cliente.mobile@meuportaretrato.com','74ea4987cfb5755cd868fd59f7d5a001', true);
+
+INSERT INTO user_roles (username, role)
+VALUES ('cliente.admin@meuportaretrato.com', 'ROLE_ADMIN');
+INSERT INTO user_roles (username, role)
+VALUES ('cliente.mobile@meuportaretrato.com', 'ROLE_USER');
