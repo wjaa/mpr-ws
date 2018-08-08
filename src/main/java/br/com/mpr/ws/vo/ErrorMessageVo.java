@@ -25,6 +25,7 @@ public class ErrorMessageVo {
     public ErrorMessageVo(Integer errorCode, String errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = new String[]{errorMessage};
+        this.timestamp = new Date();
     }
 
     public Integer getErrorCode() {

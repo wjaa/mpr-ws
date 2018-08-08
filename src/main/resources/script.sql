@@ -203,9 +203,9 @@ CREATE TABLE USER_ROLES(
 );
 
 INSERT INTO users(username,password,enabled)
-VALUES ('cliente.admin@meuportaretrato.com','759e7ae7dd6be35207f59bfe5fa46c13', true);
+VALUES ('cliente.admin@meuportaretrato.com','$2a$10$YWkzQyIPEa/0CYn4.3usyuQ956exzjNscX6NlMnjiZL3/dPVPv9v6', true);
 INSERT INTO users(username,password,enabled)
-VALUES ('cliente.mobile@meuportaretrato.com','74ea4987cfb5755cd868fd59f7d5a001', true);
+VALUES ('cliente.mobile@meuportaretrato.com','$2a$10$ILfyRMdP.nqMvvP3beXjbeFXT42Rsx.AzckTtKi2RIhcWT1jBJe6a', true);
 
 INSERT INTO user_roles (username, role)
 VALUES ('cliente.admin@meuportaretrato.com', 'ROLE_ADMIN');

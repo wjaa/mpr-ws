@@ -1,15 +1,16 @@
 package br.com.mpr.ws.conf;
 
-import br.com.mpr.ws.jwt.filter.JWTAuthenticationFilter;
-import br.com.mpr.ws.jwt.filter.JWTLoginFilter;
+import br.com.mpr.ws.constants.MprConstants;
+import br.com.mpr.ws.security.CustomBasicAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -25,40 +26,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable().authorizeRequests()
-                .antMatchers("/api/v1/admin")
-                .access("hasRole('ROLE_ADMIN')")
-                .anyRequest()
-                .permitAll()
-                .antMatchers("/api/v1/core")
-                .access("hasRole('ROLE_USER')")
-                .anyRequest()
-                .permitAll()
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
-                .anyRequest().authenticated()
-                .and()
-
-                // filtra requisições de login
-                .addFilterBefore(new JWTLoginFilter("/auth", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-
-                // filtra outras requisições para verificar a presença do JWT no header
-                .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/api/v1/admin/**")
+                .hasRole("ADMIN")
+                .antMatchers("/api/v1/core/**")
+                .hasRole("USER")
+                .and().httpBasic().realmName(MprConstants.REALM_MPR).authenticationEntryPoint(getBasicAuthEntryPoint())
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//We don't need sessions to be created.
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // cria uma conta default
-        /*auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password("{noop}password")
-                .roles("ADMIN");*/
-
         auth.jdbcAuthentication().dataSource(dataSource)
+                .passwordEncoder(new BCryptPasswordEncoder())
                 .usersByUsernameQuery(
                         "select username,password, enabled from users where username=?")
                 .authoritiesByUsernameQuery(
                         "select username, role from user_roles where username=?");
 
+    }
+
+    @Bean
+    public CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint(){
+        return new CustomBasicAuthenticationEntryPoint();
     }
 
 }
