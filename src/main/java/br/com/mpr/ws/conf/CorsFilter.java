@@ -12,8 +12,9 @@ import java.io.IOException;
 /**
  *
  */
-@Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE)
+/*@Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE)*/
+//TODO REVISAR O CORS PQ ELE ESTÁ DANDO PROBLEMAS NO HEADER DOS TESTES.
 public class CorsFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {

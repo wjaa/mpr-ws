@@ -84,7 +84,7 @@ public class ClienteServiceImpl implements ClienteService{
 
 
     private void saveEnderecos(ClienteEntity cliente) {
-        if (CollectionUtils.isEmpty(cliente.getEnderecos())){
+        if (!CollectionUtils.isEmpty(cliente.getEnderecos())){
             for (EnderecoEntity enderecoEntity: cliente.getEnderecos()) {
                 if (enderecoEntity.getId() == null){
                     enderecoEntity.setIdCliente(cliente.getId());

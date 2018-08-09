@@ -12,11 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @AutoConfigureMockMvc
 public class AdminRestTest extends BaseDBTest {
@@ -30,8 +30,10 @@ public class AdminRestTest extends BaseDBTest {
 
     @Test
     public void getAllFornecedor() {
+
         try{
             ResultActions ra = mvc.perform(get("/api/v1/admin/FornecedorEntity/all")
+                    .with(httpBasic("user","password"))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content()
@@ -47,12 +49,12 @@ public class AdminRestTest extends BaseDBTest {
     }
 
 
-
     @Test
     public void getFornecedorById() {
 
         try{
             ResultActions ra = mvc.perform(get("/api/v1/admin/FornecedorEntity/1")
+                    .with(httpBasic("user","password"))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content()
@@ -78,6 +80,7 @@ public class AdminRestTest extends BaseDBTest {
         fornecedorEntity.setTelefonePrincipal("11 5555555");
         try{
             ResultActions ra = mvc.perform(post("/api/v1/admin/FornecedorEntity/save")
+                    .with(httpBasic("user","password"))
                     .content(ObjectUtils.toJson(fornecedorEntity))
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
@@ -105,6 +108,7 @@ public class AdminRestTest extends BaseDBTest {
         fornecedorEntity.setTelefonePrincipal("11 5555555");
         try{
             ResultActions ra = mvc.perform(post("/api/v1/admin/FornecedorEntity/save")
+                    .with(httpBasic("user","password"))
                     .content(ObjectUtils.toJson(fornecedorEntity))
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaType.APPLICATION_JSON_UTF8))
@@ -125,8 +129,4 @@ public class AdminRestTest extends BaseDBTest {
 
     }
 
-
-    @Test
-    public void removeFornecedor() {
-    }
 }

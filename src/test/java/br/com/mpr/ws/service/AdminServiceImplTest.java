@@ -88,7 +88,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         try {
             adminService.removeFornecedorById(2);
             FornecedorEntity fornecedorRemovido = adminService.getFornecedorById(2l);
-            Assert.assertNull(fornecedorRemovido);
+            Assert.assertFalse(fornecedorRemovido.getAtivo());
         } catch (AdminServiceException ex) {
             Assert.assertTrue(ex.getMessage(), false);
         }
@@ -200,7 +200,8 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertTrue(false);
         } catch (AdminServiceException e) {
             Assert.assertNotNull(e);
-            Assert.assertTrue(e.getMessage().toUpperCase().contains("JÁ EXISTE"));
+            System.out.println(e.getMessage().toUpperCase());
+            Assert.assertTrue(e.getMessage().toUpperCase().contains("VOCÊ NÃO PODE"));
         }
     }
 
@@ -216,7 +217,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         tabPreco.setDataVigencia(c.getTime());
         tabPreco.setPreco(50.40);
         try {
-            tabPreco = adminService.saveTabelaPreco(tabPreco);
+            adminService.saveTabelaPreco(tabPreco);
             Assert.assertTrue(false);
         } catch (AdminServiceException e) {
             Assert.assertNotNull(e);

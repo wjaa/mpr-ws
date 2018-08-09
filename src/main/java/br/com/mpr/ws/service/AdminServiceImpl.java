@@ -227,7 +227,7 @@ public class AdminServiceImpl implements AdminService {
     public TabelaPrecoEntity saveTabelaPreco(TabelaPrecoEntity tabPreco) throws AdminServiceException {
 
         if (DateUtils.isLesserEqual(tabPreco.getDataVigencia(), new Date())) {
-            throw new AdminServiceException("Você não pode " + tabPreco.getId() == null ? "criar" : "alterar" +
+            throw new AdminServiceException("Você não pode " + (tabPreco.getId() == null ? "criar" : "alterar") +
                     " uma tabela de preço retroativa!");
         }
 
