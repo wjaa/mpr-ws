@@ -51,9 +51,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public ProdutoEntity getProdutoById(Long id) {
         ProdutoEntity produtoEntity = commonDao.get(ProdutoEntity.class,id);
-        if (produtoEntity != null){
-            produtoEntity.setTipo(this.getTipoProdutoById(produtoEntity.getIdTipoProduto()));
-        }
         return produtoEntity;
     }
 

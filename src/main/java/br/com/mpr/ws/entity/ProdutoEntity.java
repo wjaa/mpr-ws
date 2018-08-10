@@ -25,7 +25,8 @@ public class ProdutoEntity implements Serializable {
     @NotNull(message = "Tipo de produto é obrigatório!")
     private Long idTipoProduto;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "ID_TIPO_PRODUTO", updatable = false, insertable = false)
     private TipoProdutoEntity tipo;
 
     @NotEmpty(message = "Descrição do produto é obrigatória!")
