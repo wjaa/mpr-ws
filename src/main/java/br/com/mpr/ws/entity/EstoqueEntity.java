@@ -19,14 +19,16 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "ID_PRODUTO", updatable = false, insertable = false)
     private ProdutoEntity produto;
 
     @NotNull(message = "Produto é obrigatório!")
     @Column(name = "ID_PRODUTO", nullable = false)
     private Long idProduto;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "ID_FORNECEDOR", updatable = false, insertable = false)
     private FornecedorEntity fornecedor;
 
     @NotNull(message = "Fornecedor é obrigatório!")

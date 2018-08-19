@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by wagner on 6/25/18.
@@ -274,9 +277,13 @@ public class AdminServiceImpl implements AdminService {
                             "Por regra limitamos a no máximo 100 produtos por cadastro");
                 }
 
+                EstoqueEntity cloneFinal = null;
                 for (int i = 0; i < estoque.getQuantidade(); i++){
-                    estoque = commonDao.save(estoque);
+                    EstoqueEntity clone = new EstoqueEntity();
+                    BeanUtils.copyProperties(estoque,clone);
+                    cloneFinal = commonDao.save(clone);
                 }
+                estoque = cloneFinal;
             }else{
                 estoque = commonDao.save(estoque);
             }
@@ -460,6 +467,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-
     //TODO NAO EXISTE REMOVER REGISTROS E SIM DESATIVAR.
 }
+
+
