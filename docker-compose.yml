@@ -9,4 +9,5 @@ services:
     stdin_open: true
     volumes:
     - /etc/localtime:/etc/localtime
+    - /etc/hosts:/etc/hosts
     domainname: meuportaretrato.com.br
