@@ -36,7 +36,8 @@ public class CupomEntity implements Serializable {
     @Column(name = "PROMOCAO", nullable = false)
     private Boolean promocao;
 
-    @Column(name = "PORCENTAGEM", nullable = false, scale = 3, precision = 2)
+    @Column(name = "PORCENTAGEM", nullable = false, scale = 4, precision = 2)
+    @NotNull(message = "Porcentagem é obrigatório!")
     private Double porcentagem;
 
 
@@ -86,7 +87,7 @@ public class CupomEntity implements Serializable {
 
 
     public Boolean getPromocao() {
-        return promocao;
+        return promocao != null ? promocao : false;
     }
 
     public void setPromocao(Boolean promocao) {

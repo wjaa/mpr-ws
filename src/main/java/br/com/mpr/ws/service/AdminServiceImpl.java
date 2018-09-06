@@ -136,6 +136,8 @@ public class AdminServiceImpl implements AdminService {
     public FornecedorEntity saveFornecedor(FornecedorEntity fe) throws AdminServiceException {
 
         if (this.isNew(fe.getId())){
+            //tirando o zero se houver.
+            fe.setId(null);
             List<FornecedorEntity> listFornec = commonDao.findByProperties(FornecedorEntity.class,
                     new String[]{"cnpj"}, new Object[]{fe.getCnpj()});
 
@@ -176,6 +178,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (this.isNew(tipoProduto.getId())){
+            tipoProduto.setId(null);
             tipoProduto = commonDao.save(tipoProduto);
         }else{
 
@@ -212,6 +215,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (this.isNew(produto.getId())){
+            produto.setId(null);
             produto = commonDao.save(produto);
 
         }else{
@@ -251,6 +255,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (this.isNew(tabPreco.getId())){
+            tabPreco.setId(null);
             tabPreco = commonDao.save(tabPreco);
         }else{
 
@@ -267,6 +272,7 @@ public class AdminServiceImpl implements AdminService {
 
         estoque.setDataAtualizacao(new Date());
         if (this.isNew(estoque.getId())){
+            estoque.setId(null);
 
             //Facilitador para o usuário cadastrar o mesmo item varias vezes.
             if (estoque.getQuantidade() != null && estoque.getQuantidade() > 1){
@@ -331,7 +337,7 @@ public class AdminServiceImpl implements AdminService {
 
         //se for um novo cupom
         if (this.isNew(cupomEntity.getId())){
-
+            cupomEntity.setId(null);
             //não é promocional, então geramos um código aleatório.
             if (!cupomEntity.getPromocao()){
                 boolean cupomExiste = false;
@@ -341,7 +347,7 @@ public class AdminServiceImpl implements AdminService {
                     String hash = StringUtils.createRandomHash();
                     List<?> result = commonDao.findByProperties(CupomEntity.class,new String[]{"hash"}, new Object[]{hash});
                     if (result.size() == 0){
-                        commonDao.save(cupomEntity);
+                        cupomEntity.setHash(hash);
                         cupomExiste = false;
                     }else{
                         cupomExiste = true;

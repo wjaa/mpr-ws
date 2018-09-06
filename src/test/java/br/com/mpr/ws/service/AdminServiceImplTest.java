@@ -120,7 +120,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         TabelaPrecoEntity preco = new TabelaPrecoEntity();
 
         preco.setDataVigencia(DateUtils.addDays(new Date(), 2));
-        preco.setIdProduto(30l);
+        preco.setIdProduto(1l);
         preco.setPreco(50.50);
         preco.setDescricao("valor inicial");
         try {
@@ -134,7 +134,7 @@ public class AdminServiceImplTest extends BaseDBTest {
 
     @Test
     public void atualizarTabelaPreco() {
-        TabelaPrecoEntity tabPreco = commonDao.get(TabelaPrecoEntity.class, 1l);
+        TabelaPrecoEntity tabPreco = adminService.getTabelaPrecoById(1l);
         tabPreco.setId(null);
         Calendar c = Calendar.getInstance();
         c.set(Calendar.DAY_OF_MONTH, 30);

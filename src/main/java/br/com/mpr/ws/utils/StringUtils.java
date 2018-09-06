@@ -17,10 +17,9 @@ public class StringUtils {
         String hash = "";
         for (int i = 0; i < 8; i++){
             String c;
-            int rand = ThreadLocalRandom.current().nextInt(0,3);
+            int rand = ThreadLocalRandom.current().nextInt(0,2);
             c = rand == 0 ? String.valueOf((char)ThreadLocalRandom.current().nextInt('A', 'Z'+1))
                     : rand == 1 ? String.valueOf((char)ThreadLocalRandom.current().nextInt('0', '9'+1))
-                    : rand == 2 ? String.valueOf((char)ThreadLocalRandom.current().nextInt('a', 'z'+1))
                     : String.valueOf((char)ThreadLocalRandom.current().nextInt('A', 'Z'+1));
 
             hash += c;

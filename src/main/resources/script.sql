@@ -5,7 +5,7 @@
 
   ****ESSE PROCEDIMENTO TEM QUE SER FEITO ANTES DE CRIAR AS TABELAS. PORQUE O MYSQL CRIARÁ ELAS COM NOME EM MINUSCULO
 
-  1. Locate file at /etc/mysql/my.cnf
+  1. Locate file at /etc/mysql/mysql.conf.d/mysqld.cnf
 
   2. Edit the file by adding the following lines:
 
@@ -13,6 +13,22 @@
     lower_case_table_names=1
 
   3. sudo /etc/init.d/mysql restart
+
+
+  ########################################################
+  Procedimento para liberar o acesso remoto no my mysql
+
+  1. Criando uma senha de root
+
+    CREATE USER 'root'@'%' IDENTIFIED BY 'some_pass';
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+
+  2. Abrir o arquivo /etc/mysql/mysql.conf.d/mysqld.cnf
+
+  3. Comentar as linhas
+        #bind-address           = 127.0.0.1
+        #skip-external-locking
+  #########################################################
 
 */
 
@@ -27,6 +43,7 @@ CREATE TABLE CLIENTE(
     CPF VARCHAR(11) NOT NULL,
     CELULAR VARCHAR(13) NOT NULL,
     ANIVERSARIO DATE,
+    KEY_DEVICE VARCHAR(255),
     ATIVO NUMERIC(1) NOT NULL,
     PRIMARY KEY (ID)
 );
@@ -73,7 +90,7 @@ CREATE TABLE CUPOM_DESCONTO(
     DATA_INICIO DATE NOT NULL,
     DATA_FIM DATE NOT NULL,
     PROMOCAO NUMERIC(1) NOT NULL,
-    PORCENTAGEM DECIMAL(3,2) NOT NULL,
+    PORCENTAGEM DECIMAL(4,2) NOT NULL,
     PRIMARY KEY (ID)
 );
 
@@ -201,13 +218,3 @@ CREATE TABLE USER_ROLES(
   KEY FK_USERNAME_IDX (USERNAME),
   CONSTRAINT FK_USERNAME FOREIGN KEY (USERNAME) REFERENCES USERS (USERNAME)
 );
-
-INSERT INTO users(username,password,enabled)
-VALUES ('cliente.admin@meuportaretrato.com','$2a$10$YWkzQyIPEa/0CYn4.3usyuQ956exzjNscX6NlMnjiZL3/dPVPv9v6', true);
-INSERT INTO users(username,password,enabled)
-VALUES ('cliente.mobile@meuportaretrato.com','$2a$10$ILfyRMdP.nqMvvP3beXjbeFXT42Rsx.AzckTtKi2RIhcWT1jBJe6a', true);
-
-INSERT INTO user_roles (username, role)
-VALUES ('cliente.admin@meuportaretrato.com', 'ROLE_ADMIN');
-INSERT INTO user_roles (username, role)
-VALUES ('cliente.mobile@meuportaretrato.com', 'ROLE_USER');

@@ -18,7 +18,8 @@ public class TabelaPrecoEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "ID_PRODUTO", updatable = false, insertable = false)
     private ProdutoEntity produto;
 
     @NotNull(message = "Produto é obrigatório!")
