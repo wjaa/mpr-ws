@@ -5,7 +5,7 @@ services:
       - "8181:8181"
     image: mpr/ws
     environment:
-      profile: hml
+      profile: dev
     stdin_open: true
     volumes:
     - /etc/localtime:/etc/localtime
