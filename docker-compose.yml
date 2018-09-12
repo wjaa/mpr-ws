@@ -1,6 +1,6 @@
 version: '2'
 services:
-  jobs-hml:
+  be:
     ports:
       - "8181:8181"
     image: mpr/ws
