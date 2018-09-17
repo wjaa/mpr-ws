@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "INICIANDO BUILD DO WS"
 #pull e build do mpr-ws
-cd /home/mpr-server/mpr/mpr-ws && git pull && mvn clean install
+git pull && mvn clean install
 
 path=target/ws.jar
 
