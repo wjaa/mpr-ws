@@ -48,6 +48,12 @@ public class EnderecoEntity {
     @Column(name = "ATIVO", nullable = false)
     private Boolean ativo;
 
+    @Column(name = "DESCRICAO", nullable = false, length = 50)
+    private String descricao;
+
+    @Column(name = "OBSERVACAO", length = 150)
+    private String observacao;
+
 
     public Long getId() {
         return id;

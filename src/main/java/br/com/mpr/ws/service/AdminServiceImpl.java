@@ -4,6 +4,7 @@ import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.exception.ClienteServiceException;
+import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
@@ -13,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,8 @@ public class AdminServiceImpl implements AdminService {
     @Resource(name = "findAllEstoque")
     private String findAllEstoque;
 
+    @Autowired
+    private MprWsProperties properties;
 
 
     @Override
@@ -215,6 +218,13 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (this.isNew(produto.getId())){
+            if (produto.getByteImgHi() == null || produto.getByteImgLow() == null){
+                throw new AdminServiceException("As imagens de thumb e preview são obrigatórias para cadastrar um produto!");
+            }
+
+            this.saveImages(produto);
+
+
             produto.setId(null);
             produto = commonDao.save(produto);
 
@@ -225,6 +235,62 @@ public class AdminServiceImpl implements AdminService {
             produto = commonDao.update(produtoMerge);
         }
         return produto;
+    }
+
+    private void saveImages(ProdutoEntity produto) throws AdminServiceException {
+
+        File file = new File(properties.getPathImg());
+
+        if ( !file.exists() || !file.isDirectory()){
+            throw new AdminServiceException("O caminho para salvar as imagens não existe ou não está dispónivel. [" +
+                    properties.getPathImg() + "]");
+        }
+
+        try{
+
+            File fileLow = new File(properties.getPathImg() +
+                    File.separator +
+                    properties.getFolderThumb() +
+                    File.separator +
+                    this.createFileName(produto.getNameImgLow()) +
+                    this.getExtension(produto.getNameImgLow()));
+
+
+            File fileHi = new File(properties.getPathImg() +
+                    File.separator +
+                    properties.getFolderPreview() +
+                    File.separator +
+                    this.createFileName(produto.getNameImgHi()) +
+                    this.getExtension(produto.getNameImgHi()));
+
+
+            OutputStream outThumb = new FileOutputStream(fileLow);
+            OutputStream outPreview = new FileOutputStream(fileHi);
+
+            FileCopyUtils.copy(produto.getByteImgLow(), fileLow);
+            FileCopyUtils.copy(produto.getByteImgHi(), fileHi);
+
+
+        }catch (Exception ex){
+            //log
+        }
+
+
+
+    }
+
+    private String getExtension(String fileName) {
+        if (fileName.lastIndexOf(".") > -1){
+            return fileName.substring(fileName.lastIndexOf("."), fileName.length()).toLowerCase();
+        }
+
+        return ".png";
+
+    }
+
+    private String createFileName(String nameImgLow) {
+        //criando um nome aleatorio da imagem.
+        return StringUtils.createMD5(nameImgLow + new Date().getTime() + StringUtils.createRandomHash());
     }
 
     @Override

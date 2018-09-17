@@ -17,6 +17,14 @@ spring:
 
   profiles:
     active: "dev"
+
+#lembre-se se trocar esse path, precisa trocar o volume no docker-compose e o mkdir no Dockerfile
+mpr:
+  pathImg: /var/www/static/mpr/images
+  folderPreview: p
+  folderThumb: t
+  staticHost: static.mpr.com
+
 ---
 
 spring:
@@ -33,7 +41,7 @@ logging:
       hibernate: INFO
     br:
       com:
-        braspress: DEBUG
+        mpr: DEBUG
 
 ---
 

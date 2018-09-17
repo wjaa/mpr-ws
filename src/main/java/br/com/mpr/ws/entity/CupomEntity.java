@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class CupomEntity implements Serializable {
     private String descricao;
 
     @Column(name = "HASH", nullable = false, length = 8)
+    @Max(value = 8, message = "Tamanho máximo para o código do cupom é de 8 caracteres.")
     private String hash;
 
     @Column(name = "DATA_INICIO", nullable = false)

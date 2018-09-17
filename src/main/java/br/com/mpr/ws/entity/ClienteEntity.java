@@ -1,5 +1,9 @@
 package br.com.mpr.ws.entity;
 
+import br.com.mpr.ws.helper.JacksonDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -38,6 +42,7 @@ public class ClienteEntity implements Serializable {
     private String celular;
 
     @Column(name = "ANIVERSARIO")
+    @JsonSerialize(using = JacksonDateSerializer.class)
     private Date aniversario;
 
     @Column(name = "KEY_DEVICE", length = 255)

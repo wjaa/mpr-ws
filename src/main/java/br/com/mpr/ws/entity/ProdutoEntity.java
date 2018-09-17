@@ -33,11 +33,36 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 
+    @NotEmpty(message = "Referencia do produto é obrigatória!")
+    @Column(name = "REFERENCIA", nullable = false, length = 80)
+    private String referencia;
+
 
     @NotNull(message = "Peso do produto é obrigatória!")
     @Range(min = 0, max = 99999)
     @Column(name = "PESO", nullable = false, scale = 5, precision = 2)
     private Double peso;
+
+    @Column(name = "IMG_DESTAQUE", nullable = false, length = 100)
+    private String imgDestaque;
+
+    @Column(name = "IMG_PREVIEW", nullable = false, length = 100)
+    private String imgPreview;
+
+    @Transient
+    private byte [] byteImgLow;
+
+    @Transient
+    private String nameImgLow;
+
+
+    @Transient
+    private byte [] byteImgHi;
+
+    @Transient
+    private String nameImgHi;
+
+
 
     public Long getId() {
         return id;
@@ -77,5 +102,53 @@ public class ProdutoEntity implements Serializable {
 
     public void setPeso(Double peso) {
         this.peso = peso;
+    }
+
+    public String getImgDestaque() {
+        return imgDestaque;
+    }
+
+    public void setImgDestaque(String imgDestaque) {
+        this.imgDestaque = imgDestaque;
+    }
+
+    public String getImgPreview() {
+        return imgPreview;
+    }
+
+    public void setImgPreview(String imgPreview) {
+        this.imgPreview = imgPreview;
+    }
+
+    public byte[] getByteImgLow() {
+        return byteImgLow;
+    }
+
+    public void setByteImgLow(byte[] byteImgLow) {
+        this.byteImgLow = byteImgLow;
+    }
+
+    public byte[] getByteImgHi() {
+        return byteImgHi;
+    }
+
+    public void setByteImgHi(byte[] byteImgHi) {
+        this.byteImgHi = byteImgHi;
+    }
+
+    public String getNameImgLow() {
+        return nameImgLow;
+    }
+
+    public void setNameImgLow(String nameImgLow) {
+        this.nameImgLow = nameImgLow;
+    }
+
+    public String getNameImgHi() {
+        return nameImgHi;
+    }
+
+    public void setNameImgHi(String nameImgHi) {
+        this.nameImgHi = nameImgHi;
     }
 }
