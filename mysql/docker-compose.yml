@@ -1,0 +1,13 @@
+version: '2'
+services:
+  db:
+    image: mpr/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=753951
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    stdin_open: true
+    tty: true
+    domainname: meuportaretrato.com
