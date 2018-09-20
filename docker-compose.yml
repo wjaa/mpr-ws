@@ -1,8 +1,9 @@
 version: '2'
 services:
   be:
+    container_name: be
     depends_on:
-      - db
+      - mysql
     build: .
     ports:
       - "8181:8181"
@@ -10,11 +11,13 @@ services:
     environment:
       profile: dev
     stdin_open: true
+    tty: true
     volumes:
     - /etc/localtime:/etc/localtime
     - /var/www/static/mpr:/var/www/static/mpr
     domainname: meuportaretrato.com.br
-  db:
+  mysql:
+    container_name: mysql
     build: mysql/.
     image: mpr/mysql
     ports:

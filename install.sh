@@ -6,11 +6,10 @@ git pull && mvn clean install
 path=target/ws.jar
 
 if [ -f "$path" ]; then
-    echo "Removendo o container e a imagem anterior"
-    docker rmi mpr/ws && sudo docker rm -f mpr-ws_be_1
-    echo "Gerando nova imagem"
-    docker build -t mpr/ws .
-    echo "Gerando container"
+    echo "Removendo os containers e as imagens anteriores"
+    docker rm -f be && docker rmi mpr/ws
+    docker rm -f mysql && docker rmi mpr/mysql
+    echo "Iniciando o compose"
     docker-compose up -d
     echo "FIM DO BUILD"
 
