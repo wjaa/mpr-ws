@@ -30,8 +30,7 @@ mpr:
 spring:
   profiles: "dev"
   datasource:
-#url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
-    url: jdbc:mysql://mysql:3306/mpr?autoReconnect=true&useSSL=false
+    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
     username: root
     password: 753951
 

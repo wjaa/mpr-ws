@@ -9,7 +9,7 @@ services:
       - "8181:8181"
     image: mpr/ws
     environment:
-      profile: dev
+      profile: prd
     stdin_open: true
     tty: true
     volumes:
