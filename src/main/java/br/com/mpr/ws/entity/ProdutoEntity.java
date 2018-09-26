@@ -34,7 +34,7 @@ public class ProdutoEntity implements Serializable {
     private String descricao;
 
     @NotEmpty(message = "Referencia do produto é obrigatória!")
-    @Column(name = "REFERENCIA", nullable = false, length = 80)
+    @Column(name = "REFERENCIA", nullable = false, length = 50)
     private String referencia;
 
 
@@ -50,19 +50,16 @@ public class ProdutoEntity implements Serializable {
     private String imgPreview;
 
     @Transient
-    private byte [] byteImgLow;
+    private byte [] byteImgDestaque;
 
     @Transient
-    private String nameImgLow;
-
-
-    @Transient
-    private byte [] byteImgHi;
+    private String nameImgDestaque;
 
     @Transient
-    private String nameImgHi;
+    private byte [] byteImgPreview;
 
-
+    @Transient
+    private String nameImgPreview;
 
     public Long getId() {
         return id;
@@ -120,35 +117,35 @@ public class ProdutoEntity implements Serializable {
         this.imgPreview = imgPreview;
     }
 
-    public byte[] getByteImgLow() {
-        return byteImgLow;
+    public byte[] getByteImgDestaque() {
+        return byteImgDestaque;
     }
 
-    public void setByteImgLow(byte[] byteImgLow) {
-        this.byteImgLow = byteImgLow;
+    public void setByteImgDestaque(byte[] byteImgDestaque) {
+        this.byteImgDestaque = byteImgDestaque;
     }
 
-    public byte[] getByteImgHi() {
-        return byteImgHi;
+    public byte[] getByteImgPreview() {
+        return byteImgPreview;
     }
 
-    public void setByteImgHi(byte[] byteImgHi) {
-        this.byteImgHi = byteImgHi;
+    public void setByteImgPreview(byte[] byteImgPreview) {
+        this.byteImgPreview = byteImgPreview;
     }
 
-    public String getNameImgLow() {
-        return nameImgLow;
+    public String getNameImgDestaque() {
+        return nameImgDestaque;
     }
 
-    public void setNameImgLow(String nameImgLow) {
-        this.nameImgLow = nameImgLow;
+    public void setNameImgDestaque(String nameImgDestaque) {
+        this.nameImgDestaque = nameImgDestaque;
     }
 
-    public String getNameImgHi() {
-        return nameImgHi;
+    public String getNameImgPreview() {
+        return nameImgPreview;
     }
 
-    public void setNameImgHi(String nameImgHi) {
-        this.nameImgHi = nameImgHi;
+    public void setNameImgPreview(String nameImgPreview) {
+        this.nameImgPreview = nameImgPreview;
     }
 }

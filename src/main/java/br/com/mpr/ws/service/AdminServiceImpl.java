@@ -8,20 +8,17 @@ import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
-import br.com.mpr.ws.utils.Utils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Created by wagner on 6/25/18.
@@ -30,6 +27,9 @@ import java.util.stream.Stream;
 public class AdminServiceImpl implements AdminService {
 
     public static final int MAX_DAYS_CUPOM = 60;
+
+    private static final Log LOG = LogFactory.getLog(AdminServiceImpl.class);
+
     @Autowired
     private CommonDao commonDao;
 
@@ -218,12 +218,11 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (this.isNew(produto.getId())){
-            if (produto.getByteImgHi() == null || produto.getByteImgLow() == null){
+            if (produto.getByteImgPreview() == null || produto.getByteImgDestaque() == null){
                 throw new AdminServiceException("As imagens de thumb e preview são obrigatórias para cadastrar um produto!");
             }
 
             this.saveImages(produto);
-
 
             produto.setId(null);
             produto = commonDao.save(produto);
@@ -231,7 +230,9 @@ public class AdminServiceImpl implements AdminService {
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
             BeanUtils.copyProperties(produto,produtoMerge);
-
+            if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null){
+                this.saveImages(produto);
+            }
             produto = commonDao.update(produtoMerge);
         }
         return produto;
@@ -248,31 +249,33 @@ public class AdminServiceImpl implements AdminService {
 
         try{
 
-            File fileLow = new File(properties.getPathImg() +
-                    File.separator +
-                    properties.getFolderThumb() +
-                    File.separator +
-                    this.createFileName(produto.getNameImgLow()) +
-                    this.getExtension(produto.getNameImgLow()));
+            if (produto.getByteImgDestaque() != null){
+                File fileDestaque = new File(properties.getPathImg() +
+                        File.separator +
+                        properties.getFolderThumb() +
+                        File.separator +
+                        this.createFileName(produto.getNameImgDestaque()) +
+                        this.getExtension(produto.getNameImgDestaque()));
+                FileCopyUtils.copy(produto.getByteImgDestaque(), fileDestaque);
+                produto.setImgDestaque(fileDestaque.getName());
+            }
 
+            if (produto.getByteImgPreview() != null){
+                File filePreview = new File(properties.getPathImg() +
+                        File.separator +
+                        properties.getFolderPreview() +
+                        File.separator +
+                        this.createFileName(produto.getNameImgPreview()) +
+                        this.getExtension(produto.getNameImgPreview()));
+                FileCopyUtils.copy(produto.getByteImgPreview(), filePreview);
+                produto.setImgPreview(filePreview.getName());
 
-            File fileHi = new File(properties.getPathImg() +
-                    File.separator +
-                    properties.getFolderPreview() +
-                    File.separator +
-                    this.createFileName(produto.getNameImgHi()) +
-                    this.getExtension(produto.getNameImgHi()));
-
-
-            OutputStream outThumb = new FileOutputStream(fileLow);
-            OutputStream outPreview = new FileOutputStream(fileHi);
-
-            FileCopyUtils.copy(produto.getByteImgLow(), fileLow);
-            FileCopyUtils.copy(produto.getByteImgHi(), fileHi);
+            }
 
 
         }catch (Exception ex){
-            //log
+            LOG.error("Erro ao salvar as imagens de um produto", ex);
+            throw new AdminServiceException("Erro ao salvar as imagens de um produto, detail:" + ex.getMessage());
         }
 
 
