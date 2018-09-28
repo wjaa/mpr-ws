@@ -13,7 +13,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-    show-sql: true
+    show-sql: false
 
   profiles:
     active: "dev"
@@ -22,8 +22,8 @@ spring:
 mpr:
   pathImg: /var/www/static/mpr/images
   folderPreview: p
-  folderThumb: t
-  staticHost: static.mpr.com
+  folderDestaque: d
+  staticHost: static.meuportaretrato.com
 
 ---
 

@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @Entity
 @Table(name = "ENDERECO")
+@Valid
 public class EnderecoEntity {
 
     @Id
@@ -48,11 +50,15 @@ public class EnderecoEntity {
     @Column(name = "ATIVO", nullable = false)
     private Boolean ativo;
 
+    @NotEmpty(message = "Descrição do endereço é obrigatório!")
     @Column(name = "DESCRICAO", nullable = false, length = 50)
     private String descricao;
 
     @Column(name = "OBSERVACAO", length = 150)
     private String observacao;
+
+    @Column(name = "PRINCIPAL", nullable = false)
+    private Boolean principal;
 
 
     public Long getId() {
@@ -133,5 +139,29 @@ public class EnderecoEntity {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    public Boolean getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Boolean principal) {
+        this.principal = principal;
     }
 }

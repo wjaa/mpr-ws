@@ -53,6 +53,9 @@ public class FornecedorEntity implements Serializable {
     @Column(name = "ATIVO")
     private Boolean ativo;
 
+    @Column(name = "OBSERVACAO", length = 255)
+    private String observacao;
+
     public Long getId() {
         return id;
     }
@@ -115,5 +118,13 @@ public class FornecedorEntity implements Serializable {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

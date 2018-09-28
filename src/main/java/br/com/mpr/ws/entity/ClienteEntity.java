@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -35,6 +36,7 @@ public class ClienteEntity implements Serializable {
     private String cpf;
 
     @Transient
+    @Valid
     private List<EnderecoEntity> enderecos;
 
     @Column(name = "CELULAR", nullable = false, length = 13)

@@ -13,7 +13,7 @@ public class MprWsProperties {
     private String pathImg;
     private String staticHost;
     private String folderPreview;
-    private String folderThumb;
+    private String folderDestaque;
 
     public String getPathImg() {
         return pathImg;
@@ -39,11 +39,11 @@ public class MprWsProperties {
         this.folderPreview = folderPreview;
     }
 
-    public String getFolderThumb() {
-        return folderThumb;
+    public String getFolderDestaque() {
+        return folderDestaque;
     }
 
-    public void setFolderThumb(String folderThumb) {
-        this.folderThumb = folderThumb;
+    public void setFolderDestaque(String folderDestaque) {
+        this.folderDestaque = folderDestaque;
     }
 }

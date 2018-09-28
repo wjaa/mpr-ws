@@ -229,9 +229,9 @@ public class AdminServiceImpl implements AdminService {
 
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
-            BeanUtils.copyProperties(produto,produtoMerge);
+            BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview");
             if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null){
-                this.saveImages(produto);
+                this.saveImages(produtoMerge);
             }
             produto = commonDao.update(produtoMerge);
         }
@@ -240,19 +240,44 @@ public class AdminServiceImpl implements AdminService {
 
     private void saveImages(ProdutoEntity produto) throws AdminServiceException {
 
-        File file = new File(properties.getPathImg());
+        File folderImgs = new File(properties.getPathImg());
 
-        if ( !file.exists() || !file.isDirectory()){
-            throw new AdminServiceException("O caminho para salvar as imagens não existe ou não está dispónivel. [" +
-                    properties.getPathImg() + "]");
+        if ( !folderImgs.exists() || !folderImgs.isDirectory()){
+            if (!folderImgs.mkdirs()){
+                throw new AdminServiceException("O caminho para salvar as imagens não existe ou não está dispónivel. [" +
+                        properties.getPathImg() + "]");
+            }
         }
+
+        File folderDestaque = new File(properties.getPathImg() +
+                File.separator +
+                properties.getFolderDestaque());
+
+        if ( !folderDestaque.exists() || !folderDestaque.isDirectory()){
+            if (!folderDestaque.mkdirs()){
+                throw new AdminServiceException("O caminho para salvar a imagem de destaque não existe ou não está dispónivel. [" +
+                        folderDestaque.getAbsolutePath() + "]");
+            }
+        }
+
+        File folderPreview = new File(properties.getPathImg() +
+                File.separator +
+                properties.getFolderPreview());
+
+        if ( !folderPreview.exists() || !folderPreview.isDirectory()){
+            if (!folderPreview.mkdirs()){
+                throw new AdminServiceException("O caminho para salvar a imagem de preview não existe ou não está dispónivel. [" +
+                        folderPreview.getAbsolutePath() + "]");
+            }
+        }
+
 
         try{
 
             if (produto.getByteImgDestaque() != null){
                 File fileDestaque = new File(properties.getPathImg() +
                         File.separator +
-                        properties.getFolderThumb() +
+                        properties.getFolderDestaque() +
                         File.separator +
                         this.createFileName(produto.getNameImgDestaque()) +
                         this.getExtension(produto.getNameImgDestaque()));

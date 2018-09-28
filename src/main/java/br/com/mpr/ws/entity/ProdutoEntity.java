@@ -148,4 +148,12 @@ public class ProdutoEntity implements Serializable {
     public void setNameImgPreview(String nameImgPreview) {
         this.nameImgPreview = nameImgPreview;
     }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
 }
