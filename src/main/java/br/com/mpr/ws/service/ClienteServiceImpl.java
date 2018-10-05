@@ -50,7 +50,7 @@ public class ClienteServiceImpl implements ClienteService{
             cliente = commonDao.save(cliente);
         }else{
             ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());
-            BeanUtils.copyProperties(cliente,clienteMerged);
+            BeanUtils.copyProperties(cliente,clienteMerged,"login");
             commonDao.update(clienteMerged);
         }
 

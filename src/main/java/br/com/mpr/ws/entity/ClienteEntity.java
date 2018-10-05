@@ -1,7 +1,7 @@
 package br.com.mpr.ws.entity;
 
+import br.com.mpr.ws.constants.GeneroType;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
@@ -47,11 +47,17 @@ public class ClienteEntity implements Serializable {
     @JsonSerialize(using = JacksonDateSerializer.class)
     private Date aniversario;
 
-    @Column(name = "KEY_DEVICE", length = 255)
-    private String keyDevice ;
+    @Column(name = "GENERO", length = 1)
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Genero é obrigatório!")
+    private GeneroType genero ;
 
     @Column(name = "ATIVO", nullable = false)
     private Boolean ativo;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_LOGIN")
+    private LoginEntity login;
 
     public Long getId() {
         return id;
@@ -115,19 +121,27 @@ public class ClienteEntity implements Serializable {
         this.aniversario = aniversario;
     }
 
-    public String getKeyDevice() {
-        return keyDevice;
-    }
-
-    public void setKeyDevice(String keyDevice) {
-        this.keyDevice = keyDevice;
-    }
-
     public Boolean getAtivo() {
         return ativo;
     }
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public GeneroType getGenero() {
+        return genero;
+    }
+
+    public void setGenero(GeneroType genero) {
+        this.genero = genero;
+    }
+
+    public LoginEntity getLogin() {
+        return login;
+    }
+
+    public void setLogin(LoginEntity login) {
+        this.login = login;
     }
 }
