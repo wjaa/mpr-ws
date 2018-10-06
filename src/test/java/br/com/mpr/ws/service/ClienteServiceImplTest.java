@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.constants.GeneroType;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.dao.CommonDaoImplTest;
 import br.com.mpr.ws.entity.ClienteEntity;
@@ -47,6 +48,7 @@ public class ClienteServiceImplTest extends BaseDBTest {
         cliente.setCelular("111111111111");
         cliente.setCpf("89249345038");
         cliente.setEmail("email@email.com");
+        cliente.setGenero(GeneroType.M);
         try{
             cliente = clienteService.saveCliente(cliente);
             Assert.assertNotNull(cliente.getId());
