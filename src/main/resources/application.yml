@@ -4,17 +4,16 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    tomcat:
-      max-wait: 10000
-      max-active: 20
-      test-on-borrow: true
+    hikari:
+      minimumIdle: 20
+      maximumPoolSize: 100
+      maxLifetime: 120000
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     show-sql: false
-
   profiles:
     active: "dev"
 
