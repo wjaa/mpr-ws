@@ -1,8 +1,10 @@
 package br.com.mpr.ws.entity;
 
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -43,11 +45,22 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "PESO", nullable = false, scale = 5, precision = 2)
     private Double peso;
 
+
+
     @Column(name = "IMG_DESTAQUE", nullable = false, length = 100)
     private String imgDestaque;
 
     @Column(name = "IMG_PREVIEW", nullable = false, length = 100)
     private String imgPreview;
+
+
+    @Length(max = 50, message = "Nome da cor tem um tamanho máximo de 50 caracteres.")
+    @Column(name = "NOME_COR", length = 50)
+    private String nomeCor;
+
+    @Length(max = 7, message = "Hexa da cor tem tamanho máximo de 7 caracteres")
+    @Column(name = "HEXA_COR", length = 7)
+    private String hexaCor;
 
     @Transient
     private byte [] byteImgDestaque;
@@ -60,6 +73,13 @@ public class ProdutoEntity implements Serializable {
 
     @Transient
     private String nameImgPreview;
+
+    @Transient
+    private Double preco;
+
+    @Transient
+    private String nomeTipoProduto;
+
 
     public Long getId() {
         return id;
@@ -155,5 +175,37 @@ public class ProdutoEntity implements Serializable {
 
     public void setReferencia(String referencia) {
         this.referencia = referencia;
+    }
+
+    public String getNomeCor() {
+        return nomeCor;
+    }
+
+    public void setNomeCor(String nomeCor) {
+        this.nomeCor = nomeCor;
+    }
+
+    public String getHexaCor() {
+        return hexaCor;
+    }
+
+    public void setHexaCor(String hexaCor) {
+        this.hexaCor = hexaCor;
+    }
+
+    public Double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(Double preco) {
+        this.preco = preco;
+    }
+
+    public String getNomeTipoProduto() {
+        return nomeTipoProduto;
+    }
+
+    public void setNomeTipoProduto(String nomeTipoProduto) {
+        this.nomeTipoProduto = nomeTipoProduto;
     }
 }

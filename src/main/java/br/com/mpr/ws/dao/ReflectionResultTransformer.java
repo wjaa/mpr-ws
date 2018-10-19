@@ -65,14 +65,17 @@ public class ReflectionResultTransformer implements ResultTransformer {
         if (o instanceof Number && typeParam == Long.class){
             return ((Number)o).longValue();
         }
-        if (o instanceof Number && typeParam.isInstance(Integer.class)){
+        if (o instanceof Number && typeParam == Integer.class){
             return ((Number)o).intValue();
         }
-        if (o instanceof Number && typeParam.isInstance(Double.class)){
+        if (o instanceof Number && typeParam == Double.class){
             return ((Number)o).doubleValue();
         }
-        if (o instanceof Number && typeParam.isInstance(Boolean.class)){
+        if (o instanceof Number && typeParam == Boolean.class){
             return new Boolean(((Number)o).intValue() == 1) ;
+        }
+        if (o instanceof BigDecimal && typeParam == Double.class){
+            return ((BigDecimal)o).doubleValue();
         }
         return o;
     }

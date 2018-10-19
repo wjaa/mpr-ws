@@ -57,7 +57,12 @@ public class CommonDaoImpl implements CommonDao {
 
     @Override
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass) {
-        if (resultClass.isAnnotationPresent(Entity.class)){
+        return findByNativeQuery(query,resultClass,false);
+    }
+
+    @Override
+    public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, boolean ignoreEntity) {
+        if (resultClass.isAnnotationPresent(Entity.class) && !ignoreEntity){
             Query q = entityManager.createNativeQuery(query, resultClass);
             return q.getResultList();
         }else{
@@ -123,6 +128,37 @@ public class CommonDaoImpl implements CommonDao {
     public <T>void remove(Class<T> clazz, Serializable id) {
         entityManager.remove(get(clazz,id));
     }
+
+    @Override
+    public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
+        if (resultClass.isAnnotationPresent(Entity.class)) {
+
+            Query q = entityManager.createNativeQuery(query, resultClass);
+            for (int i = 0; i < nameParams.length; i++) {
+                q.setParameter(nameParams[i], params[i]);
+            }
+            return q.getResultList();
+        }else{
+            Session session = (Session) entityManager.getDelegate();
+            Session s = session.getSessionFactory().openSession();
+            NativeQuery nq = s.createNativeQuery(query);
+            nq.setResultTransformer(new ReflectionResultTransformer(resultClass));
+            for (int i = 0; i < nameParams.length; i++) {
+                nq.setParameter(nameParams[i], params[i]);
+            }
+            List<T> result = nq.getResultList();
+            s.close();
+            return result;
+        }
+    }
+
+    @Override
+    public <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
+        List<T> list = findByNativeQuery(query,resultClass,nameParams,params);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
+
 
     @Override
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, Object... params) {

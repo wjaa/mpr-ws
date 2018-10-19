@@ -1,6 +1,7 @@
 package br.com.mpr.ws.dao;
 
 import br.com.mpr.ws.entity.FornecedorEntity;
+import br.com.mpr.ws.entity.ProdutoEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -30,4 +31,9 @@ public interface CommonDao{
 
     <T>void remove(Class<T> clazz, Serializable id);
 
+    <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params) ;
+
+    <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams, Object [] params);
+
+    <T>List<T> findByNativeQuery(String query, Class<T> resultClass, boolean ignoreEntity);
 }

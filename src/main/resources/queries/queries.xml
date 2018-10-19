@@ -15,4 +15,32 @@
             </value>
         </constructor-arg>
     </bean>
+
+    <bean name="findAllProduto" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT P.ID, P.DESCRICAO, TP.DESCRICAO AS NOME_TIPO_PRODUTO, P.PESO, P.HEXA_COR, P.NOME_COR,
+                P.ID_TIPO_PRODUTO, P.IMG_DESTAQUE, P.IMG_PREVIEW, P.REFERENCIA,
+                (SELECT PRECO
+                FROM TABELA_PRECO TP
+                WHERE TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
+                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = P.ID
+                AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1) AS PRECO
+                FROM PRODUTO P
+                JOIN TIPO_PRODUTO TP ON TP.ID = P.ID_TIPO_PRODUTO
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="findTabelaPrecoAtualByProduto" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT ID, ID_PRODUTO, DATA_VIGENCIA, PRECO, DESCRICAO
+                FROM TABELA_PRECO TP
+                WHERE TP.ID_PRODUTO = :id AND TP.DATA_VIGENCIA =
+                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = :id
+                AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1
+            </value>
+        </constructor-arg>
+    </bean>
 </beans>

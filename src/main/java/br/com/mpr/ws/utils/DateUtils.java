@@ -81,6 +81,10 @@ public class DateUtils {
         return null;
     }
 
+    public static boolean isLesser(Date d1, Date d2) {
+        return d1.compareTo(d2) < 0;
+    }
+
     public static boolean isLesserEqual(Date d1, Date d2) {
         return d1.compareTo(d2) <= 0;
     }

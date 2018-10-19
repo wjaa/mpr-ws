@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class AdminServiceImpl implements AdminService {
     @Resource(name = "findAllEstoque")
     private String findAllEstoque;
 
+    @Resource(name = "findTabelaPrecoAtualByProduto")
+    private String findTabelaPrecoAtualByProduto;
+
+    @Resource(name = "findAllProduto")
+    private String findAllProduto;
+
     @Autowired
     private MprWsProperties properties;
 
@@ -57,7 +64,22 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public ProdutoEntity getProdutoById(Long id) {
         ProdutoEntity produtoEntity = commonDao.get(ProdutoEntity.class,id);
+
+        if (produtoEntity != null){
+            TabelaPrecoEntity tabelaPrecoAtual = this.getTabelaPrecoAtualByIdProduto(produtoEntity.getId());
+
+            if (tabelaPrecoAtual != null){
+                produtoEntity.setPreco(tabelaPrecoAtual.getPreco());
+            }
+        }
         return produtoEntity;
+    }
+
+    private TabelaPrecoEntity getTabelaPrecoAtualByIdProduto(Long id) {
+        List<TabelaPrecoEntity> list = commonDao.findByNativeQuery(this.findTabelaPrecoAtualByProduto,
+                TabelaPrecoEntity.class,
+                new String[]{"id"}, new Object[]{id});
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     @Override
@@ -105,8 +127,8 @@ public class AdminServiceImpl implements AdminService {
     }
     @Override
     public List<ProdutoEntity> listAllProduto() {
-        //TODO IMPLEMENTAR UM PAGINATION
-        return commonDao.listAll(ProdutoEntity.class);
+        List<ProdutoEntity> listProdutos = commonDao.findByNativeQuery(findAllProduto, ProdutoEntity.class, true);
+        return listProdutos;
     }
 
     @Override
@@ -227,6 +249,17 @@ public class AdminServiceImpl implements AdminService {
             produto.setId(null);
             produto = commonDao.save(produto);
 
+            //na criacao do produto tiver um preco, criamos um tabela de preco inicial.
+            if ( produto.getPreco() != null ){
+                TabelaPrecoEntity tabelaPrecoEntity = new TabelaPrecoEntity();
+                tabelaPrecoEntity.setPreco(produto.getPreco());
+                tabelaPrecoEntity.setDataVigencia(new Date());
+                tabelaPrecoEntity.setProduto(produto);
+                tabelaPrecoEntity.setDescricao("Valor inicial do produto.");
+                tabelaPrecoEntity.setIdProduto(produto.getId());
+                this.saveTabelaPreco(tabelaPrecoEntity);
+            }
+
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
             BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview");
@@ -324,7 +357,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public TabelaPrecoEntity saveTabelaPreco(TabelaPrecoEntity tabPreco) throws AdminServiceException {
 
-        if (DateUtils.isLesserEqual(tabPreco.getDataVigencia(), new Date())) {
+        if (DateUtils.isLesser(tabPreco.getDataVigencia(), new Date())) {
             throw new AdminServiceException("Você não pode " + (tabPreco.getId() == null ? "criar" : "alterar") +
                     " uma tabela de preço retroativa!");
         }
