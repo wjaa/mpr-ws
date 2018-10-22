@@ -27,6 +27,8 @@ public interface CommonDao{
 
     <T> List<T> findByProperties(Class<T> clazzEntity, String[] params, Object[] values);
 
+    <T> List<T> findByInProperties(Class<T> clazzEntity, String params, List values);
+
     <T> T findByPropertiesSingleResult(Class<T> clazzEntity, String[] params, Object[] values);
 
     <T>void remove(Class<T> clazz, Serializable id);

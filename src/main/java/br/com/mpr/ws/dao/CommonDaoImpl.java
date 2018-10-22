@@ -84,6 +84,26 @@ public class CommonDaoImpl implements CommonDao {
         return query.getResultList();
     }
 
+    @Override
+    public <T> List<T> findByInProperties(Class<T> clazzEntity, String param, List values) {
+        if ( !clazzEntity.isAnnotationPresent(Entity.class) ){
+            throw new IllegalArgumentException("clazzEntity nao eh uma entidade.");
+        }
+        Assert.notNull(param, "params nao pode estar nulo");
+        Assert.notEmpty(values, "values nao pode estar nulo");
+
+        final StringBuilder sql = new StringBuilder();
+        sql.append("Select e from " + clazzEntity.getSimpleName() + " e ");
+        sql.append(" where 1 = 1 ");
+        sql.append(" and e." + param + " in :" + param );
+
+        Session session = (Session) entityManager.getDelegate();
+        Session s = session.getSessionFactory().openSession();
+        Query query = s.createQuery(sql.toString());
+        ((org.hibernate.query.Query) query).setParameterList(param,values);
+       return  query.getResultList();
+    }
+
     private Query createQuery(Class clazzEntity, String[] params, Object[] values) {
         if ( !clazzEntity.isAnnotationPresent(Entity.class) ){
             throw new IllegalArgumentException("clazzEntity nao eh uma entidade.");

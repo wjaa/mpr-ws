@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by wagner on 6/25/18.
@@ -89,6 +90,12 @@ public class AdminServiceImpl implements AdminService {
 
         if (estoqueEntity != null){
             estoqueEntity.setFornecedor(this.getFornecedorById(estoqueEntity.getIdFornecedor()));
+            List<EstoqueProdutoEntity> produtos = commonDao.findByProperties(EstoqueProdutoEntity.class,new String[]{"idEstoque"},new Object[]{estoqueEntity.getId()});
+            estoqueEntity.setProdutos(produtos);
+            estoqueEntity.setQuantidade(produtos.size());
+            if (produtos.size() > 0){
+                estoqueEntity.setIdProduto(produtos.get(0).getIdProduto());
+            }
         }
         return estoqueEntity;
     }
@@ -401,34 +408,114 @@ public class AdminServiceImpl implements AdminService {
         if (this.isNew(estoque.getId())){
             estoque.setId(null);
 
+
+            if (estoque.getQuantidade() == null){
+                throw new AdminServiceException("Quantidade em estoque é obrigatório!");
+            }
+
+            if (estoque.getQuantidade() < 1){
+                throw new AdminServiceException("Quantidade em estoque precisa ser maior que 0!");
+            }
+            if (estoque.getQuantidade() > 100){
+                throw new AdminServiceException("Por segurança um lote precisa uma quantidade menor que 100.");
+            }
+
+            estoque = commonDao.save(estoque);
+
+
+            //criando os itens do estoque.
             List<EstoqueProdutoEntity> produtos = new ArrayList<>(estoque.getQuantidade());
             for (int i = 0; i < estoque.getQuantidade(); i++){
                 EstoqueProdutoEntity estoqueProduto = new EstoqueProdutoEntity();
                 estoqueProduto.setIdProduto(estoque.getIdProduto());
+                estoqueProduto.setIdEstoque(estoque.getId());
                 estoqueProduto.setInvalido(false);
                 produtos.add(estoqueProduto);
+                commonDao.save(estoqueProduto);
             }
             estoque.setProdutos(produtos);
-            commonDao.save(estoque);
 
 
         }else{
+            List<EstoqueProdutoEntity> produtos = commonDao.findByProperties(EstoqueProdutoEntity.class,
+                    new String[]{"idEstoque"},
+                    new Object[]{estoque.getId()});
 
-            BaixaEstoqueEntity baixaEstoque = commonDao.findByPropertiesSingleResult(BaixaEstoqueEntity.class,
-                    new String[]{"idEstoque"}, new Object[]{estoque.getId()});
 
-            if (baixaEstoque != null){
-                throw new AdminServiceException("Você não pode atualizar um registro do estoque que já foi baixado!");
-            }
+            //verificando se o usuário trocou o produto, para modificar os itens
+            this.verificaMudancaProduto(estoque, produtos);
+            //verificando se usuário trocou a quantidade do estoque.
+            this.verificaMudancaQuantidade(estoque, produtos);
+
 
             EstoqueEntity estoqueMerged = commonDao.get(EstoqueEntity.class, estoque.getId());
-            BeanUtils.copyProperties(estoque,estoqueMerged,"produtos");
 
-            estoque = commonDao.save(estoqueMerged);
+            BeanUtils.copyProperties(estoque,estoqueMerged);
+
+            commonDao.update(estoqueMerged);
         }
 
 
         return estoque;
+    }
+
+    private void verificaMudancaQuantidade(EstoqueEntity estoque, List<EstoqueProdutoEntity> produtos) throws AdminServiceException {
+        if (!estoque.getQuantidade().equals(produtos.size())){
+
+
+            List<Long> ids = produtos.stream().map(EstoqueProdutoEntity::getId).collect(Collectors.toList());
+
+            List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
+                    "idEstoqueProduto", ids);
+
+            if (listBaixa.size() > 0){
+                throw new AdminServiceException("Você não pode alterar a quantidade desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");
+            }
+
+
+            //se usuario aumentou a quantidade, vamos criar novos itens
+            if (estoque.getQuantidade() > produtos.size()){
+                EstoqueProdutoEntity produtoBase = produtos.get(0);
+                for (int i = produtos.size(); i < estoque.getQuantidade(); i++){
+                    EstoqueProdutoEntity estoqueProdutoEntity = new EstoqueProdutoEntity();
+                    estoqueProdutoEntity.setIdProduto(produtoBase.getIdProduto());
+                    estoqueProdutoEntity.setIdEstoque(produtoBase.getIdEstoque());
+                    estoqueProdutoEntity.setInvalido(false);
+                    commonDao.save(estoqueProdutoEntity);
+                }
+
+
+            }else
+           //se usuario diminuiu a quantidade, vamos remover itens.
+            if (estoque.getQuantidade() < produtos.size()){
+                EstoqueProdutoEntity produtoBase = produtos.get(0);
+                for (int i = estoque.getQuantidade(); i < produtos.size(); i++){
+                    commonDao.remove(EstoqueProdutoEntity.class, produtos.get(i).getId());
+                }
+            }
+        }
+    }
+
+    private void verificaMudancaProduto(EstoqueEntity estoque, List<EstoqueProdutoEntity> produtos) throws AdminServiceException {
+        if (!estoque.getIdProduto().equals(produtos.get(0).getIdProduto()) ){
+
+            //se trocou o produto, precisamos verificar se algum  item já nao foi baixado do estoque.
+            List<Long> ids = produtos.stream().map(EstoqueProdutoEntity::getId).collect(Collectors.toList());
+
+            List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
+                    "idEstoqueProduto", ids);
+
+            if (listBaixa.size() > 0){
+                throw new AdminServiceException("Você não pode alterar o produto desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");
+            }
+
+            //alterando o produto.
+            for (EstoqueProdutoEntity produto : produtos){
+                produto.setIdProduto(estoque.getIdProduto());
+                commonDao.update(produto);
+            }
+
+        }
     }
 
     @Override

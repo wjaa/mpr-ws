@@ -259,7 +259,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             EstoqueEntity ee = adminService.getEstoqueById(e.getId());
             Assert.assertNotNull(ee);
             Assert.assertNotNull(ee.getProdutos());
-            Assert.assertEquals(ee.getProdutos().size(),6);
+            Assert.assertEquals(6,ee.getProdutos().size());
 
         } catch (AdminServiceException e) {
             LOG.error("Error:", e);
@@ -293,6 +293,23 @@ public class AdminServiceImplTest extends BaseDBTest {
             EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
             Assert.assertNotNull(e);
             Assert.assertNotNull(e.getId());
+            Assert.assertNotNull(e.getProdutos());
+            Assert.assertEquals(6,e.getProdutos().size());
+
+            Long id = e.getId();
+            e.setIdProduto(2l);
+            e.setObservacao("teste123456");
+            e.setPrecoCompra(35d);
+            e = adminService.saveEstoque(e);
+
+            Assert.assertNotNull(e);
+            Assert.assertEquals(id,e.getId());
+            Assert.assertEquals(new Long(2l), e.getIdProduto());
+            Assert.assertEquals("teste123456",e.getObservacao());
+            Assert.assertEquals(new Double(35d),e.getPrecoCompra());
+
+
+
         } catch (AdminServiceException e) {
             LOG.error("Error:", e);
             Assert.assertTrue(e.getMessage(), false);

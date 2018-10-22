@@ -22,17 +22,9 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<EstoqueProdutoEntity> produtos;
-
-    @ManyToOne
-    @JoinColumn(name = "ID_FORNECEDOR", updatable = false, insertable = false)
-    private FornecedorEntity fornecedor;
-
     @NotNull(message = "Fornecedor é obrigatório!")
     @Column(name = "ID_FORNECEDOR", nullable = false)
     private Long idFornecedor;
-
 
     @NotNull(message = "Data da compra é obrigatório!")
     @Column(name = "DATA_COMPRA", nullable = false)
@@ -40,7 +32,6 @@ public class EstoqueEntity implements Serializable {
 
     @Column(name = "DATA_ATUALIZACAO", nullable = false)
     private Date dataAtualizacao;
-
 
     @NotNull(message = "Preço de compra é obrigatório!")
     @Range(min = 0, max = 999999)
@@ -51,14 +42,16 @@ public class EstoqueEntity implements Serializable {
     private String observacao;
 
     @Transient
-    @NotNull(message = "Quantidade é obrigatória!")
-    @Min(value = 1, message = "Quantidade mínima do lote do estoque é 1 produto.")
-    @Max(value = 100, message = "Quantidade máxima do lote é de 100 produtos.")
     private Integer quantidade;
 
     @Transient
-    @NotNull(message = "Produto é obrigatório!")
     private Long idProduto;
+
+    @Transient
+    private List<EstoqueProdutoEntity> produtos;
+
+    @Transient
+    private FornecedorEntity fornecedor;
 
 
     public Long getId() {

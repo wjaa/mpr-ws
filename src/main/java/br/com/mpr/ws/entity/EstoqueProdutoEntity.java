@@ -10,11 +10,13 @@ public class EstoqueProdutoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Long id;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="ID_ESTOQUE")
-    private EstoqueEntity estoque;
+
+    @Column(name="ID_ESTOQUE")
+    private Long idEstoque;
+
     @Column(name = "ID_PRODUTO", nullable = false)
     private Long idProduto;
+
     @Column(name = "INVALIDO")
     private Boolean invalido;
 
@@ -43,11 +45,12 @@ public class EstoqueProdutoEntity {
         this.invalido = invalido;
     }
 
-    public EstoqueEntity getEstoque() {
-        return estoque;
+
+    public Long getIdEstoque() {
+        return idEstoque;
     }
 
-    public void setEstoque(EstoqueEntity estoque) {
-        this.estoque = estoque;
+    public void setIdEstoque(Long idEstoque) {
+        this.idEstoque = idEstoque;
     }
 }
