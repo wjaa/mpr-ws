@@ -3,6 +3,7 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.dao.CommonDaoImplTest;
+import br.com.mpr.ws.entity.EstoqueEntity;
 import br.com.mpr.ws.entity.FornecedorEntity;
 import br.com.mpr.ws.entity.TabelaPrecoEntity;
 import br.com.mpr.ws.exception.AdminServiceException;
@@ -238,6 +239,65 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(e);
             Assert.assertTrue(e.getMessage().toUpperCase().contains("RETROATIVA"));
         }
+    }
+
+    @Test
+    public void criarEstoque(){
+
+        EstoqueEntity estoqueEntity = new EstoqueEntity();
+        estoqueEntity.setIdFornecedor(1l);
+        estoqueEntity.setIdProduto(1l);
+        estoqueEntity.setQuantidade(6);
+        estoqueEntity.setObservacao("teste");
+        estoqueEntity.setDataCompra(new Date());
+        estoqueEntity.setPrecoCompra(34.4d);
+        try {
+            EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
+            Assert.assertNotNull(e);
+            Assert.assertNotNull(e.getId());
+
+            EstoqueEntity ee = adminService.getEstoqueById(e.getId());
+            Assert.assertNotNull(ee);
+            Assert.assertNotNull(ee.getProdutos());
+            Assert.assertEquals(ee.getProdutos().size(),6);
+
+        } catch (AdminServiceException e) {
+            LOG.error("Error:", e);
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
+    }
+
+    @Test
+    public void getEstoqueById(){
+        EstoqueEntity estoqueEntity = adminService.getEstoqueById(1l);
+        Assert.assertNotNull(estoqueEntity);
+        Assert.assertNotNull(estoqueEntity.getProdutos());
+        Assert.assertEquals(estoqueEntity.getObservacao(), "obs");
+        Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
+        Assert.assertEquals(estoqueEntity.getProdutos().size() , 2);
+        Assert.assertNotNull(estoqueEntity.getFornecedor());
+    }
+
+    @Test
+    public void atualizarEstoque(){
+
+        EstoqueEntity estoqueEntity = new EstoqueEntity();
+        estoqueEntity.setIdFornecedor(1l);
+        estoqueEntity.setIdProduto(1l);
+        estoqueEntity.setQuantidade(6);
+        estoqueEntity.setObservacao("teste");
+        estoqueEntity.setDataCompra(new Date());
+        estoqueEntity.setPrecoCompra(34.4d);
+        try {
+            EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
+            Assert.assertNotNull(e);
+            Assert.assertNotNull(e.getId());
+        } catch (AdminServiceException e) {
+            LOG.error("Error:", e);
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
     }
 
 }

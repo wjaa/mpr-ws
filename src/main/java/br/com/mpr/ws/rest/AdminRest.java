@@ -28,7 +28,7 @@ public class AdminRest extends BaseRest{
     @RequestMapping(value = "/{entity}/all",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public List<? extends Serializable> getAllFornecedor(@PathVariable String entity) throws AdminServiceException {
+    public List<? extends Serializable> getAll(@PathVariable String entity) throws AdminServiceException {
         return this.adminService.listAllEntity(entity);
     }
 

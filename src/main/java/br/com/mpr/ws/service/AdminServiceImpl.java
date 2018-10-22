@@ -18,6 +18,7 @@ import org.springframework.util.FileCopyUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -88,7 +89,6 @@ public class AdminServiceImpl implements AdminService {
 
         if (estoqueEntity != null){
             estoqueEntity.setFornecedor(this.getFornecedorById(estoqueEntity.getIdFornecedor()));
-            estoqueEntity.setProduto(this.getProdutoById(estoqueEntity.getIdProduto()));
         }
         return estoqueEntity;
     }
@@ -401,25 +401,16 @@ public class AdminServiceImpl implements AdminService {
         if (this.isNew(estoque.getId())){
             estoque.setId(null);
 
-            //Facilitador para o usuário cadastrar o mesmo item varias vezes.
-            if (estoque.getQuantidade() != null && estoque.getQuantidade() > 1){
-
-                //Limite para o usuário nao fazer besteira e acabar inserindo um monte de item ao mesmo tempo.
-                if (estoque.getQuantidade() > 100){
-                    throw new AdminServiceException("Você está tentando cadastrar mais de 100 produtos no estoque ao mesmo tempo.<br/> " +
-                            "Por regra limitamos a no máximo 100 produtos por cadastro");
-                }
-
-                EstoqueEntity cloneFinal = null;
-                for (int i = 0; i < estoque.getQuantidade(); i++){
-                    EstoqueEntity clone = new EstoqueEntity();
-                    BeanUtils.copyProperties(estoque,clone);
-                    cloneFinal = commonDao.save(clone);
-                }
-                estoque = cloneFinal;
-            }else{
-                estoque = commonDao.save(estoque);
+            List<EstoqueProdutoEntity> produtos = new ArrayList<>(estoque.getQuantidade());
+            for (int i = 0; i < estoque.getQuantidade(); i++){
+                EstoqueProdutoEntity estoqueProduto = new EstoqueProdutoEntity();
+                estoqueProduto.setIdProduto(estoque.getIdProduto());
+                estoqueProduto.setInvalido(false);
+                produtos.add(estoqueProduto);
             }
+            estoque.setProdutos(produtos);
+            commonDao.save(estoque);
+
 
         }else{
 
@@ -431,7 +422,7 @@ public class AdminServiceImpl implements AdminService {
             }
 
             EstoqueEntity estoqueMerged = commonDao.get(EstoqueEntity.class, estoque.getId());
-            BeanUtils.copyProperties(estoque,estoqueMerged);
+            BeanUtils.copyProperties(estoque,estoqueMerged,"produtos");
 
             estoque = commonDao.save(estoqueMerged);
         }

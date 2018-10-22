@@ -3,9 +3,12 @@ package br.com.mpr.ws.entity;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by wagner on 13/06/18.
@@ -19,13 +22,8 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_PRODUTO", updatable = false, insertable = false)
-    private ProdutoEntity produto;
-
-    @NotNull(message = "Produto é obrigatório!")
-    @Column(name = "ID_PRODUTO", nullable = false)
-    private Long idProduto;
+    @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<EstoqueProdutoEntity> produtos;
 
     @ManyToOne
     @JoinColumn(name = "ID_FORNECEDOR", updatable = false, insertable = false)
@@ -49,14 +47,18 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "PRECO_COMPRA", nullable = false, scale = 6 , precision = 2)
     private Double precoCompra;
 
-    @Column(name = "INVALIDO")
-    private Boolean invalido;
-
     @Column(name = "OBSERVACAO", length = 60)
     private String observacao;
 
     @Transient
+    @NotNull(message = "Quantidade é obrigatória!")
+    @Min(value = 1, message = "Quantidade mínima do lote do estoque é 1 produto.")
+    @Max(value = 100, message = "Quantidade máxima do lote é de 100 produtos.")
     private Integer quantidade;
+
+    @Transient
+    @NotNull(message = "Produto é obrigatório!")
+    private Long idProduto;
 
 
     public Long getId() {
@@ -65,14 +67,6 @@ public class EstoqueEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getIdProduto() {
-        return idProduto;
-    }
-
-    public void setIdProduto(Long idProduto) {
-        this.idProduto = idProduto;
     }
 
     public Long getIdFornecedor() {
@@ -107,28 +101,12 @@ public class EstoqueEntity implements Serializable {
         this.precoCompra = precoCompra;
     }
 
-    public Boolean getInvalido() {
-        return invalido;
-    }
-
-    public void setInvalido(Boolean invalido) {
-        this.invalido = invalido;
-    }
-
     public String getObservacao() {
         return observacao;
     }
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
-    }
-
-    public ProdutoEntity getProduto() {
-        return produto;
-    }
-
-    public void setProduto(ProdutoEntity produto) {
-        this.produto = produto;
     }
 
     public FornecedorEntity getFornecedor() {
@@ -145,5 +123,21 @@ public class EstoqueEntity implements Serializable {
 
     public void setQuantidade(Integer quantidade) {
         this.quantidade = quantidade;
+    }
+
+    public List<EstoqueProdutoEntity> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<EstoqueProdutoEntity> produtos) {
+        this.produtos = produtos;
+    }
+
+    public Long getIdProduto() {
+        return idProduto;
+    }
+
+    public void setIdProduto(Long idProduto) {
+        this.idProduto = idProduto;
     }
 }

@@ -15,8 +15,8 @@ public class BaixaEstoqueEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "ID_ESTOQUE", nullable = false)
-    private Long idEstoque;
+    @Column(name = "ID_ESTOQUE_PRODUTO", nullable = false)
+    private Long idEstoqueProduo;
 
     @Column(name = "ID_ITEM_PEDIDO", nullable = false)
     private Long idItemPedido;
@@ -29,12 +29,12 @@ public class BaixaEstoqueEntity {
         this.id = id;
     }
 
-    public Long getIdEstoque() {
-        return idEstoque;
+    public Long getIdEstoqueProduo() {
+        return idEstoqueProduo;
     }
 
-    public void setIdEstoque(Long idEstoque) {
-        this.idEstoque = idEstoque;
+    public void setIdEstoqueProduo(Long idEstoqueProduo) {
+        this.idEstoqueProduo = idEstoqueProduo;
     }
 
     public Long getIdItemPedido() {

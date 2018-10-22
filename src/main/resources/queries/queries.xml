@@ -8,10 +8,13 @@
     <bean name="findAllEstoque" class="java.lang.String">
         <constructor-arg>
             <value>
-                SELECT ID, ID_PRODUTO, ID_FORNECEDOR, DATA_COMPRA, DATA_ATUALIZACAO,
-                PRECO_COMPRA, INVALIDO, OBSERVACAO
+                SELECT ID, ID_FORNECEDOR, DATA_COMPRA, DATA_ATUALIZACAO,
+                PRECO_COMPRA, OBSERVACAO,
+                (SELECT COUNT(ID) FROM ESTOQUE_PRODUTO EP WHERE EP.ID_ESTOQUE = E.ID
+                AND EP.INVALIDO = 0
+                AND EP.ID NOT IN  (SELECT ID_ESTOQUE_PRODUTO
+                FROM BAIXA_ESTOQUE BE WHERE BE.ID_ESTOQUE_PRODUTO = EP.ID) ) AS QUANTIDADE
                 FROM ESTOQUE E
-                WHERE E.ID NOT IN (SELECT ID_ESTOQUE FROM BAIXA_ESTOQUE BE WHERE BE.ID_ESTOQUE = E.ID)
             </value>
         </constructor-arg>
     </bean>
