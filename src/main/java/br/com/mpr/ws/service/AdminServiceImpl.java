@@ -8,6 +8,7 @@ import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
+import br.com.mpr.ws.vo.ProdutoEstoqueVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +48,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Resource(name = "findAllProduto")
     private String findAllProduto;
+
+    @Resource(name = "findProdutoEmEstoque")
+    private String findProdutoEmEstoque;
 
     @Autowired
     private MprWsProperties properties;
@@ -90,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
 
         if (estoqueEntity != null){
             estoqueEntity.setFornecedor(this.getFornecedorById(estoqueEntity.getIdFornecedor()));
-            List<EstoqueProdutoEntity> produtos = commonDao.findByProperties(EstoqueProdutoEntity.class,new String[]{"idEstoque"},new Object[]{estoqueEntity.getId()});
+            List<EstoqueItemEntity> produtos = commonDao.findByProperties(EstoqueItemEntity.class,new String[]{"idEstoque"},new Object[]{estoqueEntity.getId()});
             estoqueEntity.setProdutos(produtos);
             estoqueEntity.setQuantidade(produtos.size());
             if (produtos.size() > 0){
@@ -161,6 +165,11 @@ public class AdminServiceImpl implements AdminService {
     public List<TabelaPrecoEntity> listAllTabelaPreco() {
         //TODO IMPLEMENTAR UM PAGINATION
         return commonDao.listAll(TabelaPrecoEntity.class);
+    }
+
+    @Override
+    public List<ProdutoEstoqueVo> listProdutoEmEstoque(){
+        return commonDao.findByNativeQuery(findProdutoEmEstoque,ProdutoEstoqueVo.class);
     }
 
 
@@ -417,16 +426,16 @@ public class AdminServiceImpl implements AdminService {
                 throw new AdminServiceException("Quantidade em estoque precisa ser maior que 0!");
             }
             if (estoque.getQuantidade() > 100){
-                throw new AdminServiceException("Por segurança um lote precisa uma quantidade menor que 100.");
+                throw new AdminServiceException("Por segurança um lote precisa ter uma quantidade menor que 100.");
             }
 
             estoque = commonDao.save(estoque);
 
 
             //criando os itens do estoque.
-            List<EstoqueProdutoEntity> produtos = new ArrayList<>(estoque.getQuantidade());
+            List<EstoqueItemEntity> produtos = new ArrayList<>(estoque.getQuantidade());
             for (int i = 0; i < estoque.getQuantidade(); i++){
-                EstoqueProdutoEntity estoqueProduto = new EstoqueProdutoEntity();
+                EstoqueItemEntity estoqueProduto = new EstoqueItemEntity();
                 estoqueProduto.setIdProduto(estoque.getIdProduto());
                 estoqueProduto.setIdEstoque(estoque.getId());
                 estoqueProduto.setInvalido(false);
@@ -437,7 +446,7 @@ public class AdminServiceImpl implements AdminService {
 
 
         }else{
-            List<EstoqueProdutoEntity> produtos = commonDao.findByProperties(EstoqueProdutoEntity.class,
+            List<EstoqueItemEntity> produtos = commonDao.findByProperties(EstoqueItemEntity.class,
                     new String[]{"idEstoque"},
                     new Object[]{estoque.getId()});
 
@@ -456,17 +465,17 @@ public class AdminServiceImpl implements AdminService {
         }
 
 
-        return estoque;
+        return this.getEstoqueById(estoque.getId());
     }
 
-    private void verificaMudancaQuantidade(EstoqueEntity estoque, List<EstoqueProdutoEntity> produtos) throws AdminServiceException {
+    private void verificaMudancaQuantidade(EstoqueEntity estoque, List<EstoqueItemEntity> produtos) throws AdminServiceException {
         if (!estoque.getQuantidade().equals(produtos.size())){
 
 
-            List<Long> ids = produtos.stream().map(EstoqueProdutoEntity::getId).collect(Collectors.toList());
+            List<Long> ids = produtos.stream().map(EstoqueItemEntity::getId).collect(Collectors.toList());
 
             List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
-                    "idEstoqueProduto", ids);
+                    "idEstoqueItem", ids);
 
             if (listBaixa.size() > 0){
                 throw new AdminServiceException("Você não pode alterar a quantidade desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");
@@ -475,42 +484,42 @@ public class AdminServiceImpl implements AdminService {
 
             //se usuario aumentou a quantidade, vamos criar novos itens
             if (estoque.getQuantidade() > produtos.size()){
-                EstoqueProdutoEntity produtoBase = produtos.get(0);
+                EstoqueItemEntity produtoBase = produtos.get(0);
                 for (int i = produtos.size(); i < estoque.getQuantidade(); i++){
-                    EstoqueProdutoEntity estoqueProdutoEntity = new EstoqueProdutoEntity();
-                    estoqueProdutoEntity.setIdProduto(produtoBase.getIdProduto());
-                    estoqueProdutoEntity.setIdEstoque(produtoBase.getIdEstoque());
-                    estoqueProdutoEntity.setInvalido(false);
-                    commonDao.save(estoqueProdutoEntity);
+                    EstoqueItemEntity estoqueItemEntity = new EstoqueItemEntity();
+                    estoqueItemEntity.setIdProduto(produtoBase.getIdProduto());
+                    estoqueItemEntity.setIdEstoque(produtoBase.getIdEstoque());
+                    estoqueItemEntity.setInvalido(false);
+                    commonDao.save(estoqueItemEntity);
                 }
 
 
             }else
            //se usuario diminuiu a quantidade, vamos remover itens.
             if (estoque.getQuantidade() < produtos.size()){
-                EstoqueProdutoEntity produtoBase = produtos.get(0);
+                EstoqueItemEntity produtoBase = produtos.get(0);
                 for (int i = estoque.getQuantidade(); i < produtos.size(); i++){
-                    commonDao.remove(EstoqueProdutoEntity.class, produtos.get(i).getId());
+                    commonDao.remove(EstoqueItemEntity.class, produtos.get(i).getId());
                 }
             }
         }
     }
 
-    private void verificaMudancaProduto(EstoqueEntity estoque, List<EstoqueProdutoEntity> produtos) throws AdminServiceException {
+    private void verificaMudancaProduto(EstoqueEntity estoque, List<EstoqueItemEntity> produtos) throws AdminServiceException {
         if (!estoque.getIdProduto().equals(produtos.get(0).getIdProduto()) ){
 
             //se trocou o produto, precisamos verificar se algum  item já nao foi baixado do estoque.
-            List<Long> ids = produtos.stream().map(EstoqueProdutoEntity::getId).collect(Collectors.toList());
+            List<Long> ids = produtos.stream().map(EstoqueItemEntity::getId).collect(Collectors.toList());
 
             List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
-                    "idEstoqueProduto", ids);
+                    "idEstoqueItem", ids);
 
             if (listBaixa.size() > 0){
                 throw new AdminServiceException("Você não pode alterar o produto desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");
             }
 
             //alterando o produto.
-            for (EstoqueProdutoEntity produto : produtos){
+            for (EstoqueItemEntity produto : produtos){
                 produto.setIdProduto(estoque.getIdProduto());
                 commonDao.update(produto);
             }

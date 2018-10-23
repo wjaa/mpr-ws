@@ -3,8 +3,8 @@ package br.com.mpr.ws.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ESTOQUE_PRODUTO")
-public class EstoqueProdutoEntity {
+@Table(name = "ESTOQUE_ITEM")
+public class EstoqueItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

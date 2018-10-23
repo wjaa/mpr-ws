@@ -1,7 +1,6 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by wagner on 20/06/18.
@@ -15,8 +14,8 @@ public class BaixaEstoqueEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "ID_ESTOQUE_PRODUTO", nullable = false)
-    private Long idEstoqueProduto;
+    @Column(name = "ID_ESTOQUE_ITEM", nullable = false)
+    private Long idEstoqueItem;
 
     @Column(name = "ID_ITEM_PEDIDO", nullable = false)
     private Long idItemPedido;
@@ -29,12 +28,12 @@ public class BaixaEstoqueEntity {
         this.id = id;
     }
 
-    public Long getIdEstoqueProduto() {
-        return idEstoqueProduto;
+    public Long getIdEstoqueItem() {
+        return idEstoqueItem;
     }
 
-    public void setIdEstoqueProduto(Long idEstoqueProduto) {
-        this.idEstoqueProduto = idEstoqueProduto;
+    public void setIdEstoqueItem(Long idEstoqueItem) {
+        this.idEstoqueItem = idEstoqueItem;
     }
 
     public Long getIdItemPedido() {

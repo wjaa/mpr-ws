@@ -2,6 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
+import br.com.mpr.ws.vo.ProdutoEstoqueVo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,6 +28,7 @@ public interface AdminService {
     List<ClienteEntity> listAllCliente();
     List<CupomEntity> listaAllCupom();
     List<TabelaPrecoEntity> listAllTabelaPreco();
+    List<ProdutoEstoqueVo> listProdutoEmEstoque();
     List<? extends Serializable> listAllEntity(String entity) throws AdminServiceException;
 
     FornecedorEntity saveFornecedor(FornecedorEntity fe) throws AdminServiceException;

@@ -3,12 +3,11 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.dao.CommonDaoImplTest;
-import br.com.mpr.ws.entity.EstoqueEntity;
-import br.com.mpr.ws.entity.FornecedorEntity;
-import br.com.mpr.ws.entity.TabelaPrecoEntity;
+import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
+import br.com.mpr.ws.vo.ProdutoEstoqueVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -273,9 +272,9 @@ public class AdminServiceImplTest extends BaseDBTest {
         EstoqueEntity estoqueEntity = adminService.getEstoqueById(1l);
         Assert.assertNotNull(estoqueEntity);
         Assert.assertNotNull(estoqueEntity.getProdutos());
-        Assert.assertEquals(estoqueEntity.getObservacao(), "obs");
+        Assert.assertEquals("obs",estoqueEntity.getObservacao() );
         Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
-        Assert.assertEquals(estoqueEntity.getProdutos().size() , 2);
+        Assert.assertEquals(5, estoqueEntity.getProdutos().size());
         Assert.assertNotNull(estoqueEntity.getFornecedor());
     }
 
@@ -317,4 +316,143 @@ public class AdminServiceImplTest extends BaseDBTest {
 
     }
 
+
+    @Test
+    public void atualizarEstoqueMudarProduto(){
+
+        EstoqueEntity estoqueEntity = new EstoqueEntity();
+        estoqueEntity.setIdFornecedor(1l);
+        estoqueEntity.setIdProduto(1l);
+        estoqueEntity.setQuantidade(6);
+        estoqueEntity.setObservacao("teste");
+        estoqueEntity.setDataCompra(new Date());
+        estoqueEntity.setPrecoCompra(34.4d);
+        try {
+            EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
+            Assert.assertNotNull(e);
+            Assert.assertNotNull(e.getId());
+            Assert.assertNotNull(e.getProdutos());
+            Assert.assertEquals(6,e.getProdutos().size());
+
+            for (EstoqueItemEntity item : e.getProdutos()){
+                Assert.assertEquals(item.getIdProduto(),new Long(1l));
+            }
+
+            Long id = e.getId();
+            e.setIdProduto(2l);
+            e.setObservacao("teste123456");
+            e.setPrecoCompra(35d);
+            e = adminService.saveEstoque(e);
+
+            Assert.assertNotNull(e);
+            Assert.assertEquals(id,e.getId());
+            Assert.assertEquals(new Long(2l), e.getIdProduto());
+            Assert.assertEquals("teste123456",e.getObservacao());
+            Assert.assertEquals(new Double(35d),e.getPrecoCompra());
+
+            for (EstoqueItemEntity item : e.getProdutos()){
+                Assert.assertEquals(new Long(2l),item.getIdProduto());
+            }
+
+
+
+        } catch (AdminServiceException e) {
+            LOG.error("Error:", e);
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
+    }
+
+
+    @Test
+    public void atualizarEstoqueAumentarItens(){
+
+        EstoqueEntity estoqueEntity = new EstoqueEntity();
+        estoqueEntity.setIdFornecedor(1l);
+        estoqueEntity.setIdProduto(1l);
+        estoqueEntity.setQuantidade(6);
+        estoqueEntity.setObservacao("teste");
+        estoqueEntity.setDataCompra(new Date());
+        estoqueEntity.setPrecoCompra(34.4d);
+        try {
+            EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
+            Assert.assertNotNull(e);
+            Assert.assertNotNull(e.getId());
+            Assert.assertNotNull(e.getProdutos());
+            Assert.assertEquals(6,e.getProdutos().size());
+
+            Long id = e.getId();
+            e.setQuantidade(10);
+            e.setObservacao("teste123456");
+            e.setPrecoCompra(35d);
+            e = adminService.saveEstoque(e);
+
+            Assert.assertNotNull(e);
+            Assert.assertEquals(id,e.getId());
+            Assert.assertEquals("teste123456",e.getObservacao());
+            Assert.assertEquals(new Double(35d),e.getPrecoCompra());
+            Assert.assertEquals(10,e.getProdutos().size());
+
+        } catch (AdminServiceException e) {
+            LOG.error("Error:", e);
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
+    }
+
+
+    @Test
+    public void atualizarEstoqueDiminuirItens(){
+
+        EstoqueEntity estoqueEntity = new EstoqueEntity();
+        estoqueEntity.setIdFornecedor(1l);
+        estoqueEntity.setIdProduto(1l);
+        estoqueEntity.setQuantidade(6);
+        estoqueEntity.setObservacao("teste");
+        estoqueEntity.setDataCompra(new Date());
+        estoqueEntity.setPrecoCompra(34.4d);
+        try {
+            EstoqueEntity e = adminService.saveEstoque(estoqueEntity);
+            Assert.assertNotNull(e);
+            Assert.assertNotNull(e.getId());
+            Assert.assertNotNull(e.getProdutos());
+            Assert.assertEquals(6,e.getProdutos().size());
+
+            Long id = e.getId();
+            e.setQuantidade(5);
+            e.setObservacao("teste123456");
+            e.setPrecoCompra(35d);
+            e = adminService.saveEstoque(e);
+
+            Assert.assertNotNull(e);
+            Assert.assertEquals(id,e.getId());
+            Assert.assertEquals("teste123456",e.getObservacao());
+            Assert.assertEquals(new Double(35d),e.getPrecoCompra());
+            Assert.assertEquals(5,e.getProdutos().size());
+
+        } catch (AdminServiceException e) {
+            LOG.error("Error:", e);
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
+    }
+
+
+    @Test
+    public void listEstoque(){
+        List<ProdutoEstoqueVo> produtos = adminService.listProdutoEmEstoque();
+
+        Assert.assertNotNull(produtos);
+        Assert.assertTrue(produtos.size() > 0);
+
+
+        for (ProdutoEstoqueVo produto : produtos){
+            if (produto.getIdProduto() == 3) {
+                Assert.assertEquals("PRODUTO TESTE ESTOQUE", produto.getNomeProduto());
+                Assert.assertEquals("TESTE", produto.getReferencia());
+                Assert.assertEquals("PORTA RETRATO", produto.getTipoProduto());
+                Assert.assertEquals(new Long(2), produto.getQuantidade());
+            }
+        }
+    }
 }

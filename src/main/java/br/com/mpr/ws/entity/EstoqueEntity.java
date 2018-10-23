@@ -3,8 +3,6 @@ package br.com.mpr.ws.entity;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -48,7 +46,7 @@ public class EstoqueEntity implements Serializable {
     private Long idProduto;
 
     @Transient
-    private List<EstoqueProdutoEntity> produtos;
+    private List<EstoqueItemEntity> produtos;
 
     @Transient
     private FornecedorEntity fornecedor;
@@ -118,11 +116,11 @@ public class EstoqueEntity implements Serializable {
         this.quantidade = quantidade;
     }
 
-    public List<EstoqueProdutoEntity> getProdutos() {
+    public List<EstoqueItemEntity> getProdutos() {
         return produtos;
     }
 
-    public void setProdutos(List<EstoqueProdutoEntity> produtos) {
+    public void setProdutos(List<EstoqueItemEntity> produtos) {
         this.produtos = produtos;
     }
 

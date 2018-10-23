@@ -10,10 +10,10 @@
             <value>
                 SELECT ID, ID_FORNECEDOR, DATA_COMPRA, DATA_ATUALIZACAO,
                 PRECO_COMPRA, OBSERVACAO,
-                (SELECT COUNT(ID) FROM ESTOQUE_PRODUTO EP WHERE EP.ID_ESTOQUE = E.ID
+                (SELECT COUNT(ID) FROM ESTOQUE_ITEM EP WHERE EP.ID_ESTOQUE = E.ID
                 AND EP.INVALIDO = 0
-                AND EP.ID NOT IN  (SELECT ID_ESTOQUE_PRODUTO
-                FROM BAIXA_ESTOQUE BE WHERE BE.ID_ESTOQUE_PRODUTO = EP.ID) ) AS QUANTIDADE
+                AND EP.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
+                FROM BAIXA_ESTOQUE BE WHERE BE.ID_ESTOQUE_ITEM = EP.ID) ) AS QUANTIDADE
                 FROM ESTOQUE E
             </value>
         </constructor-arg>
@@ -46,4 +46,22 @@
             </value>
         </constructor-arg>
     </bean>
+
+
+    <bean name="findProdutoEmEstoque" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT P.ID AS ID_PRODUTO, P.REFERENCIA, P.DESCRICAO AS NOME_PRODUTO,
+                TP.DESCRICAO AS TIPO_PRODUTO,
+                (SELECT COUNT(ID) FROM ESTOQUE_ITEM EI WHERE EI.ID_PRODUTO = P.ID
+                    AND EI.INVALIDO = 0
+                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
+                    FROM BAIXA_ESTOQUE BE WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                ) AS QUANTIDADE
+                FROM PRODUTO P
+                JOIN TIPO_PRODUTO TP ON TP.ID = P.ID_TIPO_PRODUTO
+            </value>
+        </constructor-arg>
+    </bean>
+
 </beans>
