@@ -98,5 +98,5 @@ public class AdminRest extends BaseRest{
         return this.adminService.saveCliente(entity);
     }
 
-    
+
 }
