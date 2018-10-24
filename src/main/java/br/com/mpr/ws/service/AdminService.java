@@ -24,7 +24,7 @@ public interface AdminService {
     List<FornecedorEntity> listAllFornecedor();
     List<TipoProdutoEntity> listAllTipoProduto();
     List<ProdutoEntity> listAllProduto();
-    List<EstoqueEntity> listAllEstoque();
+    List<EstoqueEntity> listEstoqueByIdProduto(Long idProduto);
     List<ClienteEntity> listAllCliente();
     List<CupomEntity> listaAllCupom();
     List<TabelaPrecoEntity> listAllTabelaPreco();

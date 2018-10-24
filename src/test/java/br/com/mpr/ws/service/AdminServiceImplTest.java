@@ -451,8 +451,30 @@ public class AdminServiceImplTest extends BaseDBTest {
                 Assert.assertEquals("PRODUTO TESTE ESTOQUE", produto.getNomeProduto());
                 Assert.assertEquals("TESTE", produto.getReferencia());
                 Assert.assertEquals("PORTA RETRATO", produto.getTipoProduto());
-                Assert.assertEquals(new Long(2), produto.getQuantidade());
+                Assert.assertEquals(new Integer(5), produto.getQuantidade());
             }
         }
     }
+
+
+    @Test
+    public void listEstoqueByIdProduto(){
+        List<EstoqueEntity> listEstoque = adminService.listEstoqueByIdProduto(3l);
+
+        Assert.assertNotNull(listEstoque);
+        Assert.assertTrue(listEstoque.size() == 2);
+
+        for (EstoqueEntity estoque : listEstoque){
+            if ( estoque.getId() == 2 ){
+                Assert.assertEquals("TESTE_PRODUTO3", estoque.getObservacao());
+                Assert.assertEquals(new Integer(2), estoque.getQuantidade());
+            }else if (estoque.getId() == 3){
+                Assert.assertEquals("TESTE_OUTRO LOTE PRODUTO3", estoque.getObservacao());
+                Assert.assertEquals(new Integer(3), estoque.getQuantidade());
+
+            }
+        }
+
+    }
+
 }

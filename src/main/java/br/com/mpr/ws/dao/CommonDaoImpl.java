@@ -149,9 +149,15 @@ public class CommonDaoImpl implements CommonDao {
         entityManager.remove(get(clazz,id));
     }
 
+
     @Override
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
-        if (resultClass.isAnnotationPresent(Entity.class)) {
+        return this.findByNativeQuery(query,resultClass,nameParams,params,false);
+    }
+
+    @Override
+    public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params, boolean ignoreEntity) {
+        if (resultClass.isAnnotationPresent(Entity.class) &&  !ignoreEntity) {
 
             Query q = entityManager.createNativeQuery(query, resultClass);
             for (int i = 0; i < nameParams.length; i++) {

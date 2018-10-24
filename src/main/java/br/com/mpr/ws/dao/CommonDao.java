@@ -25,6 +25,9 @@ public interface CommonDao{
 
     int executeUpdate(String query, Object ... params );
 
+    <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params,
+                                  boolean ignoreEntity);
+
     <T> List<T> findByProperties(Class<T> clazzEntity, String[] params, Object[] values);
 
     <T> List<T> findByInProperties(Class<T> clazzEntity, String params, List values);

@@ -9,7 +9,7 @@ public class ProdutoEstoqueVo {
     private String referencia;
     private String tipoProduto;
     private String nomeProduto;
-    private Long quantidade;
+    private Integer quantidade;
 
     public Long getIdProduto() {
         return idProduto;
@@ -27,11 +27,11 @@ public class ProdutoEstoqueVo {
         this.nomeProduto = nomeProduto;
     }
 
-    public Long getQuantidade() {
+    public Integer getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(Long quantidade) {
+    public void setQuantidade(Integer quantidade) {
         this.quantidade = quantidade;
     }
 

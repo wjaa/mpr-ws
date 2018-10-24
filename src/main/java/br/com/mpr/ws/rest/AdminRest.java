@@ -32,6 +32,13 @@ public class AdminRest extends BaseRest{
         return this.adminService.listAllEntity(entity);
     }
 
+    @RequestMapping(value = "/EstoqueEntity/byIdProduto/{idProduto}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<? extends Serializable> listEstoqueByIdProduto(@PathVariable Long idProduto) throws AdminServiceException {
+        return this.adminService.listEstoqueByIdProduto(idProduto);
+    }
+
     @RequestMapping(value = "/{entity}/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
@@ -90,4 +97,6 @@ public class AdminRest extends BaseRest{
     public Serializable saveCliente(@RequestBody @Valid ClienteEntity entity) throws AdminServiceException {
         return this.adminService.saveCliente(entity);
     }
+
+    
 }

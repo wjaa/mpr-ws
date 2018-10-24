@@ -40,8 +40,8 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private ClienteService clienteService;
 
-    @Resource(name = "findAllEstoque")
-    private String findAllEstoque;
+    @Resource(name = "findAllEstoqueByIdProduto")
+    private String findAllEstoqueByIdProduto;
 
     @Resource(name = "findTabelaPrecoAtualByProduto")
     private String findTabelaPrecoAtualByProduto;
@@ -143,9 +143,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<EstoqueEntity> listAllEstoque() {
+    public List<EstoqueEntity> listEstoqueByIdProduto(Long idProduto) {
         //TODO IMPLEMENTAR UM PAGINATION
-        List<EstoqueEntity> listEstoque = commonDao.findByNativeQuery(findAllEstoque, EstoqueEntity.class);
+        List<EstoqueEntity> listEstoque = commonDao.findByNativeQuery(findAllEstoqueByIdProduto,
+                EstoqueEntity.class,
+                new String[]{"idProduto"},
+                new Object[]{idProduto},
+                true);
         return listEstoque;
     }
 
@@ -660,7 +664,6 @@ public class AdminServiceImpl implements AdminService {
             case "TipoProdutoEntity": return listAllTipoProduto();
             case "ProdutoEntity": return listAllProduto();
             case "TabelaPrecoEntity": return listAllTabelaPreco();
-            case "EstoqueEntity": return listAllEstoque();
             case "CupomEntity": return listaAllCupom();
             case "ClienteEntity": return listAllCliente();
             default: throw new AdminServiceException("Argumento [entity] inválido!");
