@@ -8,17 +8,19 @@
     <bean name="findAllEstoqueByIdProduto" class="java.lang.String">
         <constructor-arg>
             <value>
-                SELECT ID, ID_FORNECEDOR, DATA_COMPRA, DATA_ATUALIZACAO,
-                PRECO_COMPRA, OBSERVACAO,
-                (SELECT COUNT(ID)
+                SELECT E.ID, E.ID_FORNECEDOR, E.DATA_COMPRA, E.DATA_ATUALIZACAO,
+                E.PRECO_COMPRA, E.OBSERVACAO, F.NOME AS NOME_FORNECEDOR,
+                (SELECT COUNT(EI.ID)
                          FROM ESTOQUE_ITEM EI
                          WHERE EI.ID_ESTOQUE = E.ID
                          AND EI.INVALIDO = 0
                          AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
                                             FROM BAIXA_ESTOQUE BE
                                              WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
-                ) AS QUANTIDADE
+                ) AS QUANTIDADE_ATUAL,
+                E.QUANTIDADE
                 FROM ESTOQUE E
+                JOIN FORNECEDOR F ON F.ID = E.ID_FORNECEDOR
                 WHERE E.ID IN (SELECT EI.ID_ESTOQUE
                                 FROM ESTOQUE_ITEM EI
                                 WHERE EI.ID_PRODUTO = :idProduto
@@ -27,6 +29,27 @@
                                                    FROM BAIXA_ESTOQUE BE
                                                     WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 )
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="findEstoqueById" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT E.ID, E.ID_FORNECEDOR, E.DATA_COMPRA, E.DATA_ATUALIZACAO,
+                E.PRECO_COMPRA, E.OBSERVACAO,
+                (SELECT COUNT(EI.ID)
+                FROM ESTOQUE_ITEM EI
+                WHERE EI.ID_ESTOQUE = E.ID
+                AND EI.INVALIDO = 0
+                AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
+                FROM BAIXA_ESTOQUE BE
+                WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                ) AS QUANTIDADE_ATUAL,
+                E.QUANTIDADE,
+                (SELECT DISTINCT EI.ID_PRODUTO FROM ESTOQUE_ITEM EI WHERE EI.ID_ESTOQUE = E.ID) AS ID_PRODUTO
+                FROM ESTOQUE E WHERE E.ID = :id
+
             </value>
         </constructor-arg>
     </bean>

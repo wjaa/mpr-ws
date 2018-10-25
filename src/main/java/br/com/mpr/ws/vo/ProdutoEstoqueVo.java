@@ -1,9 +1,11 @@
 package br.com.mpr.ws.vo;
 
+import java.io.Serializable;
+
 /**
  *
  */
-public class ProdutoEstoqueVo {
+public class ProdutoEstoqueVo implements Serializable {
 
     private Long idProduto;
     private String referencia;

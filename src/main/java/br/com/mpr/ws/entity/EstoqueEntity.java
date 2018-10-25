@@ -3,6 +3,8 @@ package br.com.mpr.ws.entity;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -36,11 +38,17 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "PRECO_COMPRA", nullable = false, scale = 6 , precision = 2)
     private Double precoCompra;
 
+    @NotNull(message = "Quantidade é obrigatório!")
+    @Min(value = 1, message = "A quantidade mínima para um lote é de 1 item.")
+    @Max(value = 100, message = "Por segurança um lote precisa ter uma quantidade menor que 100.")
+    @Column(name = "QUANTIDADE", nullable = false)
+    private Integer quantidade;
+
     @Column(name = "OBSERVACAO", length = 60)
     private String observacao;
 
     @Transient
-    private Integer quantidade;
+    private Integer quantidadeAtual;
 
     @Transient
     private Long idProduto;
@@ -51,6 +59,8 @@ public class EstoqueEntity implements Serializable {
     @Transient
     private FornecedorEntity fornecedor;
 
+    @Transient
+    private String nomeFornecedor;
 
     public Long getId() {
         return id;
@@ -108,12 +118,12 @@ public class EstoqueEntity implements Serializable {
         this.fornecedor = fornecedor;
     }
 
-    public Integer getQuantidade() {
-        return quantidade;
+    public Integer getQuantidadeAtual() {
+        return quantidadeAtual;
     }
 
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
+    public void setQuantidadeAtual(Integer quantidadeAtual) {
+        this.quantidadeAtual = quantidadeAtual;
     }
 
     public List<EstoqueItemEntity> getProdutos() {
@@ -130,5 +140,21 @@ public class EstoqueEntity implements Serializable {
 
     public void setIdProduto(Long idProduto) {
         this.idProduto = idProduto;
+    }
+
+    public String getNomeFornecedor() {
+        return nomeFornecedor;
+    }
+
+    public void setNomeFornecedor(String nomeFornecedor) {
+        this.nomeFornecedor = nomeFornecedor;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
     }
 }

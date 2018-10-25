@@ -52,6 +52,9 @@ public class AdminServiceImpl implements AdminService {
     @Resource(name = "findProdutoEmEstoque")
     private String findProdutoEmEstoque;
 
+    @Resource(name = "findEstoqueById")
+    private String findEstoqueById;
+
     @Autowired
     private MprWsProperties properties;
 
@@ -90,16 +93,19 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public EstoqueEntity getEstoqueById(Long id) {
-        EstoqueEntity estoqueEntity = commonDao.get(EstoqueEntity.class,id);
+        List<EstoqueEntity> resultList = commonDao.findByNativeQuery(findEstoqueById, EstoqueEntity.class,
+                new String[]{"id"},new Object[]{id},true);
+
+        EstoqueEntity estoqueEntity = null;
+        if (resultList.size() > 0){
+            estoqueEntity = resultList.get(0);
+        }
 
         if (estoqueEntity != null){
             estoqueEntity.setFornecedor(this.getFornecedorById(estoqueEntity.getIdFornecedor()));
-            List<EstoqueItemEntity> produtos = commonDao.findByProperties(EstoqueItemEntity.class,new String[]{"idEstoque"},new Object[]{estoqueEntity.getId()});
+            List<EstoqueItemEntity> produtos = commonDao.findByProperties(EstoqueItemEntity.class,
+                    new String[]{"idEstoque"},new Object[]{estoqueEntity.getId()});
             estoqueEntity.setProdutos(produtos);
-            estoqueEntity.setQuantidade(produtos.size());
-            if (produtos.size() > 0){
-                estoqueEntity.setIdProduto(produtos.get(0).getIdProduto());
-            }
         }
         return estoqueEntity;
     }
@@ -421,18 +427,6 @@ public class AdminServiceImpl implements AdminService {
         if (this.isNew(estoque.getId())){
             estoque.setId(null);
 
-
-            if (estoque.getQuantidade() == null){
-                throw new AdminServiceException("Quantidade em estoque é obrigatório!");
-            }
-
-            if (estoque.getQuantidade() < 1){
-                throw new AdminServiceException("Quantidade em estoque precisa ser maior que 0!");
-            }
-            if (estoque.getQuantidade() > 100){
-                throw new AdminServiceException("Por segurança um lote precisa ter uma quantidade menor que 100.");
-            }
-
             estoque = commonDao.save(estoque);
 
 
@@ -501,7 +495,6 @@ public class AdminServiceImpl implements AdminService {
             }else
            //se usuario diminuiu a quantidade, vamos remover itens.
             if (estoque.getQuantidade() < produtos.size()){
-                EstoqueItemEntity produtoBase = produtos.get(0);
                 for (int i = estoque.getQuantidade(); i < produtos.size(); i++){
                     commonDao.remove(EstoqueItemEntity.class, produtos.get(i).getId());
                 }
@@ -666,6 +659,7 @@ public class AdminServiceImpl implements AdminService {
             case "TabelaPrecoEntity": return listAllTabelaPreco();
             case "CupomEntity": return listaAllCupom();
             case "ClienteEntity": return listAllCliente();
+            case "EstoqueEntity": return listProdutoEmEstoque();
             default: throw new AdminServiceException("Argumento [entity] inválido!");
 
         }

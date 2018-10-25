@@ -275,6 +275,34 @@ public class AdminServiceImplTest extends BaseDBTest {
         Assert.assertEquals("obs",estoqueEntity.getObservacao() );
         Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
         Assert.assertEquals(5, estoqueEntity.getProdutos().size());
+        Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidade());
+        Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidadeAtual());
+        Assert.assertNotNull(estoqueEntity.getFornecedor());
+    }
+
+    @Test
+    public void getEstoqueById2(){
+        EstoqueEntity estoqueEntity = adminService.getEstoqueById(2l);
+        Assert.assertNotNull(estoqueEntity);
+        Assert.assertNotNull(estoqueEntity.getProdutos());
+        Assert.assertEquals("TESTE_PRODUTO3",estoqueEntity.getObservacao() );
+        Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
+        Assert.assertEquals(5, estoqueEntity.getProdutos().size());
+        Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidade());
+        Assert.assertEquals(new Integer(2),estoqueEntity.getQuantidadeAtual());
+        Assert.assertNotNull(estoqueEntity.getFornecedor());
+    }
+
+    @Test
+    public void getEstoqueById3(){
+        EstoqueEntity estoqueEntity = adminService.getEstoqueById(3l);
+        Assert.assertNotNull(estoqueEntity);
+        Assert.assertNotNull(estoqueEntity.getProdutos());
+        Assert.assertEquals("TESTE_OUTRO LOTE PRODUTO3",estoqueEntity.getObservacao() );
+        Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
+        Assert.assertEquals(5, estoqueEntity.getProdutos().size());
+        Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidade());
+        Assert.assertEquals(new Integer(3),estoqueEntity.getQuantidadeAtual());
         Assert.assertNotNull(estoqueEntity.getFornecedor());
     }
 
@@ -294,6 +322,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(e.getId());
             Assert.assertNotNull(e.getProdutos());
             Assert.assertEquals(6,e.getProdutos().size());
+            Assert.assertEquals(new Integer(6),e.getQuantidade());
 
             Long id = e.getId();
             e.setIdProduto(2l);
@@ -333,6 +362,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(e.getId());
             Assert.assertNotNull(e.getProdutos());
             Assert.assertEquals(6,e.getProdutos().size());
+            Assert.assertEquals(new Integer(6),e.getQuantidade());
 
             for (EstoqueItemEntity item : e.getProdutos()){
                 Assert.assertEquals(item.getIdProduto(),new Long(1l));
@@ -380,6 +410,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(e.getId());
             Assert.assertNotNull(e.getProdutos());
             Assert.assertEquals(6,e.getProdutos().size());
+            Assert.assertEquals(new Integer(6),e.getQuantidade());
 
             Long id = e.getId();
             e.setQuantidade(10);
@@ -392,6 +423,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertEquals("teste123456",e.getObservacao());
             Assert.assertEquals(new Double(35d),e.getPrecoCompra());
             Assert.assertEquals(10,e.getProdutos().size());
+            Assert.assertEquals(new Integer(10),e.getQuantidade());
 
         } catch (AdminServiceException e) {
             LOG.error("Error:", e);
@@ -417,6 +449,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(e.getId());
             Assert.assertNotNull(e.getProdutos());
             Assert.assertEquals(6,e.getProdutos().size());
+            Assert.assertEquals(new Integer(6),e.getQuantidade());
 
             Long id = e.getId();
             e.setQuantidade(5);
@@ -429,6 +462,7 @@ public class AdminServiceImplTest extends BaseDBTest {
             Assert.assertEquals("teste123456",e.getObservacao());
             Assert.assertEquals(new Double(35d),e.getPrecoCompra());
             Assert.assertEquals(5,e.getProdutos().size());
+            Assert.assertEquals(new Integer(5),e.getQuantidade());
 
         } catch (AdminServiceException e) {
             LOG.error("Error:", e);
@@ -467,10 +501,12 @@ public class AdminServiceImplTest extends BaseDBTest {
         for (EstoqueEntity estoque : listEstoque){
             if ( estoque.getId() == 2 ){
                 Assert.assertEquals("TESTE_PRODUTO3", estoque.getObservacao());
-                Assert.assertEquals(new Integer(2), estoque.getQuantidade());
+                Assert.assertEquals(new Integer(2), estoque.getQuantidadeAtual());
+                Assert.assertEquals(new Integer(5), estoque.getQuantidade());
             }else if (estoque.getId() == 3){
                 Assert.assertEquals("TESTE_OUTRO LOTE PRODUTO3", estoque.getObservacao());
-                Assert.assertEquals(new Integer(3), estoque.getQuantidade());
+                Assert.assertEquals(new Integer(3), estoque.getQuantidadeAtual());
+                Assert.assertEquals(new Integer(5), estoque.getQuantidade());
 
             }
         }
