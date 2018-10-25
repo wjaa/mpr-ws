@@ -44,7 +44,7 @@ public class EstoqueEntity implements Serializable {
     @Column(name = "QUANTIDADE", nullable = false)
     private Integer quantidade;
 
-    @Column(name = "OBSERVACAO", length = 60)
+    @Column(name = "OBSERVACAO", length = 1000)
     private String observacao;
 
     @Transient

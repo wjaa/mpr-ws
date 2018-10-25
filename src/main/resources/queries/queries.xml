@@ -95,7 +95,8 @@
                         AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
                                                 FROM BAIXA_ESTOQUE BE
                                                 WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
-                ) AS QUANTIDADE
+                ) AS QUANTIDADE,
+                P.ESTOQUE_MINIMO
                 FROM PRODUTO P
                 JOIN TIPO_PRODUTO TP ON TP.ID = P.ID_TIPO_PRODUTO
             </value>

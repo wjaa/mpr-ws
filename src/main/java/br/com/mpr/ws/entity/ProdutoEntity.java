@@ -62,6 +62,11 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "HEXA_COR", length = 7)
     private String hexaCor;
 
+    @NotNull(message = "Estoque mínimo é obrigatório!")
+    @Range(min = 0, max = 99999)
+    @Column(name = "ESTOQUE_MINIMO", nullable = false)
+    private Integer estoqueMinimo;
+
     @Transient
     private byte [] byteImgDestaque;
 
@@ -207,5 +212,13 @@ public class ProdutoEntity implements Serializable {
 
     public void setNomeTipoProduto(String nomeTipoProduto) {
         this.nomeTipoProduto = nomeTipoProduto;
+    }
+
+    public Integer getEstoqueMinimo() {
+        return estoqueMinimo;
+    }
+
+    public void setEstoqueMinimo(Integer estoqueMinimo) {
+        this.estoqueMinimo = estoqueMinimo;
     }
 }
