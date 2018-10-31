@@ -4,10 +4,10 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by wagner on 04/06/18.
@@ -39,20 +39,19 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "REFERENCIA", nullable = false, length = 50)
     private String referencia;
 
+    @OneToMany(mappedBy = "produto", orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<ProdutoImagemDestaqueEntity> listImgDestaque;
 
     @NotNull(message = "Peso do produto é obrigatória!")
     @Range(min = 0, max = 99999)
     @Column(name = "PESO", nullable = false, scale = 5, precision = 2)
     private Double peso;
 
-
-
-    @Column(name = "IMG_DESTAQUE", nullable = false, length = 100)
-    private String imgDestaque;
-
     @Column(name = "IMG_PREVIEW", nullable = false, length = 100)
     private String imgPreview;
 
+    @Column(name = "IMG_DESTAQUE", nullable = false, length = 100)
+    private String imgDestaque;
 
     @Length(max = 50, message = "Nome da cor tem um tamanho máximo de 50 caracteres.")
     @Column(name = "NOME_COR", length = 50)
@@ -67,11 +66,11 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "ESTOQUE_MINIMO", nullable = false)
     private Integer estoqueMinimo;
 
-    @Transient
-    private byte [] byteImgDestaque;
 
-    @Transient
-    private String nameImgDestaque;
+    @NotEmpty(message = "Descrição detalhada do produto é obrigatória!")
+    @Column(name = "DESCRICAO_DETALHADA", nullable = false, length = 1000)
+    private String descricaoDetalhada;
+
 
     @Transient
     private byte [] byteImgPreview;
@@ -80,11 +79,16 @@ public class ProdutoEntity implements Serializable {
     private String nameImgPreview;
 
     @Transient
+    private byte [] byteImgDestaque;
+
+    @Transient
+    private String nameImgDestaque;
+
+    @Transient
     private Double preco;
 
     @Transient
     private String nomeTipoProduto;
-
 
     public Long getId() {
         return id;
@@ -126,14 +130,6 @@ public class ProdutoEntity implements Serializable {
         this.peso = peso;
     }
 
-    public String getImgDestaque() {
-        return imgDestaque;
-    }
-
-    public void setImgDestaque(String imgDestaque) {
-        this.imgDestaque = imgDestaque;
-    }
-
     public String getImgPreview() {
         return imgPreview;
     }
@@ -142,28 +138,12 @@ public class ProdutoEntity implements Serializable {
         this.imgPreview = imgPreview;
     }
 
-    public byte[] getByteImgDestaque() {
-        return byteImgDestaque;
-    }
-
-    public void setByteImgDestaque(byte[] byteImgDestaque) {
-        this.byteImgDestaque = byteImgDestaque;
-    }
-
     public byte[] getByteImgPreview() {
         return byteImgPreview;
     }
 
     public void setByteImgPreview(byte[] byteImgPreview) {
         this.byteImgPreview = byteImgPreview;
-    }
-
-    public String getNameImgDestaque() {
-        return nameImgDestaque;
-    }
-
-    public void setNameImgDestaque(String nameImgDestaque) {
-        this.nameImgDestaque = nameImgDestaque;
     }
 
     public String getNameImgPreview() {
@@ -220,5 +200,47 @@ public class ProdutoEntity implements Serializable {
 
     public void setEstoqueMinimo(Integer estoqueMinimo) {
         this.estoqueMinimo = estoqueMinimo;
+    }
+
+    public List<ProdutoImagemDestaqueEntity> getListImgDestaque() {
+        return listImgDestaque;
+    }
+
+    public void setListImgDestaque(List<ProdutoImagemDestaqueEntity> listImgDestaque) {
+        this.listImgDestaque = listImgDestaque;
+    }
+
+    public String getDescricaoDetalhada() {
+        return descricaoDetalhada;
+    }
+
+    public void setDescricaoDetalhada(String descricaoDetalhada) {
+        this.descricaoDetalhada = descricaoDetalhada;
+    }
+
+
+    public String getImgDestaque() {
+        return imgDestaque;
+    }
+
+    public void setImgDestaque(String imgDestaque) {
+        this.imgDestaque = imgDestaque;
+    }
+
+
+    public byte[] getByteImgDestaque() {
+        return byteImgDestaque;
+    }
+
+    public void setByteImgDestaque(byte[] byteImgDestaque) {
+        this.byteImgDestaque = byteImgDestaque;
+    }
+
+    public String getNameImgDestaque() {
+        return nameImgDestaque;
+    }
+
+    public void setNameImgDestaque(String nameImgDestaque) {
+        this.nameImgDestaque = nameImgDestaque;
     }
 }

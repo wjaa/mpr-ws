@@ -3,6 +3,8 @@ package br.com.mpr.ws.rest;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.service.AdminService;
+import br.com.mpr.ws.service.ProdutoService;
+import br.com.mpr.ws.vo.ProdutoVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class ProdutoRest extends BaseRest{
 
 
     @Autowired
-    private AdminService adminService;
+    private ProdutoService produtoService;
 
 
     //TODO CRIEI ESSE METHOD APENAS PARA TESTES...NAO VAMOS LISTAR TODOS OS PRODUTOS ASSIM NA API NÉ??
@@ -29,8 +31,8 @@ public class ProdutoRest extends BaseRest{
     @RequestMapping(value = "/produto/all",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public List<? extends Serializable> getAllProduto() throws AdminServiceException {
-        return this.adminService.listAllProduto();
+    public List<ProdutoVo> getAllProduto() throws AdminServiceException {
+        return this.produtoService.listAll();
     }
 
 

@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.Resource;
@@ -267,7 +268,7 @@ public class AdminServiceImpl implements AdminService {
 
         if (this.isNew(produto.getId())){
             if (produto.getByteImgPreview() == null || produto.getByteImgDestaque() == null){
-                throw new AdminServiceException("As imagens de thumb e preview são obrigatórias para cadastrar um produto!");
+                throw new AdminServiceException("As imagens de destaque e preview são obrigatórias para cadastrar um produto!");
             }
 
             this.saveImages(produto);
@@ -289,7 +290,8 @@ public class AdminServiceImpl implements AdminService {
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
             BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview");
-            if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null){
+            if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null ||
+                    !CollectionUtils.isEmpty(produto.getListImgDestaque()) ){
                 this.saveImages(produtoMerge);
             }
             produto = commonDao.update(produtoMerge);
@@ -333,6 +335,26 @@ public class AdminServiceImpl implements AdminService {
 
         try{
 
+            //LOOP NAS IMAGENS DE DESTAQUE.
+            if (!CollectionUtils.isEmpty(produto.getListImgDestaque())){
+                for (ProdutoImagemDestaqueEntity imgDestaque : produto.getListImgDestaque()){
+
+                    //se o byte nao estiver vazio é porque tem nova imagem de destaque.
+                    if (imgDestaque.getByteImgDestaque() != null){
+
+                        File fileDestaque = new File(properties.getPathImg() +
+                                File.separator +
+                                properties.getFolderDestaque() +
+                                File.separator +
+                                this.createFileName(imgDestaque.getNameImgDestaque()) +
+                                this.getExtension(imgDestaque.getNameImgDestaque()));
+                        FileCopyUtils.copy(imgDestaque.getByteImgDestaque(), fileDestaque);
+                        imgDestaque.setImg(fileDestaque.getName());
+                        imgDestaque.setProduto(produto);
+                    }
+                }
+            }
+
             if (produto.getByteImgDestaque() != null){
                 File fileDestaque = new File(properties.getPathImg() +
                         File.separator +
@@ -342,6 +364,7 @@ public class AdminServiceImpl implements AdminService {
                         this.getExtension(produto.getNameImgDestaque()));
                 FileCopyUtils.copy(produto.getByteImgDestaque(), fileDestaque);
                 produto.setImgDestaque(fileDestaque.getName());
+
             }
 
             if (produto.getByteImgPreview() != null){

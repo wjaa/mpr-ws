@@ -58,3 +58,15 @@ logging:
     br:
       com:
         braspress: DEBUG
+
+
+---
+
+spring:
+  profiles: "tests"
+
+mpr:
+  pathImg: /tmp
+  folderPreview: p
+  folderDestaque: d
+  staticHost: static.meuportaretrato.com

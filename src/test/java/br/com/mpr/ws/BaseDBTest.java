@@ -12,12 +12,14 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.SQLException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("tests")
 @Import(TestsConfiguration.class)
 public abstract class BaseDBTest {
 

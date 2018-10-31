@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -511,6 +512,149 @@ public class AdminServiceImplTest extends BaseDBTest {
             }
         }
 
+    }
+
+
+    @Test
+    public void criarProduto(){
+        ProdutoEntity produtoEntity = createProduto("PR criar produto");
+        try {
+            produtoEntity = adminService.saveProduto(produtoEntity);
+            this.validateProduto(produtoEntity);
+            produtoEntity = adminService.getProdutoById(produtoEntity.getId());
+            validateProduto(produtoEntity);
+
+        } catch (AdminServiceException e) {
+            Assert.assertTrue("Erro ao cadastrar o produto erro:" + e.getMessage(), false);
+        }
+    }
+
+
+
+
+    @Test
+    public void alterProdutoAddNovaFoto(){
+        ProdutoEntity produtoEntity = createProduto("PR add nova foto");
+        try {
+            produtoEntity = adminService.saveProduto(produtoEntity);
+            this.validateProduto(produtoEntity);
+            ProdutoImagemDestaqueEntity imgDestaque = produtoEntity.getListImgDestaque().get(0);
+            ProdutoImagemDestaqueEntity novaImgDestaque = new ProdutoImagemDestaqueEntity();
+            novaImgDestaque.setNameImgDestaque("eeeeeee.png");
+            novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+            produtoEntity.getListImgDestaque().add(novaImgDestaque);
+            Assert.assertEquals(produtoEntity.getListImgDestaque().size(),2);
+
+            produtoEntity = adminService.saveProduto(produtoEntity);
+            Assert.assertEquals(produtoEntity.getListImgDestaque().size(),2);
+
+            for (ProdutoImagemDestaqueEntity img : produtoEntity.getListImgDestaque()){
+                Assert.assertEquals(img.getProduto().getId(),produtoEntity.getId());
+                Assert.assertNotNull(img.getId());
+            }
+
+        } catch (AdminServiceException e) {
+            Assert.assertTrue("Erro ao cadastrar o produto erro: " + e.getMessage(), false);
+        }
+    }
+
+    @Test
+    public void alterarProdutoRemoveFoto(){
+        ProdutoEntity produto = createProduto("PR remover foto");
+        ProdutoImagemDestaqueEntity novaImgDestaque = new ProdutoImagemDestaqueEntity();
+        novaImgDestaque.setNameImgDestaque("eeeeeee.png");
+        novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+        produto.getListImgDestaque().add(novaImgDestaque);
+        novaImgDestaque = new ProdutoImagemDestaqueEntity();
+        novaImgDestaque.setNameImgDestaque("ffffff.png");
+        novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+        produto.getListImgDestaque().add(novaImgDestaque);
+
+        try {
+            produto = adminService.saveProduto(produto);
+            Assert.assertNotNull(produto.getListImgDestaque());
+            Assert.assertEquals(3, produto.getListImgDestaque().size());
+
+            produto.getListImgDestaque().remove(0);
+            produto.getListImgDestaque().remove(0);
+
+            adminService.saveProduto(produto);
+            produto = adminService.getProdutoById(produto.getId());
+            Assert.assertEquals(1, produto.getListImgDestaque().size());
+
+        } catch (AdminServiceException e) {
+            Assert.assertTrue("Erro ao cadastrar o produto erro: " + e.getMessage(), false);
+        }
+    }
+
+
+    @Test
+    public void alterarProdutoAddRemoveFoto(){
+        ProdutoEntity produto = createProduto("PR add remover foto");
+        ProdutoImagemDestaqueEntity novaImgDestaque = new ProdutoImagemDestaqueEntity();
+        novaImgDestaque.setNameImgDestaque("eeeeeee.png");
+        novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+        produto.getListImgDestaque().add(novaImgDestaque);
+        novaImgDestaque = new ProdutoImagemDestaqueEntity();
+        novaImgDestaque.setNameImgDestaque("ffffff.png");
+        novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+        produto.getListImgDestaque().add(novaImgDestaque);
+
+        try {
+            produto = adminService.saveProduto(produto);
+            Assert.assertNotNull(produto.getListImgDestaque());
+            Assert.assertEquals(3, produto.getListImgDestaque().size());
+
+            produto.getListImgDestaque().remove(0);
+            produto.getListImgDestaque().remove(0);
+
+            novaImgDestaque = new ProdutoImagemDestaqueEntity();
+            novaImgDestaque.setNameImgDestaque("ffffff.png");
+            novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+            produto.getListImgDestaque().add(novaImgDestaque);
+            adminService.saveProduto(produto);
+            produto = adminService.getProdutoById(produto.getId());
+            Assert.assertEquals(2, produto.getListImgDestaque().size());
+
+        } catch (AdminServiceException e) {
+            Assert.assertTrue("Erro ao cadastrar o produto erro: " + e.getMessage(), false);
+        }
+    }
+
+    private ProdutoEntity createProduto(String descricao) {
+        ProdutoEntity produtoEntity = new ProdutoEntity();
+        produtoEntity.setPreco(10.0);
+        produtoEntity.setByteImgPreview(new byte[]{12,12,12,12});
+        produtoEntity.setNameImgPreview("huahauhau.jpg");
+        produtoEntity.setByteImgDestaque(new byte[]{12,12,12,12});
+        produtoEntity.setNameImgDestaque("huahauhau.jpg");
+        produtoEntity.setDescricao(descricao);
+        produtoEntity.setEstoqueMinimo(10);
+        produtoEntity.setHexaCor("#FFFFFF");
+        produtoEntity.setIdTipoProduto(1l);
+        produtoEntity.setNomeCor("Cor qualquer");
+        produtoEntity.setReferencia("RRRSSSS");
+        produtoEntity.setDescricaoDetalhada("teste teste teste");
+        List<ProdutoImagemDestaqueEntity> listImgDestaque = new ArrayList<>();
+        ProdutoImagemDestaqueEntity imgDestaque = new ProdutoImagemDestaqueEntity();
+        imgDestaque.setNameImgDestaque("jjjjjjj.png");
+        imgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
+        listImgDestaque.add(imgDestaque);
+        produtoEntity.setListImgDestaque(listImgDestaque);
+        produtoEntity.setPeso(0.30);
+        return produtoEntity;
+    }
+
+    private void validateProduto(ProdutoEntity produtoEntity) {
+        Assert.assertNotNull(produtoEntity);
+        Assert.assertNotNull(produtoEntity.getId());
+        Assert.assertNotNull(produtoEntity.getListImgDestaque());
+        ProdutoImagemDestaqueEntity imgDestaque = produtoEntity.getListImgDestaque().get(0);
+        Assert.assertNotNull(imgDestaque.getProduto());
+        Assert.assertNotNull(imgDestaque.getId());
+        Assert.assertEquals(imgDestaque.getProduto().getId(), produtoEntity.getId());
+        Assert.assertNotNull(produtoEntity.getListImgDestaque().get(0).getId());
+        Assert.assertNotNull(imgDestaque.getImg());
     }
 
 }

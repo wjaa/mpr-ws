@@ -5,6 +5,8 @@
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 
+    <!-- ADMIN SERVICE -->
+
     <bean name="findAllEstoqueByIdProduto" class="java.lang.String">
         <constructor-arg>
             <value>
@@ -102,5 +104,35 @@
             </value>
         </constructor-arg>
     </bean>
+
+    <!-- FIM ADMIN SERVICE -->
+
+
+
+
+    <!-- PRODUTO SERVICE -->
+
+    <bean name="ProdutoService.findAllProduto" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT P.ID,
+                P.DESCRICAO,
+                P.PRECO
+                FROM PRODUTO P
+                WHERE (SELECT COUNT(ID)
+                        FROM ESTOQUE_ITEM EI
+                         WHERE EI.ID_PRODUTO = P.ID
+                        AND EI.INVALIDO = 0
+                        AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
+                          FROM BAIXA_ESTOQUE BE
+                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                    ) > 0
+
+            </value>
+        </constructor-arg>
+    </bean>
+
+
+    <!-- FIM PRODUTO SERVICE -->
 
 </beans>
