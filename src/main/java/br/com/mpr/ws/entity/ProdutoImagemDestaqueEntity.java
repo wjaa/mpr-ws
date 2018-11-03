@@ -16,14 +16,9 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-   /* @Column(name = "ID_PRODUTO", nullable = false)
-    private Long idProduto;
-*/
-
     @ManyToOne()
     @JoinColumn(name = "ID_PRODUTO", nullable = false)
     private ProdutoEntity produto;
-
 
     @Column(name = "IMG", nullable = false, length = 100)
     private String img;
@@ -43,14 +38,6 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-   /* public Long getIdProduto() {
-        return idProduto;
-    }
-
-    public void setIdProduto(Long idProduto) {
-        this.idProduto = idProduto;
-    }*/
 
     public String getImg() {
         return img;

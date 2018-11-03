@@ -117,14 +117,14 @@ public class CommonDaoImpl implements CommonDao {
         final StringBuilder sql = new StringBuilder();
         sql.append("Select e from " + clazzEntity.getSimpleName() + " e ");
         sql.append(" where 1 = 1 ");
-        Arrays.asList(params).forEach(p -> sql.append(" and e." + p + " = :" + p ));
+        Arrays.asList(params).forEach(p -> sql.append(" and e." + p + " = :" + p.replace(".","") ));
 
         Session session = (Session) entityManager.getDelegate();
         Session s = session.getSessionFactory().openSession();
         Query query = s.createQuery(sql.toString());
 
         for (int i = 0 ; i < values.length ; i++){
-            query.setParameter(params[i],values[i]);
+            query.setParameter(params[i].replace(".",""),values[i]);
         }
 
         return query;

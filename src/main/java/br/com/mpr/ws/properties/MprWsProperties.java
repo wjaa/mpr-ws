@@ -14,6 +14,9 @@ public class MprWsProperties {
     private String staticHost;
     private String folderPreview;
     private String folderDestaque;
+    private String imgSemFoto;
+    private String baseUrlDestaque;
+    private String baseUrlPreview;
 
     public String getPathImg() {
         return pathImg;
@@ -45,5 +48,29 @@ public class MprWsProperties {
 
     public void setFolderDestaque(String folderDestaque) {
         this.folderDestaque = folderDestaque;
+    }
+
+    public String getImgSemFoto() {
+        return imgSemFoto;
+    }
+
+    public void setImgSemFoto(String imgSemFoto) {
+        this.imgSemFoto = imgSemFoto;
+    }
+
+    public String getBaseUrlDestaque() {
+        return baseUrlDestaque;
+    }
+
+    public void setBaseUrlDestaque(String baseUrlDestaque) {
+        this.baseUrlDestaque = baseUrlDestaque;
+    }
+
+    public String getBaseUrlPreview() {
+        return baseUrlPreview;
+    }
+
+    public void setBaseUrlPreview(String baseUrlPreview) {
+        this.baseUrlPreview = baseUrlPreview;
     }
 }

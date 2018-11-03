@@ -1,5 +1,6 @@
 package br.com.mpr.ws.entity;
 
+import br.com.mpr.ws.vo.ProdutoVo;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
@@ -242,5 +243,9 @@ public class ProdutoEntity implements Serializable {
 
     public void setNameImgDestaque(String nameImgDestaque) {
         this.nameImgDestaque = nameImgDestaque;
+    }
+
+    public ProdutoVo toVo() {
+        return new ProdutoVo(this);
     }
 }

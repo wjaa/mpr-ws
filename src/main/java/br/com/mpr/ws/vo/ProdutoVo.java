@@ -1,5 +1,8 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.entity.ProdutoEntity;
+import org.springframework.beans.BeanUtils;
+
 import java.util.List;
 
 /**
@@ -12,9 +15,16 @@ public class ProdutoVo {
     private String descricao;
     private String descricaoDetalhada;
     private List<String> listUrlFotoDestaque;
-    private String urlFotoPreview;
-    private String urlSemFoto;
+    private String imgPreview;
+    private String imgDestaque;
+    private String imgSemFoto;
     private Double preco;
+
+    public ProdutoVo(){}
+
+    public ProdutoVo(ProdutoEntity produtoEntity) {
+        BeanUtils.copyProperties(produtoEntity,this);
+    }
 
 
     public Long getId() {
@@ -49,20 +59,28 @@ public class ProdutoVo {
         this.listUrlFotoDestaque = listUrlFotoDestaque;
     }
 
-    public String getUrlFotoPreview() {
-        return urlFotoPreview;
+    public String getImgDestaque() {
+        return imgDestaque;
     }
 
-    public void setUrlFotoPreview(String urlFotoPreview) {
-        this.urlFotoPreview = urlFotoPreview;
+    public void setImgDestaque(String imgDestaque) {
+        this.imgDestaque = imgDestaque;
     }
 
-    public String getUrlSemFoto() {
-        return urlSemFoto;
+    public String getImgPreview() {
+        return imgPreview;
     }
 
-    public void setUrlSemFoto(String urlSemFoto) {
-        this.urlSemFoto = urlSemFoto;
+    public void setImgPreview(String imgPreview) {
+        this.imgPreview = imgPreview;
+    }
+
+    public String getImgSemFoto() {
+        return imgSemFoto;
+    }
+
+    public void setImgSemFoto(String imgSemFoto) {
+        this.imgSemFoto = imgSemFoto;
     }
 
     public Double getPreco() {
