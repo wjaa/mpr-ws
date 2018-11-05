@@ -117,19 +117,26 @@
             <value>
                 SELECT P.ID,
                 P.DESCRICAO,
-                TP.PRECO
+                TP.PRECO,
+                (   SELECT COUNT(ID)
+                    FROM ESTOQUE_ITEM EI
+                    WHERE EI.ID_PRODUTO = P.ID
+                    AND EI.INVALIDO = 0
+                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
+                                        FROM BAIXA_ESTOQUE BE
+                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID
+                                       )
+                    AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
+                                       FROM ITEM_CARRINHO ICA
+                                       WHERE ICA.ID_ESTOQUE_ITEM = EI.ID
+                                      )
+                ) AS QUANTIDADE
                 FROM PRODUTO P
                 JOIN TABELA_PRECO TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
                 (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = P.ID
                 AND DATA_VIGENCIA &lt;= sysdate())
-                WHERE (SELECT COUNT(ID)
-                        FROM ESTOQUE_ITEM EI
-                         WHERE EI.ID_PRODUTO = P.ID
-                        AND EI.INVALIDO = 0
-                        AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                          FROM BAIXA_ESTOQUE BE
-                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
-                    ) > 0
+                JOIN TIPO_PRODUTO TIPO ON TIPO.ID = P.ID_TIPO_PRODUTO
+                WHERE P.ATIVO = 1 AND TIPO.ACESSORIO = 0
 
             </value>
         </constructor-arg>

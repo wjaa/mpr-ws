@@ -72,6 +72,8 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "DESCRICAO_DETALHADA", nullable = false, length = 1000)
     private String descricaoDetalhada;
 
+    @Column(name = "ATIVO", nullable = false)
+    private Boolean ativo;
 
     @Transient
     private byte [] byteImgPreview;

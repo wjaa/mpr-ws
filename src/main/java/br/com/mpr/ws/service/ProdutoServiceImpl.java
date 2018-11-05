@@ -32,6 +32,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Autowired
     private MprWsProperties properties;
 
+
+    /**
+     * Lista todos os produtos ativos no cadastro.
+     * O Objeto ProdutoVo tem um propriedade quantidade (ProdutoVo.quantidade) que indica a quantidade em estoque no
+     * momento da listagem dos produtos. Ele exclui produtos que estão no carrinho de outros clientes.
+     *
+     * Então essa listagem pode ter um falso positivo, caso dois clientes estão com o produto no carrinho e um terceiro,
+     * liste os produtos, o terceiro cliente receberá um produto esgotado, caso ele liste novamente, os dois clientes
+     * retiraram o produto do carrinho, esse produto estará disponível novamente.
+     * TODO ESTUDAR MELHOR ESSA FORMA DE CONTROLAR O ESTOQUE.
+     * @return
+     */
     @Override
     public List<ProdutoVo> listAll() {
 
@@ -40,6 +52,12 @@ public class ProdutoServiceImpl implements ProdutoService {
         return list;
     }
 
+
+    /**
+     * Lista um produto pelo ID.
+     * @param id
+     * @return
+     */
     @Override
     public ProdutoVo getProdutoById(Long id) {
         List<ProdutoVo> result = commonDao.findByNativeQuery(getProdutoById,

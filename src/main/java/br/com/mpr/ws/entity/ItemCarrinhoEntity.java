@@ -15,8 +15,8 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "ID_ESTOQUE", nullable = false)
-    private Long idEstoque;
+    @Column(name = "ID_ESTOQUE_ITEM", nullable = false)
+    private Long idEstoqueItem;
 
     @Column(name = "ID_CARRINHO", nullable = false)
     private Long idCarrinho;
@@ -29,19 +29,19 @@ public class ItemCarrinhoEntity {
         this.id = id;
     }
 
-    public Long getIdEstoque() {
-        return idEstoque;
-    }
-
-    public void setIdEstoque(Long idEstoque) {
-        this.idEstoque = idEstoque;
-    }
-
     public Long getIdCarrinho() {
         return idCarrinho;
     }
 
     public void setIdCarrinho(Long idCarrinho) {
         this.idCarrinho = idCarrinho;
+    }
+
+    public Long getIdEstoqueItem() {
+        return idEstoqueItem;
+    }
+
+    public void setIdEstoqueItem(Long idEstoqueItem) {
+        this.idEstoqueItem = idEstoqueItem;
     }
 }

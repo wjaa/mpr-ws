@@ -23,6 +23,10 @@ public class TipoProdutoEntity implements Serializable {
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 
+
+    @Column(name = "ACESSORIO", nullable = false)
+    private Boolean acessorio;
+
     public Long getId() {
         return id;
     }
@@ -37,5 +41,13 @@ public class TipoProdutoEntity implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Boolean getAcessorio() {
+        return acessorio;
+    }
+
+    public void setAcessorio(Boolean acessorio) {
+        this.acessorio = acessorio;
     }
 }
