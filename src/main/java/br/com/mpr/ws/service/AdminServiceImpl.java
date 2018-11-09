@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -289,14 +290,54 @@ public class AdminServiceImpl implements AdminService {
 
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
-            BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview");
+            BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview","listImgDestaque");
+            this.mesclaImagemDestaque(produto,produtoMerge);
             if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null ||
-                    !CollectionUtils.isEmpty(produto.getListImgDestaque()) ){
+                    this.temNovaImagemDestaque(produto.getListImgDestaque()) ){
+
                 this.saveImages(produtoMerge);
+
             }
+
+
             produto = commonDao.update(produtoMerge);
         }
         return produto;
+    }
+
+    private void mesclaImagemDestaque(ProdutoEntity produto, ProdutoEntity produtoMerge) {
+
+        //adicionando os novos.
+        for (ProdutoImagemDestaqueEntity img : produto.getListImgDestaque()){
+            //ignorando objetos que vem vazios.
+            if (img.isEmpty()){
+                continue;
+            }
+
+            if ( !produtoMerge.getListImgDestaque().contains(img) ){
+                produtoMerge.getListImgDestaque().add(img);
+            }
+        }
+
+        List<ProdutoImagemDestaqueEntity> listRemover = new ArrayList<>();
+        //excluindo os que foram removidos
+        for (ProdutoImagemDestaqueEntity img : produtoMerge.getListImgDestaque()){
+            if ( !produto.getListImgDestaque().contains(img) ){
+                listRemover.add(img);
+            }
+        }
+        produtoMerge.getListImgDestaque().removeAll(listRemover);
+
+    }
+
+    private boolean temNovaImagemDestaque(List<ProdutoImagemDestaqueEntity> listImgDestaque) {
+        boolean tem = false;
+        if (!CollectionUtils.isEmpty(listImgDestaque)){
+            for (ProdutoImagemDestaqueEntity e : listImgDestaque){
+                tem |= e.getByteImgDestaque() != null;
+            }
+        }
+        return tem;
     }
 
     private void saveImages(ProdutoEntity produto) throws AdminServiceException {

@@ -210,7 +210,11 @@ public class ProdutoEntity implements Serializable {
     }
 
     public void setListImgDestaque(List<ProdutoImagemDestaqueEntity> listImgDestaque) {
-        this.listImgDestaque = listImgDestaque;
+        if (this.listImgDestaque != null && listImgDestaque == null){
+            this.listImgDestaque.clear();
+        }else{
+            this.listImgDestaque = listImgDestaque;
+        }
     }
 
     public String getDescricaoDetalhada() {
@@ -247,7 +251,16 @@ public class ProdutoEntity implements Serializable {
         this.nameImgDestaque = nameImgDestaque;
     }
 
+    public Boolean getAtivo() {
+        return ativo == null ? false : ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
     public ProdutoVo toVo() {
         return new ProdutoVo(this);
     }
+
 }

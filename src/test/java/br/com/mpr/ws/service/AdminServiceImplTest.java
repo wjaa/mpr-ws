@@ -530,6 +530,22 @@ public class AdminServiceImplTest extends BaseDBTest {
     }
 
 
+    @Test
+    public void criarProdutoSemFotosDestaque(){
+        ProdutoEntity produtoEntity = createProduto("PR criar produto sem foto destaque");
+        produtoEntity.setListImgDestaque(null);
+        try {
+            produtoEntity = adminService.saveProduto(produtoEntity);
+            produtoEntity = adminService.getProdutoById(produtoEntity.getId());
+            produtoEntity.setListImgDestaque(null);
+            adminService.saveProduto(produtoEntity);
+
+        } catch (AdminServiceException e) {
+            Assert.assertTrue("Erro ao cadastrar o produto erro:" + e.getMessage(), false);
+        }
+    }
+
+
 
 
     @Test
@@ -538,7 +554,6 @@ public class AdminServiceImplTest extends BaseDBTest {
         try {
             produtoEntity = adminService.saveProduto(produtoEntity);
             this.validateProduto(produtoEntity);
-            ProdutoImagemDestaqueEntity imgDestaque = produtoEntity.getListImgDestaque().get(0);
             ProdutoImagemDestaqueEntity novaImgDestaque = new ProdutoImagemDestaqueEntity();
             novaImgDestaque.setNameImgDestaque("eeeeeee.png");
             novaImgDestaque.setByteImgDestaque(new byte[]{12,12,12,12});
@@ -635,6 +650,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         produtoEntity.setNomeCor("Cor qualquer");
         produtoEntity.setReferencia("RRRSSSS");
         produtoEntity.setDescricaoDetalhada("teste teste teste");
+        produtoEntity.setAtivo(true);
         List<ProdutoImagemDestaqueEntity> listImgDestaque = new ArrayList<>();
         ProdutoImagemDestaqueEntity imgDestaque = new ProdutoImagemDestaqueEntity();
         imgDestaque.setNameImgDestaque("jjjjjjj.png");

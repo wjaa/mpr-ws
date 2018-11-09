@@ -23,7 +23,6 @@ public class TipoProdutoEntity implements Serializable {
     @Column(name = "DESCRICAO", nullable = false, length = 80)
     private String descricao;
 
-
     @Column(name = "ACESSORIO", nullable = false)
     private Boolean acessorio;
 
@@ -44,7 +43,7 @@ public class TipoProdutoEntity implements Serializable {
     }
 
     public Boolean getAcessorio() {
-        return acessorio;
+        return acessorio == null ? false : acessorio;
     }
 
     public void setAcessorio(Boolean acessorio) {

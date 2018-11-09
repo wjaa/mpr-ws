@@ -1,7 +1,10 @@
 package br.com.mpr.ws.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by wagner on 04/06/18.
@@ -16,13 +19,13 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "ID_PRODUTO", nullable = false)
     private ProdutoEntity produto;
 
     @Column(name = "IMG", nullable = false, length = 100)
     private String img;
-
 
     @Transient
     private byte [] byteImgDestaque;
@@ -69,5 +72,25 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
 
     public void setProduto(ProdutoEntity produto) {
         this.produto = produto;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProdutoImagemDestaqueEntity that = (ProdutoImagemDestaqueEntity) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(nameImgDestaque, that.nameImgDestaque);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nameImgDestaque);
+    }
+
+    @Transient
+    public boolean isEmpty() {
+        return id == null && img == null && this.byteImgDestaque == null && this.nameImgDestaque == null;
     }
 }
