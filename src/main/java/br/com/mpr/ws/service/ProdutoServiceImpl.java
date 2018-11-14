@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
+import br.com.mpr.ws.entity.EstoqueItemEntity;
 import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.entity.ProdutoImagemDestaqueEntity;
 import br.com.mpr.ws.properties.MprWsProperties;
@@ -72,6 +73,11 @@ public class ProdutoServiceImpl implements ProdutoService {
             vo.setListUrlFotoDestaque(this.getListFotoDestaque(vo.getId()));
         }
         return vo;
+    }
+
+    @Override
+    public EstoqueItemEntity getProdutoEmEstoque(Long idProduto) {
+        return null;
     }
 
     private List<String> getListFotoDestaque(Long idProduto) {

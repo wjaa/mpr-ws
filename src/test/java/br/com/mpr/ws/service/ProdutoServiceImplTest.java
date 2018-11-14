@@ -58,7 +58,11 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         for (String foto : produto.getListUrlFotoDestaque()){
             Assert.assertTrue(foto.contains("static.meuportaretrato.com/images/d"));
         }
+    }
 
+
+    @Test
+    public void getProdutoEmEstoque(){
 
     }
 

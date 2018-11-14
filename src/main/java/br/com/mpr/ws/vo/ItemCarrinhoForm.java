@@ -11,6 +11,7 @@ public class ItemCarrinhoForm {
     private Long idProduto;
     private Byte[] foto;
     private Long idCatalogo;
+    private Long idCarrinho;
 
 
     public Long getIdCliente() {
@@ -51,5 +52,13 @@ public class ItemCarrinhoForm {
 
     public void setIdCatalogo(Long idCatalogo) {
         this.idCatalogo = idCatalogo;
+    }
+
+    public Long getIdCarrinho() {
+        return idCarrinho;
+    }
+
+    public void setIdCarrinho(Long idCarrinho) {
+        this.idCarrinho = idCarrinho;
     }
 }

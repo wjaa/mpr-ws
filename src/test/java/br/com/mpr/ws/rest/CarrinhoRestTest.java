@@ -37,7 +37,7 @@ public class CarrinhoRestTest extends BaseDBTest {
      */
     @Test
     public void addItemCarrinhoSemCliente(){
-/*
+
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setKeyDevice("AAABBBCCCDDD");
         item.setIdProduto(1l);
@@ -59,7 +59,7 @@ public class CarrinhoRestTest extends BaseDBTest {
             Assert.assertTrue(ex.getMessage(),false);
         }
 
-*/
+
     }
 
 
