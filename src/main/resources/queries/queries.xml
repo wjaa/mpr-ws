@@ -118,6 +118,8 @@
                 SELECT P.ID,
                 P.DESCRICAO,
                 TP.PRECO,
+                concat('http://stc.meuportaretrato.com/images/d/' , P.IMG_DESTAQUE) as IMG_DESTAQUE,
+                P.DESCRICAO_DETALHADA,
                 (   SELECT COUNT(ID)
                     FROM ESTOQUE_ITEM EI
                     WHERE EI.ID_PRODUTO = P.ID
