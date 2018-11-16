@@ -22,7 +22,7 @@ mpr:
   pathImg: /var/www/static/mpr/images
   folderPreview: p
   folderDestaque: d
-  staticHost: http://static.meuportaretrato.com
+  staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png
@@ -72,7 +72,7 @@ mpr:
   pathImg: /tmp
   folderPreview: p
   folderDestaque: d
-  staticHost: http://static.meuportaretrato.com
+  staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png

@@ -69,6 +69,8 @@ public class ProdutoServiceImpl implements ProdutoService {
         ProdutoVo vo = null;
         if (result.size() > 0){
             vo = result.get(0);
+            vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
+            vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
             vo.setImgSemFoto(properties.getImgSemFoto());
             vo.setListUrlFotoDestaque(this.getListFotoDestaque(vo.getId()));
         }
