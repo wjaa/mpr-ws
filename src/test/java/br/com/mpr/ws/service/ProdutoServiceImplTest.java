@@ -52,11 +52,11 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         Assert.assertNotNull(produto.getImgPreview());
         Assert.assertNotNull(produto.getImgDestaque());
         Assert.assertNotNull(produto.getImgSemFoto());
-        Assert.assertTrue(produto.getImgSemFoto().contains("static.meuportaretrato.com/images"));
+        Assert.assertTrue(produto.getImgSemFoto().contains("stc.meuportaretrato.com/images"));
         Assert.assertNotNull(produto.getListUrlFotoDestaque());
         Assert.assertTrue(produto.getListUrlFotoDestaque().size() > 0);
         for (String foto : produto.getListUrlFotoDestaque()){
-            Assert.assertTrue(foto.contains("static.meuportaretrato.com/images/d"));
+            Assert.assertTrue(foto.contains("stc.meuportaretrato.com/images/d"));
         }
     }
 

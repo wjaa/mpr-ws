@@ -14,8 +14,7 @@ import java.util.Enumeration;
  *
  */
 @Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE)
-//TODO REVISAR O CORS PQ ELE ESTÁ DANDO PROBLEMAS NO HEADER DOS TESTES.
+@Order(Ordered. HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -42,9 +41,11 @@ public class CorsFilter implements Filter {
     }
 
     public void destroy() {
+        System.out.println("destroy filter");
     }
 
     public void init(FilterConfig config) throws ServletException {
+        System.out.println("Init filter");
     }
 
 }

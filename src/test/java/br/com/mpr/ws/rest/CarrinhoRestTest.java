@@ -1,13 +1,12 @@
 package br.com.mpr.ws.rest;
 
-import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.BaseMvcTest;
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,8 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  *
  */
-@AutoConfigureMockMvc
-public class CarrinhoRestTest extends BaseDBTest {
+public class CarrinhoRestTest extends BaseMvcTest {
 
 
     @Autowired
