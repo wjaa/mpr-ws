@@ -32,14 +32,14 @@ mpr:
 spring:
   profiles: "dev"
   datasource:
-    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
+    url: jdbc:mysql://192.168.1.323:3306/mpr?autoReconnect=true&useSSL=false
     username: root
     password: 753951
 
 logging:
   level:
     org:
-      springframework: INFO
+      springframework: DEBUG
       hibernate: INFO
     br:
       com:
@@ -50,14 +50,14 @@ logging:
 spring:
   profiles: "prd"
   datasource:
-    url: jdbc:mysql://mysql:3306/mpr?autoReconnect=true&useSSL=false
-    username: root
-    password: 753951
+    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
+    username: mpr
+    password: *753951*
 logging:
   level:
     org:
-      springframework: ERROR
-      hibernate: ERROR
+      springframework: INFO
+      hibernate: INFO
     br:
       com:
         braspress: DEBUG

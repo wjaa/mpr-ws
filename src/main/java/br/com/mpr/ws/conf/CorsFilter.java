@@ -8,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  *
@@ -32,6 +33,12 @@ public class CorsFilter implements Filter {
         } else {
             chain.doFilter(req, res);
         }
+        Enumeration<String> e = request.getHeaderNames();
+        while (e.hasMoreElements()){
+            String next = e.nextElement();
+            System.out.println(next + ":" + request.getHeader(next));
+        }
+
     }
 
     public void destroy() {

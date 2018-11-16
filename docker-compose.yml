@@ -1,9 +1,20 @@
 version: '2'
 services:
-  be:
-    container_name: be
+  nginx:
     depends_on:
-      - mysql
+    - ws
+    container_name: nginx
+    build: nginx/.
+    image: mpr/nginx
+    ports:
+    - "80:80"
+    stdin_open: true
+    tty: true
+    volumes:
+    - /var/www/static/mpr:/var/www/static/mpr
+    domainname: meuportaretrato.com
+  ws:
+    container_name: ws
     build: .
     ports:
       - "8181:8181"
@@ -15,17 +26,4 @@ services:
     volumes:
     - /etc/localtime:/etc/localtime
     - /var/www/static/mpr:/var/www/static/mpr
-    domainname: meuportaretrato.com.br
-  mysql:
-    container_name: mysql
-    build: mysql/.
-    image: mpr/mysql
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=753951
-    volumes:
-      - /var/lib/mysql:/var/lib/mysql
-    stdin_open: true
-    tty: true
-    domainname: meuportaretrato.com  
+    domainname: api.meuportaretrato.com.br

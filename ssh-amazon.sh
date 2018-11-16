@@ -1,0 +1,1 @@
+ssh -i Documents/mpr-key.pem ubuntu@ec2-18-228-136-145.sa-east-1.compute.amazonaws.com
