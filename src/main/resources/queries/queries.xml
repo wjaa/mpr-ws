@@ -13,22 +13,22 @@
                 SELECT E.ID, E.ID_FORNECEDOR, E.DATA_COMPRA, E.DATA_ATUALIZACAO,
                 E.PRECO_COMPRA, E.OBSERVACAO, F.NOME AS NOME_FORNECEDOR,
                 (SELECT COUNT(EI.ID)
-                         FROM ESTOQUE_ITEM EI
+                         FROM estoque_item EI
                          WHERE EI.ID_ESTOQUE = E.ID
                          AND EI.INVALIDO = 0
                          AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
-                                            FROM BAIXA_ESTOQUE BE
+                                            FROM baixa_estoque BE
                                              WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE_ATUAL,
                 E.QUANTIDADE
-                FROM ESTOQUE E
-                JOIN FORNECEDOR F ON F.ID = E.ID_FORNECEDOR
+                FROM estoque E
+                JOIN fornecedor F ON F.ID = E.ID_FORNECEDOR
                 WHERE E.ID IN (SELECT EI.ID_ESTOQUE
-                                FROM ESTOQUE_ITEM EI
+                                FROM estoque_item EI
                                 WHERE EI.ID_PRODUTO = :idProduto
                                 AND EI.INVALIDO = 0
                                 AND EI.ID NOT IN (SELECT ID_ESTOQUE_ITEM
-                                                   FROM BAIXA_ESTOQUE BE
+                                                   FROM baixa_estoque BE
                                                     WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 )
             </value>
@@ -41,16 +41,16 @@
                 SELECT E.ID, E.ID_FORNECEDOR, E.DATA_COMPRA, E.DATA_ATUALIZACAO,
                 E.PRECO_COMPRA, E.OBSERVACAO,
                 (SELECT COUNT(EI.ID)
-                FROM ESTOQUE_ITEM EI
+                FROM estoque_item EI
                 WHERE EI.ID_ESTOQUE = E.ID
                 AND EI.INVALIDO = 0
                 AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
-                FROM BAIXA_ESTOQUE BE
+                FROM baixa_estoque BE
                 WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE_ATUAL,
                 E.QUANTIDADE,
-                (SELECT DISTINCT EI.ID_PRODUTO FROM ESTOQUE_ITEM EI WHERE EI.ID_ESTOQUE = E.ID) AS ID_PRODUTO
-                FROM ESTOQUE E WHERE E.ID = :id
+                (SELECT DISTINCT EI.ID_PRODUTO FROM estoque_item EI WHERE EI.ID_ESTOQUE = E.ID) AS ID_PRODUTO
+                FROM estoque E WHERE E.ID = :id
 
             </value>
         </constructor-arg>
@@ -62,12 +62,12 @@
                 SELECT P.ID, P.DESCRICAO, TP.DESCRICAO AS NOME_TIPO_PRODUTO, P.PESO, P.HEXA_COR, P.NOME_COR,
                 P.ID_TIPO_PRODUTO, P.IMG_DESTAQUE, P.IMG_PREVIEW, P.REFERENCIA,
                 (SELECT PRECO
-                FROM TABELA_PRECO TP
+                FROM tabela_preco TP
                 WHERE TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = P.ID
+                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
                 AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1) AS PRECO
-                FROM PRODUTO P
-                JOIN TIPO_PRODUTO TP ON TP.ID = P.ID_TIPO_PRODUTO
+                FROM produto P
+                JOIN tipo_produto TP ON TP.ID = P.ID_TIPO_PRODUTO
             </value>
         </constructor-arg>
     </bean>
@@ -76,9 +76,9 @@
         <constructor-arg>
             <value>
                 SELECT ID, ID_PRODUTO, DATA_VIGENCIA, PRECO, DESCRICAO
-                FROM TABELA_PRECO TP
+                FROM tabela_preco TP
                 WHERE TP.ID_PRODUTO = :id AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = :id
+                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = :id
                 AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1
             </value>
         </constructor-arg>
@@ -91,7 +91,7 @@
                 SELECT P.ID AS ID_PRODUTO, P.REFERENCIA, P.DESCRICAO AS NOME_PRODUTO,
                 TP.DESCRICAO AS TIPO_PRODUTO,
                 (SELECT COUNT(ID)
-                        FROM ESTOQUE_ITEM EI
+                        FROM estoque_item EI
                         WHERE EI.ID_PRODUTO = P.ID
                         AND EI.INVALIDO = 0
                         AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
@@ -99,8 +99,8 @@
                                                 WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE,
                 P.ESTOQUE_MINIMO
-                FROM PRODUTO P
-                JOIN TIPO_PRODUTO TP ON TP.ID = P.ID_TIPO_PRODUTO
+                FROM produto P
+                JOIN tipo_produto TP ON TP.ID = P.ID_TIPO_PRODUTO
             </value>
         </constructor-arg>
     </bean>
@@ -121,23 +121,23 @@
                 concat('http://stc.meuportaretrato.com/images/d/' , P.IMG_DESTAQUE) as IMG_DESTAQUE,
                 P.DESCRICAO_DETALHADA,
                 (   SELECT COUNT(ID)
-                    FROM ESTOQUE_ITEM EI
+                    FROM estoque_item EI
                     WHERE EI.ID_PRODUTO = P.ID
                     AND EI.INVALIDO = 0
                     AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                                        FROM BAIXA_ESTOQUE BE
+                                        FROM baixa_estoque BE
                                         WHERE BE.ID_ESTOQUE_ITEM = EI.ID
                                        )
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
-                                       FROM ITEM_CARRINHO ICA
+                                       FROM item_carrinho ICA
                                        WHERE ICA.ID_ESTOQUE_ITEM = EI.ID
                                       )
                 ) AS QUANTIDADE
-                FROM PRODUTO P
-                JOIN TABELA_PRECO TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = P.ID
+                FROM produto P
+                JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
+                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
                 AND DATA_VIGENCIA &lt;= sysdate())
-                JOIN TIPO_PRODUTO TIPO ON TIPO.ID = P.ID_TIPO_PRODUTO
+                JOIN tipo_produto TIPO ON TIPO.ID = P.ID_TIPO_PRODUTO
                 WHERE P.ATIVO = 1 AND TIPO.ACESSORIO = 0
 
             </value>
@@ -153,9 +153,9 @@
                 P.IMG_PREVIEW,
                 P.IMG_DESTAQUE,
                 TP.PRECO
-                FROM PRODUTO P
-                JOIN TABELA_PRECO TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM TABELA_PRECO TTP WHERE TTP.ID_PRODUTO = P.ID
+                FROM produto P
+                JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
+                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
                 AND DATA_VIGENCIA &lt;= sysdate())
                 WHERE P.ID = :id
 
