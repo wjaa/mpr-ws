@@ -15,7 +15,7 @@ spring:
         format_sql: true
     show-sql: false
   profiles:
-    active: "dev"
+    active: "prd"
 
 #lembre-se se trocar esse path, precisa trocar o volume no docker-compose e o mkdir no Dockerfile
 mpr:
