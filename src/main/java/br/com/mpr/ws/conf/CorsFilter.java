@@ -1,5 +1,7 @@
 package br.com.mpr.ws.conf;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,6 +19,8 @@ import java.util.Enumeration;
 @Order(Ordered. HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
+    private static final Log LOG = LogFactory.getLog(CorsFilter.class);
+
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
@@ -33,10 +37,15 @@ public class CorsFilter implements Filter {
             chain.doFilter(req, res);
         }
         Enumeration<String> e = request.getHeaderNames();
+        LOG.trace("---------------------------------------------");
         while (e.hasMoreElements()){
-            String next = e.nextElement();
-            System.out.println(next + ":" + request.getHeader(next));
+            String key = e.nextElement();
+            LOG.trace("doFilter, " + key + ":" + request.getHeader(key));
         }
+        LOG.trace("---------------------------------------------");
+
+
+
 
     }
 
