@@ -2,7 +2,6 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
-import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.entity.ProdutoImagemDestaqueEntity;
 import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.vo.ProdutoVo;
@@ -22,10 +21,13 @@ public class ProdutoServiceImpl implements ProdutoService {
 
 
     @Resource(name = "ProdutoService.findAllProduto")
-    private String findAllProduto;
+    private String QUERY_ALL_PRODUTO;
 
     @Resource(name = "ProdutoService.getProdutoById")
-    private String getProdutoById;
+    private String QUERY_PRODUTO_BY_ID;
+
+    @Resource(name = "ProdutoService.getProdutosRelacionados")
+    private String QUERY_PRODUTOS_RELACIONADOS;
 
     @Autowired
     private CommonDao commonDao;
@@ -48,7 +50,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public List<ProdutoVo> listAll() {
 
-        List<ProdutoVo> list = commonDao.findByNativeQuery(findAllProduto,ProdutoVo.class);
+        List<ProdutoVo> list = commonDao.findByNativeQuery(QUERY_ALL_PRODUTO,ProdutoVo.class);
 
         return list;
     }
@@ -61,7 +63,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      */
     @Override
     public ProdutoVo getProdutoById(Long id) {
-        List<ProdutoVo> result = commonDao.findByNativeQuery(getProdutoById,
+        List<ProdutoVo> result = commonDao.findByNativeQuery(QUERY_PRODUTO_BY_ID,
                 ProdutoVo.class,
                 new String[]{"id"},
                 new Object[]{id}, true);
@@ -73,9 +75,12 @@ public class ProdutoServiceImpl implements ProdutoService {
             vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
             vo.setImgSemFoto(properties.getImgSemFoto());
             vo.setListUrlFotoDestaque(this.getListFotoDestaque(vo.getId()));
+            vo.setProdutosRelacionados(this.getProdutosRelacionados(vo.getId()));
         }
         return vo;
     }
+
+
 
     @Override
     public EstoqueItemEntity getProdutoEmEstoque(Long idProduto) {
@@ -95,5 +100,23 @@ public class ProdutoServiceImpl implements ProdutoService {
             }
         }
         return listFotoDestaque;
+    }
+
+    @Override
+    public List<ProdutoVo> getProdutosRelacionados(Long idProduto) {
+        List<ProdutoVo> result = commonDao.findByNativeQuery(QUERY_PRODUTOS_RELACIONADOS,
+                ProdutoVo.class,
+                new String[]{"id"},
+                new Object[]{idProduto}, true);
+
+        for (ProdutoVo vo : result){
+            vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
+            vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
+            vo.setImgSemFoto(properties.getImgSemFoto());
+            vo.setListUrlFotoDestaque(this.getListFotoDestaque(vo.getId()));
+        }
+
+        return result;
+
     }
 }

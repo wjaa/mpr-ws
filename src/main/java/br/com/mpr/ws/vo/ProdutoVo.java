@@ -1,6 +1,7 @@
 package br.com.mpr.ws.vo;
 
 import br.com.mpr.ws.entity.ProdutoEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class ProdutoVo {
 
 
     private Long id;
+
     private String descricao;
     private String descricaoDetalhada;
     private List<String> listUrlFotoDestaque;
@@ -20,6 +22,9 @@ public class ProdutoVo {
     private String imgSemFoto;
     private Double preco;
     private Integer quantidade;
+    private String hexaCor;
+    private String nomeCor;
+    private List<ProdutoVo> produtosRelacionados;
 
     public ProdutoVo(){}
 
@@ -98,5 +103,29 @@ public class ProdutoVo {
 
     public void setQuantidade(Integer quantidade) {
         this.quantidade = quantidade;
+    }
+
+    public String getHexaCor() {
+        return hexaCor;
+    }
+
+    public void setHexaCor(String hexaCor) {
+        this.hexaCor = hexaCor;
+    }
+
+    public List<ProdutoVo> getProdutosRelacionados() {
+        return produtosRelacionados;
+    }
+
+    public void setProdutosRelacionados(List<ProdutoVo> produtosRelacionados) {
+        this.produtosRelacionados = produtosRelacionados;
+    }
+
+    public String getNomeCor() {
+        return nomeCor;
+    }
+
+    public void setNomeCor(String nomeCor) {
+        this.nomeCor = nomeCor;
     }
 }

@@ -18,4 +18,6 @@ public interface ProdutoService {
     ProdutoVo getProdutoById(Long id);
 
     EstoqueItemEntity getProdutoEmEstoque(Long idProduto);
+
+    List<ProdutoVo> getProdutosRelacionados(Long idProduto);
 }

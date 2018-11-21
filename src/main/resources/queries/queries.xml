@@ -126,12 +126,10 @@
                     AND EI.INVALIDO = 0
                     AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
                                         FROM baixa_estoque BE
-                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID
-                                       )
+                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
                                        FROM item_carrinho ICA
-                                       WHERE ICA.ID_ESTOQUE_ITEM = EI.ID
-                                      )
+                                       WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE
                 FROM produto P
                 JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
@@ -152,12 +150,61 @@
                 P.DESCRICAO_DETALHADA,
                 P.IMG_PREVIEW,
                 P.IMG_DESTAQUE,
-                TP.PRECO
+                P.HEXA_COR,
+                P.NOME_COR,
+                TP.PRECO,
+                (   SELECT COUNT(ID)
+                    FROM estoque_item EI
+                    WHERE EI.ID_PRODUTO = P.ID
+                    AND EI.INVALIDO = 0
+                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
+                                        FROM baixa_estoque BE
+                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                    AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
+                                         FROM item_carrinho ICA
+                                         WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
+                ) AS QUANTIDADE
                 FROM produto P
                 JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
                 (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
                 AND DATA_VIGENCIA &lt;= sysdate())
                 WHERE P.ID = :id
+
+            </value>
+        </constructor-arg>
+    </bean>
+
+
+    <bean name="ProdutoService.getProdutosRelacionados" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT P.ID,
+                P.DESCRICAO,
+                P.DESCRICAO_DETALHADA,
+                P.IMG_PREVIEW,
+                P.IMG_DESTAQUE,
+                P.HEXA_COR,
+                P.NOME_COR,
+                TP.PRECO,
+                (   SELECT COUNT(ID)
+                    FROM estoque_item EI
+                    WHERE EI.ID_PRODUTO = P.ID
+                    AND EI.INVALIDO = 0
+                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
+                                        FROM baixa_estoque BE
+                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                    AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
+                                        FROM item_carrinho ICA
+                                        WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
+                ) AS QUANTIDADE
+                FROM produto P
+                JOIN tipo_produto TIPO ON TIPO.ID = P.ID_TIPO_PRODUTO
+                JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
+                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
+                AND DATA_VIGENCIA &lt;= sysdate())
+                WHERE TIPO.ID = (SELECT T.ID FROM produto PP
+                                JOIN tipo_produto T ON T.ID = PP.ID_TIPO_PRODUTO
+                                WHERE PP.ID = :id)
 
             </value>
         </constructor-arg>
