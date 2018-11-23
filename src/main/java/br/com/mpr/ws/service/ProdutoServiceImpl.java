@@ -29,6 +29,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Resource(name = "ProdutoService.getProdutosRelacionados")
     private String QUERY_PRODUTOS_RELACIONADOS;
 
+    @Resource(name = "ProdutoService.getProdutoEmEstoque")
+    private String QUERY_PRODUTO_EM_ESTOQUE;
+
     @Autowired
     private CommonDao commonDao;
 
@@ -84,6 +87,14 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public EstoqueItemEntity getProdutoEmEstoque(Long idProduto) {
+        List<EstoqueItemEntity> result = commonDao.findByNativeQuery(QUERY_PRODUTO_EM_ESTOQUE,
+                EstoqueItemEntity.class,
+                new String[]{"idProduto"},
+                new Object[]{idProduto});
+
+        if (result.size() > 0){
+            return result.get(0);
+        }
         return null;
     }
 

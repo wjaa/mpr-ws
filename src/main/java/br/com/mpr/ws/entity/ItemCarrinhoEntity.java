@@ -15,7 +15,7 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "ID_ESTOQUE_ITEM", nullable = false)
+    @Column(name = "ID_ESTOQUE_ITEM", nullable = false, unique = true)
     private Long idEstoqueItem;
 
     @Column(name = "ID_CARRINHO", nullable = false)

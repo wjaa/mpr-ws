@@ -534,10 +534,9 @@ public class AdminServiceImpl implements AdminService {
         if (!estoque.getQuantidade().equals(produtos.size())){
 
 
-            List<Long> ids = produtos.stream().map(EstoqueItemEntity::getId).collect(Collectors.toList());
-
-            List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
-                    "idEstoqueItem", ids);
+            List<BaixaEstoqueEntity> listBaixa = commonDao.findByProperties(BaixaEstoqueEntity.class,
+                    new String[]{"idEstoque"},
+                    new Object[]{estoque.getId()});
 
             if (listBaixa.size() > 0){
                 throw new AdminServiceException("Você não pode alterar a quantidade desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");
@@ -570,10 +569,9 @@ public class AdminServiceImpl implements AdminService {
         if (!estoque.getIdProduto().equals(produtos.get(0).getIdProduto()) ){
 
             //se trocou o produto, precisamos verificar se algum  item já nao foi baixado do estoque.
-            List<Long> ids = produtos.stream().map(EstoqueItemEntity::getId).collect(Collectors.toList());
-
-            List<BaixaEstoqueEntity> listBaixa = commonDao.findByInProperties(BaixaEstoqueEntity.class,
-                    "idEstoqueItem", ids);
+            List<BaixaEstoqueEntity> listBaixa = commonDao.findByProperties(BaixaEstoqueEntity.class,
+                    new String[]{"idEstoque"},
+                    new Object[]{estoque.getId()});
 
             if (listBaixa.size() > 0){
                 throw new AdminServiceException("Você não pode alterar o produto desse lote, porque algum item já teve baixa. Contate o administrador do sistema!");

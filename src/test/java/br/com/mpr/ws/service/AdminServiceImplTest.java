@@ -288,7 +288,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         Assert.assertNotNull(estoqueEntity.getProdutos());
         Assert.assertEquals("TESTE_PRODUTO3",estoqueEntity.getObservacao() );
         Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
-        Assert.assertEquals(5, estoqueEntity.getProdutos().size());
+        Assert.assertEquals(2, estoqueEntity.getProdutos().size());
         Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidade());
         Assert.assertEquals(new Integer(2),estoqueEntity.getQuantidadeAtual());
         Assert.assertNotNull(estoqueEntity.getFornecedor());
@@ -301,7 +301,7 @@ public class AdminServiceImplTest extends BaseDBTest {
         Assert.assertNotNull(estoqueEntity.getProdutos());
         Assert.assertEquals("TESTE_OUTRO LOTE PRODUTO3",estoqueEntity.getObservacao() );
         Assert.assertTrue(estoqueEntity.getPrecoCompra() == 10);
-        Assert.assertEquals(5, estoqueEntity.getProdutos().size());
+        Assert.assertEquals(3, estoqueEntity.getProdutos().size());
         Assert.assertEquals(new Integer(5),estoqueEntity.getQuantidade());
         Assert.assertEquals(new Integer(3),estoqueEntity.getQuantidadeAtual());
         Assert.assertNotNull(estoqueEntity.getFornecedor());

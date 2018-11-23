@@ -16,9 +16,6 @@
                          FROM estoque_item EI
                          WHERE EI.ID_ESTOQUE = E.ID
                          AND EI.INVALIDO = 0
-                         AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
-                                            FROM baixa_estoque BE
-                                             WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE_ATUAL,
                 E.QUANTIDADE
                 FROM estoque E
@@ -27,9 +24,6 @@
                                 FROM estoque_item EI
                                 WHERE EI.ID_PRODUTO = :idProduto
                                 AND EI.INVALIDO = 0
-                                AND EI.ID NOT IN (SELECT ID_ESTOQUE_ITEM
-                                                   FROM baixa_estoque BE
-                                                    WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 )
             </value>
         </constructor-arg>
@@ -41,12 +35,9 @@
                 SELECT E.ID, E.ID_FORNECEDOR, E.DATA_COMPRA, E.DATA_ATUALIZACAO,
                 E.PRECO_COMPRA, E.OBSERVACAO,
                 (SELECT COUNT(EI.ID)
-                FROM estoque_item EI
-                WHERE EI.ID_ESTOQUE = E.ID
-                AND EI.INVALIDO = 0
-                AND EI.ID NOT IN  (SELECT ID_ESTOQUE_ITEM
-                FROM baixa_estoque BE
-                WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
+                    FROM estoque_item EI
+                    WHERE EI.ID_ESTOQUE = E.ID
+                    AND EI.INVALIDO = 0
                 ) AS QUANTIDADE_ATUAL,
                 E.QUANTIDADE,
                 (SELECT DISTINCT EI.ID_PRODUTO FROM estoque_item EI WHERE EI.ID_ESTOQUE = E.ID) AS ID_PRODUTO
@@ -61,11 +52,15 @@
             <value>
                 SELECT P.ID, P.DESCRICAO, TP.DESCRICAO AS NOME_TIPO_PRODUTO, P.PESO, P.HEXA_COR, P.NOME_COR,
                 P.ID_TIPO_PRODUTO, P.IMG_DESTAQUE, P.IMG_PREVIEW, P.REFERENCIA,
-                (SELECT PRECO
-                FROM tabela_preco TP
-                WHERE TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
-                AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1) AS PRECO
+                (  SELECT PRECO
+                    FROM tabela_preco TP
+                    WHERE TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
+                                                        (SELECT MAX(DATA_VIGENCIA)
+                                                         FROM tabela_preco TTP
+                                                         WHERE TTP.ID_PRODUTO = P.ID
+                                                         AND DATA_VIGENCIA &lt;= sysdate())
+                     LIMIT 1
+                ) AS PRECO
                 FROM produto P
                 JOIN tipo_produto TP ON TP.ID = P.ID_TIPO_PRODUTO
             </value>
@@ -78,8 +73,10 @@
                 SELECT ID, ID_PRODUTO, DATA_VIGENCIA, PRECO, DESCRICAO
                 FROM tabela_preco TP
                 WHERE TP.ID_PRODUTO = :id AND TP.DATA_VIGENCIA =
-                (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = :id
-                AND DATA_VIGENCIA &lt;= sysdate()) LIMIT 1
+                                        (SELECT MAX(DATA_VIGENCIA)
+                                         FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = :id
+                                         AND DATA_VIGENCIA &lt;= sysdate())
+                LIMIT 1
             </value>
         </constructor-arg>
     </bean>
@@ -94,9 +91,6 @@
                         FROM estoque_item EI
                         WHERE EI.ID_PRODUTO = P.ID
                         AND EI.INVALIDO = 0
-                        AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                                                FROM BAIXA_ESTOQUE BE
-                                                WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                 ) AS QUANTIDADE,
                 P.ESTOQUE_MINIMO
                 FROM produto P
@@ -124,9 +118,6 @@
                     FROM estoque_item EI
                     WHERE EI.ID_PRODUTO = P.ID
                     AND EI.INVALIDO = 0
-                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                                        FROM baixa_estoque BE
-                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
                                        FROM item_carrinho ICA
                                        WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
@@ -157,9 +148,6 @@
                     FROM estoque_item EI
                     WHERE EI.ID_PRODUTO = P.ID
                     AND EI.INVALIDO = 0
-                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                                        FROM baixa_estoque BE
-                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
                                          FROM item_carrinho ICA
                                          WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
@@ -190,9 +178,6 @@
                     FROM estoque_item EI
                     WHERE EI.ID_PRODUTO = P.ID
                     AND EI.INVALIDO = 0
-                    AND EI.ID NOT IN  (SELECT BE.ID_ESTOQUE_ITEM
-                                        FROM baixa_estoque BE
-                                        WHERE BE.ID_ESTOQUE_ITEM = EI.ID)
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
                                         FROM item_carrinho ICA
                                         WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
@@ -209,6 +194,28 @@
             </value>
         </constructor-arg>
     </bean>
+
+    <bean name="ProdutoService.getProdutoEmEstoque" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT EI.ID,
+                EI.ID_ESTOQUE,
+                EI.ID_PRODUTO,
+                EI.INVALIDO
+                FROM estoque_item EI
+                WHERE EI.ID_PRODUTO = :idProduto
+                AND EI.INVALIDO = 0
+                AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
+                                    FROM item_carrinho ICA
+                                    WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
+                ORDER BY RAND()
+                LIMIT 1
+
+            </value>
+        </constructor-arg>
+    </bean>
+
+
 
 
     <!-- FIM PRODUTO SERVICE -->

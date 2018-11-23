@@ -7,6 +7,8 @@ import java.util.List;
 /**
  * Created by wagner on 20/06/18.
  */
+@Entity
+@Table(name = "CARRINHO")
 public class CarrinhoEntity {
 
 

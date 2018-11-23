@@ -11,7 +11,7 @@ public class EstoqueItemEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name="ID_ESTOQUE")
+    @Column(name="ID_ESTOQUE", nullable = false)
     private Long idEstoque;
 
     @Column(name = "ID_PRODUTO", nullable = false)
