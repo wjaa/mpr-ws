@@ -45,10 +45,12 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
     @Test
     public void addCarrinho() {
+        List<EstoqueItemEntity> estoques = dao.findByProperties(EstoqueItemEntity.class, new String[]{"idProduto"}, new Object[]{4l});
+        assertEquals(13, estoques.size());
         ClienteCarrinhoThreadMonitor monitor = new ClienteCarrinhoThreadMonitor();
-        monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
-        monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
-        monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
+        for (int i = 0; i < 16; i++){
+            monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
+        }
 
         monitor.start();
 
@@ -61,7 +63,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             System.out.println("waiting....");
         }
 
-        Assert.assertEquals(1,monitor.getQuantidadeSucesso());
+        Assert.assertEquals(13,monitor.getQuantidadeSucesso());
         Assert.assertEquals(2,monitor.getQuantidadeError());
 
     }

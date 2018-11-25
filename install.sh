@@ -1,5 +1,8 @@
 #!/bin/bash
 echo "INICIANDO BUILD DO WS"
+echo "PARANDO OS CONTAINERS"
+docker stop ws && docker stop nginx
+
 #pull e build do mpr-ws
 git pull && mvn clean install
 
@@ -15,4 +18,5 @@ if [ -f "$path" ]; then
 
 else
     echo "ERROR: Algum erro no build não gerou o war. Implementar envio de email"
+    docker start ws && docker start nginx
 fi
