@@ -13,11 +13,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -34,13 +33,76 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Autowired
     private ProdutoService produtoService;
 
+    @Autowired
+    private CarrinhoService carrinhoService;
 
     @Override
-    /** TODO: VALIDAR EM TESTE DE UNIDADE SE COM ESSE ISOLAMENTO EU CONSIGO RESOLVER O PROBLEMA
-    ONDE É PRECISO ESPERAR UM CLIENTE ADICIONAR UM ITEM NO CARRINHO, ATÉ OUTRO CLIENTE ADICIONAR.
-    PARA NAO TERMOS PROBLEMAS DE DOIS CLIENTES ADICIONAREM O MESMO ITEM NO CARRINHO (ITEM DO ESTOQUE).*/
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
+        String key = br.com.mpr.ws.utils.StringUtils.createRandomHash();
+        CarrinhoThreadExecutor.putExecute(key,item);
+        this.startThreadAddCarrinho();
+
+        Date start = new Date();
+        while (CarrinhoThreadExecutor.containsExecute(key)){
+            try {
+                LOG.debug("Aguardando para adicionar o carrinho [" + key + "]");
+                this.startThreadAddCarrinho();
+                Thread.sleep(100);
+
+                if (start.getTime() + CarrinhoThreadExecutor.TIMEOUT <  new Date().getTime()){
+                    CarrinhoThreadExecutor.removeExecute(key);
+                }
+
+            } catch (InterruptedException e) {
+                LOG.error("Error no sleep da Thread");
+                new CarrinhoServiceException("Erro ao adicionar o produto no carrinho.");
+            }
+        }
+
+        if (CarrinhoThreadExecutor.containsResult(key)){
+            CarrinhoVo vo = CarrinhoThreadExecutor.getResult(key);
+            CarrinhoThreadExecutor.removeResult(key);
+            return vo;
+        }
+
+        if (CarrinhoThreadExecutor.containsException(key)){
+            CarrinhoServiceException e = CarrinhoThreadExecutor.getException(key);
+            CarrinhoThreadExecutor.removeException(key);
+            throw e;
+        }
+
+        throw new CarrinhoServiceException("Ocorreu um erro ao adicionar um item no carrinho [TIMEOUT]");
+
+    }
+
+    public void startThreadAddCarrinho(){
+
+        if (!CarrinhoThreadExecutor.isAlive()){
+
+            CarrinhoThreadExecutor.setAlive(true);
+            Iterator<String> it = CarrinhoThreadExecutor.getIterator();
+
+            if (!CarrinhoThreadExecutor.isEmpty()){
+                while (it.hasNext()){
+                    String key = it.next();
+                    try {
+                        CarrinhoVo vo = carrinhoService.addCarrinho(CarrinhoThreadExecutor.getExecute(key),key);
+                        CarrinhoThreadExecutor.putResult(key,vo);
+                        CarrinhoThreadExecutor.removeExecute(key);
+                    } catch (CarrinhoServiceException e) {
+                        CarrinhoThreadExecutor.putException(key,e);
+                        CarrinhoThreadExecutor.removeExecute(key);
+                    }
+                }
+
+            }
+            CarrinhoThreadExecutor.setAlive(false);
+        }
+
+
+    }
+
+    public CarrinhoVo addCarrinho(ItemCarrinhoForm item, String threadName) throws CarrinhoServiceException {
         try{
             //tentando procurar um carrinho do cliente.
             CarrinhoEntity carrinhoEntity = this.findCarrinho(item);
@@ -67,6 +129,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             //TODO: GRAVAR IMAGEM NO ITEM DO CARRINHO.
 
             commonDao.save(itemCarrinhoEntity);
+
             return this.getCarrinho(item.getIdCliente(),item.getKeyDevice());
 
 
@@ -76,9 +139,6 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         }catch (DataIntegrityViolationException ex){
             LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", ex);
             throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
-        }catch (Exception ex){
-            LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", ex);
-            throw new CarrinhoServiceException("Um erro ocorreu ao adicionar um item no carrinho.");
         }
     }
 

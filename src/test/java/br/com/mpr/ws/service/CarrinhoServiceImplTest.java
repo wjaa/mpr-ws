@@ -20,8 +20,6 @@ import static org.junit.Assert.*;
 
 public class CarrinhoServiceImplTest extends BaseDBTest {
 
-
-
     @Autowired
     private CarrinhoService carrinhoService;
 
@@ -31,11 +29,14 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
     @Test
     public void addCarrinhoSemThread() throws CarrinhoServiceException {
-        CarrinhoVo vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
-        Assert.assertNotNull(vo);
-        try{
 
+        try{
+            CarrinhoVo vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
             vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
+            vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage().contains("Infelizmente"));
@@ -45,10 +46,14 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
     @Test
     public void addCarrinho() {
-        List<EstoqueItemEntity> estoques = dao.findByProperties(EstoqueItemEntity.class, new String[]{"idProduto"}, new Object[]{4l});
-        assertEquals(13, estoques.size());
+        List<EstoqueItemEntity> estoques = dao.findByProperties(EstoqueItemEntity.class,
+                new String[]{"idProduto"},
+                new Object[]{4l});
+
+        Assert.assertEquals(13, estoques.size());
+
         ClienteCarrinhoThreadMonitor monitor = new ClienteCarrinhoThreadMonitor();
-        for (int i = 0; i < 16; i++){
+        for (int i = 0; i < 20; i++){
             monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
         }
 
@@ -64,7 +69,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
         }
 
         Assert.assertEquals(13,monitor.getQuantidadeSucesso());
-        Assert.assertEquals(2,monitor.getQuantidadeError());
+        Assert.assertEquals(7,monitor.getQuantidadeError());
 
     }
 

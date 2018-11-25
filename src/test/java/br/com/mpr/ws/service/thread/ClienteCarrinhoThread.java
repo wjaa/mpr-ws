@@ -4,6 +4,9 @@ import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 
+/**
+ *
+ */
 public class ClienteCarrinhoThread extends Thread{
 
     private CarrinhoService carrinhoService;

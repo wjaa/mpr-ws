@@ -229,3 +229,5 @@ insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
 values(null,5,5,0);
 insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
 values(null,5,5,0);
+insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
+values(null,5,5,0);
