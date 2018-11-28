@@ -21,6 +21,8 @@ import java.util.List;
 
 /**
  *
+ *
+ *
  */
 @Service
 public class CarrinhoServiceImpl implements CarrinhoService {
@@ -36,8 +38,27 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Autowired
     private CarrinhoService carrinhoService;
 
+
+    /**
+     * Esse metodo cria uma fila de threads e executa 1 a 1 em startThreadAddCarrinho
+     *
+     * Esse mecanismo foi criado para evitar concorrencias ao adicionar um item no carrinho.
+     *
+     * Exemplo1: Sabemos que no estoque temos 18 produtos do tipo 'A', se 20 clientes simultaneamente tentassem adicionar
+     * o produto 'A' no carrinho, teriamos um problema na consulta que valida se temos produto em estoque, porque para
+     * as 20 consultas o resultado seria positivo, devido aos milisecundos entre o commit de uma Thread-X até o select
+     * de uma Thread-Y.
+     *
+     * Exemplo2: A query que retorna um item do estoque, poderia retornar o mesmo item para Threads concorrentes,
+     * gerando um ConstraintViolationException porque ItemEstoque no carrinho é unique. Um cliente nao ficaria feliz.
+     *
+     * @param item Formulario com dados do item do carrinho
+     * @return Vo com dados do carrinho do cliente.
+     * @throws CarrinhoServiceException
+     */
     @Override
     public CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
+        //chave da thread em questao.
         String key = br.com.mpr.ws.utils.StringUtils.createRandomHash();
         CarrinhoThreadExecutor.putExecute(key,item);
         this.startThreadAddCarrinho();
@@ -75,6 +96,16 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     }
 
+    /**
+     * Metodo para controlar a executacao das Threads.
+     *
+     * Esse metodo é executado apenas por uma Thread.
+     * O metodo addCarrinho, vai empinhando os parametros das Thread, e quando esse metodo for liberado,
+     * a Thread que conseguir chama-la executa a pilha inteira.
+     *
+     * A pilha fica armazenada em CarrinhoThreadExecutor.getIterator();
+     *
+     */
     public void startThreadAddCarrinho(){
 
         if (!CarrinhoThreadExecutor.isAlive()){
@@ -102,8 +133,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     }
 
+    /**
+     * Metodo que adiciona um item no carrinho do cliente.
+     * @param item Form do item do carrinho
+     * @param threadName nome da Thread em execucao.
+     * @return
+     * @throws CarrinhoServiceException
+     */
+    @Override
     public CarrinhoVo addCarrinho(ItemCarrinhoForm item, String threadName) throws CarrinhoServiceException {
         try{
+            LOG.debug("m=addCarrinho, item="+item + "threadName="+threadName);
             //tentando procurar um carrinho do cliente.
             CarrinhoEntity carrinhoEntity = this.findCarrinho(item);
 
@@ -120,7 +160,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             EstoqueItemEntity estoqueItemEntity = produtoService.getProdutoEmEstoque(item.getIdProduto());
 
             if (estoqueItemEntity == null){
-                //TODO DISPARAR UM EMAIL AQUI, PORQUE ISSO NAO PODE ACONTECER.
+                //TODO: DISPARAR UM EMAIL AQUI, PORQUE ISSO NAO PODE ACONTECER.
                 throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
             }
 

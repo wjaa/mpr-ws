@@ -68,6 +68,8 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             System.out.println("waiting....");
         }
 
+
+        System.out.println("sucesso="+ monitor.getQuantidadeSucesso() + " error=" + monitor.getQuantidadeError());
         Assert.assertEquals(13,monitor.getQuantidadeSucesso());
         Assert.assertEquals(7,monitor.getQuantidadeError());
 

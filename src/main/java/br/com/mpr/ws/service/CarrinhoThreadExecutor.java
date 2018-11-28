@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Essa classe encapsula os parametros e resultados de execução das Thread de request para adicionar produtos
+ * no carrinho dos clientes.
+ *
  * Created by wagner on 11/25/18.
  */
 public class CarrinhoThreadExecutor {
