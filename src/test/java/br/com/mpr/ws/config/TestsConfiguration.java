@@ -50,7 +50,7 @@ public class TestsConfiguration {
         em.setPackagesToScan("br.com.mpr");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
-        vendorAdapter.setShowSql(true);
+        vendorAdapter.setShowSql(false);
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
         return em;
@@ -91,8 +91,8 @@ public class TestsConfiguration {
     Properties additionalProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect","org.hibernate.dialect.H2Dialect");
-        properties.setProperty("hibernate.show_sql","true");
-        properties.setProperty("hibernate.format_sql","true");
+        properties.setProperty("hibernate.show_sql","false");
+        properties.setProperty("hibernate.format_sql","false");
         properties.setProperty("hibernante.hbm2ddl.auto", "create");
         properties.setProperty("hibernate.archive.autodetection","class");
         return properties;

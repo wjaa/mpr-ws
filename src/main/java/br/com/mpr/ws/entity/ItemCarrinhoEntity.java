@@ -21,6 +21,12 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID_CARRINHO", nullable = false)
     private Long idCarrinho;
 
+    @Column(name = "FOTO")
+    private String foto;
+
+    @Column(name = "ID_CATALOGO")
+    private Long idCatalogo;
+
     public Long getId() {
         return id;
     }
@@ -43,5 +49,21 @@ public class ItemCarrinhoEntity {
 
     public void setIdEstoqueItem(Long idEstoqueItem) {
         this.idEstoqueItem = idEstoqueItem;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public Long getIdCatalogo() {
+        return idCatalogo;
+    }
+
+    public void setIdCatalogo(Long idCatalogo) {
+        this.idCatalogo = idCatalogo;
     }
 }

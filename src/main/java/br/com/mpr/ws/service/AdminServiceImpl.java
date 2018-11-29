@@ -42,6 +42,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private ImagemService imagemService;
+
     @Resource(name = "findAllEstoqueByIdProduto")
     private String findAllEstoqueByIdProduto;
 
@@ -341,41 +344,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void saveImages(ProdutoEntity produto) throws AdminServiceException {
-
-        File folderImgs = new File(properties.getPathImg());
-
-        if ( !folderImgs.exists() || !folderImgs.isDirectory()){
-            if (!folderImgs.mkdirs()){
-                throw new AdminServiceException("O caminho para salvar as imagens não existe ou não está dispónivel. [" +
-                        properties.getPathImg() + "]");
-            }
-        }
-
-        File folderDestaque = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderDestaque());
-
-        if ( !folderDestaque.exists() || !folderDestaque.isDirectory()){
-            if (!folderDestaque.mkdirs()){
-                throw new AdminServiceException("O caminho para salvar a imagem de destaque não existe ou não está dispónivel. [" +
-                        folderDestaque.getAbsolutePath() + "]");
-            }
-        }
-
-        File folderPreview = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderPreview());
-
-        if ( !folderPreview.exists() || !folderPreview.isDirectory()){
-            if (!folderPreview.mkdirs()){
-                throw new AdminServiceException("O caminho para salvar a imagem de preview não existe ou não está dispónivel. [" +
-                        folderPreview.getAbsolutePath() + "]");
-            }
-        }
-
-
         try{
-
             //LOOP NAS IMAGENS DE DESTAQUE.
             if (!CollectionUtils.isEmpty(produto.getListImgDestaque())){
                 for (ProdutoImagemDestaqueEntity imgDestaque : produto.getListImgDestaque()){
@@ -383,50 +352,32 @@ public class AdminServiceImpl implements AdminService {
                     //se o byte nao estiver vazio é porque tem nova imagem de destaque.
                     if (imgDestaque.getByteImgDestaque() != null){
 
-                        File fileDestaque = new File(properties.getPathImg() +
-                                File.separator +
-                                properties.getFolderDestaque() +
-                                File.separator +
-                                this.createFileName(imgDestaque.getNameImgDestaque()) +
-                                this.getExtension(imgDestaque.getNameImgDestaque()));
-                        FileCopyUtils.copy(imgDestaque.getByteImgDestaque(), fileDestaque);
-                        imgDestaque.setImg(fileDestaque.getName());
+                        String finalName = imagemService.uploadFotoProdutoDestaque(imgDestaque.getByteImgDestaque(),
+                                imgDestaque.getNameImgDestaque());
+                        imgDestaque.setImg(finalName);
                         imgDestaque.setProduto(produto);
                     }
                 }
             }
 
             if (produto.getByteImgDestaque() != null){
-                File fileDestaque = new File(properties.getPathImg() +
-                        File.separator +
-                        properties.getFolderDestaque() +
-                        File.separator +
-                        this.createFileName(produto.getNameImgDestaque()) +
-                        this.getExtension(produto.getNameImgDestaque()));
-                FileCopyUtils.copy(produto.getByteImgDestaque(), fileDestaque);
-                produto.setImgDestaque(fileDestaque.getName());
+                String finalName = imagemService.uploadFotoProdutoDestaque(produto.getByteImgDestaque(),
+                        produto.getNameImgDestaque());
+                produto.setImgDestaque(finalName);
 
             }
 
             if (produto.getByteImgPreview() != null){
-                File filePreview = new File(properties.getPathImg() +
-                        File.separator +
-                        properties.getFolderPreview() +
-                        File.separator +
-                        this.createFileName(produto.getNameImgPreview()) +
-                        this.getExtension(produto.getNameImgPreview()));
-                FileCopyUtils.copy(produto.getByteImgPreview(), filePreview);
-                produto.setImgPreview(filePreview.getName());
+                String finalName = imagemService.uploadFotoProdutoPreview(produto.getByteImgPreview(),
+                        produto.getNameImgPreview());
+                produto.setImgPreview(finalName);
 
             }
-
 
         }catch (Exception ex){
             LOG.error("Erro ao salvar as imagens de um produto", ex);
             throw new AdminServiceException("Erro ao salvar as imagens de um produto, detail:" + ex.getMessage());
         }
-
-
 
     }
 

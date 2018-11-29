@@ -3,6 +3,7 @@ package br.com.mpr.ws.rest;
 import br.com.mpr.ws.BaseMvcTest;
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.utils.ObjectUtils;
+import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,7 +70,8 @@ public class CarrinhoRestTest extends BaseMvcTest {
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setIdCliente(1l);
         item.setIdProduto(1l);
-        item.setFoto(new Byte[]{10,10,10});
+        item.setFoto(new byte[]{10,10,10});
+        item.setNomeArquivo(StringUtils.createRandomHash() + ".png");
 
         try{
             ResultActions ra = mvc.perform(post("/api/v1/core/carrinho/add", item)

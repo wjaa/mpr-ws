@@ -2,7 +2,9 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.entity.ProdutoImagemDestaqueEntity;
+import br.com.mpr.ws.entity.TipoProdutoEntity;
 import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,5 +131,15 @@ public class ProdutoServiceImpl implements ProdutoService {
 
         return result;
 
+    }
+
+    @Override
+    public boolean isAcessorio(Long idProduto) {
+        ProdutoEntity produtoEntity = commonDao.get(ProdutoEntity.class,idProduto);
+        if (produtoEntity != null){
+            TipoProdutoEntity tipoProdutoEntity = commonDao.get(TipoProdutoEntity.class, produtoEntity.getIdTipoProduto());
+            return tipoProdutoEntity != null && tipoProdutoEntity.getAcessorio() != null ? tipoProdutoEntity.getAcessorio() : true;
+        }
+        return true;
     }
 }

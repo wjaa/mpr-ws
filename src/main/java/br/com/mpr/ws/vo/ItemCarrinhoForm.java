@@ -9,7 +9,8 @@ public class ItemCarrinhoForm {
     private Long idCliente;
     private String keyDevice;
     private Long idProduto;
-    private Byte[] foto;
+    private byte[] foto;
+    private String nomeArquivo;
     private Long idCatalogo;
     private Long idCarrinho;
 
@@ -38,11 +39,11 @@ public class ItemCarrinhoForm {
         this.idProduto = idProduto;
     }
 
-    public Byte[] getFoto() {
+    public byte[] getFoto() {
         return foto;
     }
 
-    public void setFoto(Byte[] foto) {
+    public void setFoto(byte[] foto) {
         this.foto = foto;
     }
 
@@ -60,5 +61,13 @@ public class ItemCarrinhoForm {
 
     public void setIdCarrinho(Long idCarrinho) {
         this.idCarrinho = idCarrinho;
+    }
+
+    public String getNomeArquivo() {
+        return nomeArquivo;
+    }
+
+    public void setNomeArquivo(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
     }
 }

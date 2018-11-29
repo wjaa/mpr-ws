@@ -14,6 +14,8 @@ public class MprWsProperties {
     private String staticHost;
     private String folderPreview;
     private String folderDestaque;
+    private String folderCatalogo;
+    private String folderCliente;
     private String imgSemFoto;
     private String baseUrlDestaque;
     private String baseUrlPreview;
@@ -72,5 +74,21 @@ public class MprWsProperties {
 
     public void setBaseUrlPreview(String baseUrlPreview) {
         this.baseUrlPreview = baseUrlPreview;
+    }
+
+    public String getFolderCatalogo() {
+        return folderCatalogo;
+    }
+
+    public void setFolderCatalogo(String folderCatalogo) {
+        this.folderCatalogo = folderCatalogo;
+    }
+
+    public String getFolderCliente() {
+        return folderCliente;
+    }
+
+    public void setFolderCliente(String folderCliente) {
+        this.folderCliente = folderCliente;
     }
 }

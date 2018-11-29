@@ -22,6 +22,8 @@ mpr:
   pathImg: /var/www/static/mpr/images
   folderPreview: p
   folderDestaque: d
+  folderCatalogo: catalogo
+  folderCliente: cliente
   staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/
@@ -72,6 +74,8 @@ mpr:
   pathImg: /tmp
   folderPreview: p
   folderDestaque: d
+  folderCatalogo: catalogo
+  folderCliente: cliente
   staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/

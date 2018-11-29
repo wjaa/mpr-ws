@@ -20,4 +20,6 @@ public interface ProdutoService {
     EstoqueItemEntity getProdutoEmEstoque(Long idProduto);
 
     List<ProdutoVo> getProdutosRelacionados(Long idProduto);
+
+    boolean isAcessorio(Long idProduto);
 }

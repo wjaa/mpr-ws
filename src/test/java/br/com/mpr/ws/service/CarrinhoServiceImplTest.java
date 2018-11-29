@@ -79,6 +79,8 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
         itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setFoto(new byte[]{0,0,0,0,0});
+        itemCarrinhoForm.setNomeArquivo(StringUtils.createRandomHash() + ".png");
         return itemCarrinhoForm;
     }
 

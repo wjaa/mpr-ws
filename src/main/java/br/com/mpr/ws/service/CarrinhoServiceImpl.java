@@ -5,8 +5,10 @@ import br.com.mpr.ws.entity.CarrinhoEntity;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
 import br.com.mpr.ws.entity.ItemCarrinhoEntity;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
+import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
+import br.com.mpr.ws.vo.ProdutoVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -36,8 +38,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     private ProdutoService produtoService;
 
     @Autowired
-    private CarrinhoService carrinhoService;
-
+    private ImagemService imagemService;
 
     /**
      * Esse metodo cria uma fila de threads e executa 1 a 1 em startThreadAddCarrinho
@@ -67,8 +68,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         while (CarrinhoThreadExecutor.containsExecute(key)){
             try {
                 LOG.debug("Aguardando para adicionar o carrinho [" + key + "]");
-                this.startThreadAddCarrinho();
                 Thread.sleep(100);
+                this.startThreadAddCarrinho();
+
 
                 if (start.getTime() + CarrinhoThreadExecutor.TIMEOUT <  new Date().getTime()){
                     CarrinhoThreadExecutor.removeExecute(key);
@@ -106,10 +108,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      * A pilha fica armazenada em CarrinhoThreadExecutor.getIterator();
      *
      */
-    public void startThreadAddCarrinho(){
+    private synchronized void startThreadAddCarrinho(){
 
         if (!CarrinhoThreadExecutor.isAlive()){
-
             CarrinhoThreadExecutor.setAlive(true);
             Iterator<String> it = CarrinhoThreadExecutor.getIterator();
 
@@ -117,7 +118,11 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 while (it.hasNext()){
                     String key = it.next();
                     try {
-                        CarrinhoVo vo = carrinhoService.addCarrinho(CarrinhoThreadExecutor.getExecute(key),key);
+                        ItemCarrinhoForm itemCarrinho = CarrinhoThreadExecutor.getExecute(key);
+                        if (itemCarrinho == null){
+                            continue;
+                        }
+                        CarrinhoVo vo = this.addTransactionCarrinho(itemCarrinho);
                         CarrinhoThreadExecutor.putResult(key,vo);
                         CarrinhoThreadExecutor.removeExecute(key);
                     } catch (CarrinhoServiceException e) {
@@ -136,14 +141,11 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     /**
      * Metodo que adiciona um item no carrinho do cliente.
      * @param item Form do item do carrinho
-     * @param threadName nome da Thread em execucao.
      * @return
      * @throws CarrinhoServiceException
      */
-    @Override
-    public CarrinhoVo addCarrinho(ItemCarrinhoForm item, String threadName) throws CarrinhoServiceException {
+    private CarrinhoVo addTransactionCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
         try{
-            LOG.debug("m=addCarrinho, item="+item + "threadName="+threadName);
             //tentando procurar um carrinho do cliente.
             CarrinhoEntity carrinhoEntity = this.findCarrinho(item);
 
@@ -166,7 +168,13 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
             itemCarrinhoEntity.setIdEstoqueItem(estoqueItemEntity.getId());
 
-            //TODO: GRAVAR IMAGEM NO ITEM DO CARRINHO.
+
+            //CLIENTES PODEM ADICIONAR ACESSORIOS, SE NAO FOR UM ACESSORIO ENTÃO TEM FOTO.
+            if ( !produtoService.isAcessorio(item.getIdProduto()) ){
+                itemCarrinhoEntity.setFoto(imagemService.uploadFotoCliente(item.getFoto(),item.getNomeArquivo()));
+                itemCarrinhoEntity.setIdCatalogo(item.getIdCatalogo());
+            }
+
 
             commonDao.save(itemCarrinhoEntity);
 
@@ -179,6 +187,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         }catch (DataIntegrityViolationException ex){
             LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", ex);
             throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
+        } catch (ImagemServiceException e) {
+            LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", e);
+            throw new CarrinhoServiceException("Erro ao salvar a imagem do carrinho.");
         }
     }
 
