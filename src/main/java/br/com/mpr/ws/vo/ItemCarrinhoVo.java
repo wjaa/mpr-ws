@@ -10,6 +10,7 @@ public class ItemCarrinhoVo {
     private ProdutoVo produto;
     //TODO teremos a foto com PR ? ou só a foto do cliente ?
     private String urlFoto;
+    private Long idCatalogo;
 
     public Long getId() {
         return id;
@@ -41,5 +42,13 @@ public class ItemCarrinhoVo {
 
     public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
+    }
+
+    public Long getIdCatalogo() {
+        return idCatalogo;
+    }
+
+    public void setIdCatalogo(Long idCatalogo) {
+        this.idCatalogo = idCatalogo;
     }
 }

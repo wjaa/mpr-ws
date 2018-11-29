@@ -16,4 +16,7 @@ public interface ImagemService {
 
     String uploadFotoCatalogo(byte[] img, String originName) throws ImagemServiceException;
 
+    String getUrlFotoCatalogo(String foto);
+
+    String getUrlFotoCliente(String foto);
 }

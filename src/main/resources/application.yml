@@ -27,6 +27,8 @@ mpr:
   staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/
+  baseUrlCliente: ${mpr.staticHost}/images/${mpr.folderCliente}/
+  baseUrlCatalogo: ${mpr.staticHost}/images/${mpr.folderCatalogo}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png
 
 ---
@@ -79,4 +81,6 @@ mpr:
   staticHost: http://stc.meuportaretrato.com
   baseUrlDestaque: ${mpr.staticHost}/images/${mpr.folderDestaque}/
   baseUrlPreview: ${mpr.staticHost}/images/${mpr.folderPreview}/
+  baseUrlCliente: ${mpr.staticHost}/images/${mpr.folderCliente}/
+  baseUrlCatalogo: ${mpr.staticHost}/images/${mpr.folderCatalogo}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png

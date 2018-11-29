@@ -89,6 +89,16 @@ public class ImagemServiceImpl implements ImagemService {
         return this.saveImages(img,originName, properties.getFolderCatalogo());
     }
 
+    @Override
+    public String getUrlFotoCatalogo(String foto) {
+        return properties.getBaseUrlCatalogo() + foto;
+    }
+
+    @Override
+    public String getUrlFotoCliente(String foto) {
+        return properties.getBaseUrlCliente() + foto;
+    }
+
 
     private String saveImages(byte[] data, String originName, String folder ) throws ImagemServiceException {
 

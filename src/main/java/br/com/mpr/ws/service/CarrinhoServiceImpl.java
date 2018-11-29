@@ -8,15 +8,18 @@ import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
+import br.com.mpr.ws.vo.ItemCarrinhoVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -197,16 +200,25 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
         if ( item.getIdCarrinho() != null ){
             return commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
-        }else if (item.getIdCliente() != null){
+        }else{
+
+            return findCarrinho(item.getIdCliente(),item.getKeyDevice());
+
+        }
+    }
+
+    private CarrinhoEntity findCarrinho(Long idCliente, String keyDevice) {
+
+        if (idCliente != null){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
-                    new String[]{"idCliente"}, new Object[]{item.getIdCliente()});
+                    new String[]{"idCliente"}, new Object[]{idCliente});
 
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
             }
-        }else if (!StringUtils.isEmpty(item.getKeyDevice())){
+        }else if (!StringUtils.isEmpty(keyDevice)){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
-                    new String[]{"keyDevice"}, new Object[]{item.getKeyDevice()});
+                    new String[]{"keyDevice"}, new Object[]{keyDevice});
 
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
@@ -216,13 +228,52 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         return null;
     }
 
+
     @Override
     public CarrinhoVo getCarrinho(Long idCliente, String keyDevice) {
-        return new CarrinhoVo();
+        CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,keyDevice);
+
+        CarrinhoVo vo = CarrinhoVo.toVo(carrinhoEntity);
+        List<ItemCarrinhoEntity> items =
+                commonDao.findByProperties(
+                        ItemCarrinhoEntity.class,
+                        new String[]{"idCarrinho"},
+                        new Object[]{carrinhoEntity.getId()});
+
+
+        List<ItemCarrinhoVo> listVos = new ArrayList<>();
+
+        for (ItemCarrinhoEntity i : items){
+            ItemCarrinhoVo ivo = new ItemCarrinhoVo();
+            BeanUtils.copyProperties(i, ivo);
+            EstoqueItemEntity itemEstoque = this.commonDao.get(EstoqueItemEntity.class, i.getIdEstoqueItem());
+            ivo.setProduto(this.produtoService.getProdutoById(itemEstoque.getIdProduto()));
+
+            if (i.getIdCatalogo() != null){
+                ivo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(i.getFoto()));
+            }else{
+                ivo.setUrlFoto(this.imagemService.getUrlFotoCliente(i.getFoto()));
+            }
+            listVos.add(ivo);
+        }
+
+        vo.setItems(listVos);
+        return vo;
     }
 
     @Override
     public CarrinhoVo removeItem(Long idItem) throws CarrinhoServiceException {
-        return null;
+        try{
+            ItemCarrinhoEntity item = this.commonDao.get(ItemCarrinhoEntity.class, idItem);
+            if (item != null){
+                this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
+                CarrinhoEntity carrinhoEntity = this.commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getKeyDevice());
+            }
+            return null;
+        }catch(Exception ex){
+            LOG.error("Erro ao remover um item do carrinho.", ex);
+            throw new CarrinhoServiceException("Erro ao remover o item do carrinho");
+        }
     }
 }

@@ -1,6 +1,11 @@
 package br.com.mpr.ws.entity;
 
+import br.com.mpr.ws.vo.CarrinhoVo;
+import br.com.mpr.ws.vo.ItemCarrinhoVo;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wagner on 20/06/18.

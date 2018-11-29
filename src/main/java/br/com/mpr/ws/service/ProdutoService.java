@@ -22,4 +22,5 @@ public interface ProdutoService {
     List<ProdutoVo> getProdutosRelacionados(Long idProduto);
 
     boolean isAcessorio(Long idProduto);
+
 }
