@@ -25,7 +25,7 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
         Assert.assertNotNull(listProduto);
         Assert.assertTrue(listProduto.size() > 0);
-        Assert.assertEquals(3,listProduto.size());
+        Assert.assertEquals(5,listProduto.size());
 
         for (ProdutoVo p : listProduto){
             Assert.assertNotNull(p.getId());

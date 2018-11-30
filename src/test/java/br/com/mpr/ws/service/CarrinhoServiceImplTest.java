@@ -137,27 +137,28 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
 
     /**
-     * 1. Adicionando o ultimo produto(id=5) da base de teste para o Cliente1.
-     * 2. Tentar adicionar o mesmo produto (id=5) para o Cliente2, e esperar um erro "Infelizmente..."
+     * 1. Adicionando o ultimo produto(id=6) da base de teste para o Cliente1.
+     * 2. Tentar adicionar o mesmo produto (id=6) para o Cliente2, e esperar um erro "Infelizmente..."
      * 3. Remover o item do Cliente1
-     * 4. Tentar adicionar o mesmo produto (id=5) para o Cliente e esperar um sucesso.
+     * 4. Tentar adicionar o mesmo produto (id=6) para o Cliente e esperar um sucesso.
      */
     @Test
     public void removeItem() {
 
         try {
             //ADICIONEI O ULTIMO PRODUTO QUE ESTÁ NA TABELA DE TESTE
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(6l);
             CarrinhoVo carrinhoVo = this.carrinhoService.addCarrinho(item1);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNotNull(carrinhoVo.getItems());
             Assert.assertEquals(1, carrinhoVo.getItems().size());
 
 
-            ItemCarrinhoForm outroClienteitem1 = createItemCarrinhoFormClienteDinamico(5l);
+            ItemCarrinhoForm outroClienteitem1 = createItemCarrinhoFormClienteDinamico(6l);
             try{
                 //TENTANDO ADICIONAR O MESMO PRODUTO PARA OUTRO CLIENTE E ESPERANDO O ERRO.
-                this.carrinhoService.addCarrinho(outroClienteitem1);
+                CarrinhoVo  carr1 = this.carrinhoService.addCarrinho(outroClienteitem1);
+                Assert.assertTrue("Nesse passao ele deveria receber um erro de produto esgotado", false);
             } catch (CarrinhoServiceException e) {
                 //CONFIRMANDO O ERRO.
                 Assert.assertTrue(e.getMessage().contains("Infelizmente"));
