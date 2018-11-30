@@ -209,7 +209,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     private CarrinhoEntity findCarrinho(Long idCliente, String keyDevice) {
 
-        if (idCliente != null){
+        if (idCliente != null && idCliente > 0){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
                     new String[]{"idCliente"}, new Object[]{idCliente});
 

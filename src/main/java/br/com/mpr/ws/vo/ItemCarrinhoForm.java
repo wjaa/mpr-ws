@@ -1,6 +1,8 @@
 package br.com.mpr.ws.vo;
 
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -8,6 +10,8 @@ public class ItemCarrinhoForm {
 
     private Long idCliente;
     private String keyDevice;
+
+    @NotNull
     private Long idProduto;
     private byte[] foto;
     private String nomeArquivo;
