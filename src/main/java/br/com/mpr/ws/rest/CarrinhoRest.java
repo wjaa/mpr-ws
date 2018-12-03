@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  *
  */
@@ -29,16 +31,23 @@ public class CarrinhoRest extends BaseRest {
     @RequestMapping(value = "/carrinho/add",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.PUT)
-    public CarrinhoVo addCarrinho(@ModelAttribute ItemCarrinhoForm form) throws CarrinhoServiceException {
+    public CarrinhoVo addCarrinho(@RequestBody @Valid ItemCarrinhoForm form) throws CarrinhoServiceException {
         return this.carrinhoService.addCarrinho(form);
     }
 
 
-    @RequestMapping(value = "/carrinho/{idCliente}/{keyDevice}",
+    @RequestMapping(value = "/carrinho/byIdCliente/{idCliente}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoCliente(@PathVariable Long idCliente, @PathVariable String keyDevice){
-        return this.carrinhoService.getCarrinho(idCliente, keyDevice);
+    public CarrinhoVo getCarrinhoCliente(@PathVariable Long idCliente){
+        return this.carrinhoService.getCarrinho(idCliente, null);
+    }
+
+    @RequestMapping(value = "/carrinho/byKeyDevice/{keyDevice}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public CarrinhoVo getCarrinhoCliente(@PathVariable String keyDevice){
+        return this.carrinhoService.getCarrinho(null, keyDevice);
     }
 
 

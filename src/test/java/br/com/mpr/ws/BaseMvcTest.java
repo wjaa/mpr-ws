@@ -52,6 +52,18 @@ public abstract class BaseMvcTest extends BaseDBTest {
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
+    public ResultActions getMvcPutErrorResultAction(String endPoint, String content) throws Exception {
+        return mvc.perform(put(endPoint)
+                .with(httpBasic("user","password"))
+                .header("Origin","api.meuportaretrato.com")
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
     public ResultActions getMvcPostResultAction(String endPoint, String content) throws Exception {
         return mvc.perform(post(endPoint)
                 .with(httpBasic("user","password"))

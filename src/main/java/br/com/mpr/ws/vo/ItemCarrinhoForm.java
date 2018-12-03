@@ -11,7 +11,7 @@ public class ItemCarrinhoForm {
     private Long idCliente;
     private String keyDevice;
 
-    @NotNull
+    @NotNull(message = "Produto é obrigatório!")
     private Long idProduto;
     private byte[] foto;
     private String nomeArquivo;

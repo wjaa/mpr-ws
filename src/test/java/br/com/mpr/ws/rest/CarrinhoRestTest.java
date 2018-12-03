@@ -5,6 +5,7 @@ import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.CarrinhoVo;
+import br.com.mpr.ws.vo.ErrorMessageVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.ContentResultMatchers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,11 +52,17 @@ public class CarrinhoRestTest extends BaseMvcTest {
         try{
             String content = ObjectUtils.toJson(item);
             ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
-            CarrinhoVo carrinhoVo = carrinhoService.addCarrinho(item);
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoVo)));
 
-            ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item.getKeyDevice());
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoVo)));
+            String resultJson = ra.andReturn().getResponse().getContentAsString();
+
+            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item.getKeyDevice());
+
+            raGet.andExpect(content().json(resultJson));
+
+            CarrinhoVo resultCarrinho = ObjectUtils.fromJSON(resultJson,CarrinhoVo.class);
+            Assert.assertEquals("AAABBBCCCDDD",resultCarrinho.getKeyDevice());
+            Assert.assertNotNull(resultCarrinho.getIdCarrinho());
+            Assert.assertEquals(1, resultCarrinho.getItems().size());
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
@@ -81,15 +89,22 @@ public class CarrinhoRestTest extends BaseMvcTest {
         try{
             String content = ObjectUtils.toJson(item);
             ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
-            CarrinhoVo carrinhoVo = carrinhoService.addCarrinho(item);
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoVo)));
 
-            ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item.getKeyDevice());
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoVo)));
+            String resultJson = ra.andReturn().getResponse().getContentAsString();
+
+            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/byIdCliente/" + item.getIdCliente());
+
+            raGet.andExpect(content().json(resultJson));
+
+            CarrinhoVo resultCarrinho = ObjectUtils.fromJSON(resultJson,CarrinhoVo.class);
+            Assert.assertEquals(new Long(1),resultCarrinho.getIdCliente());
+            Assert.assertNotNull(resultCarrinho.getIdCarrinho());
+            Assert.assertEquals(1, resultCarrinho.getItems().size());
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
         }
+
     }
 
 
@@ -108,18 +123,17 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setIdCliente(1l);
-        item.setIdProduto(1l);
         item.setFoto(new byte[]{10,10,10});
         item.setNomeArquivo(StringUtils.createRandomHash() + ".png");
 
         try{
+            //#1
             String content = ObjectUtils.toJson(item);
+            ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Produto é obrigatório"));
 
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
-
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoService.addCarrinho(item))));
-
-            System.out.println(content());
+            //TODO CONTINUAR AQUI
+            //#2
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
