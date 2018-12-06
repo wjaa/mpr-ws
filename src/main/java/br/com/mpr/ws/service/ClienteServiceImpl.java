@@ -1,16 +1,24 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.EnderecoEntity;
+import br.com.mpr.ws.entity.LoginEntity;
 import br.com.mpr.ws.exception.ClienteServiceException;
 import br.com.mpr.ws.utils.Utils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.validation.*;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -18,45 +26,94 @@ import java.util.List;
 @Service
 public class ClienteServiceImpl implements ClienteService{
 
+    private static final Log LOG = LogFactory.getLog(ClienteServiceImpl.class);
+
     @Autowired
     private CommonDao commonDao;
+
+
+    @Autowired
+    private Validator validator;
 
     @Override
     public ClienteEntity saveCliente(ClienteEntity cliente) throws ClienteServiceException {
 
-        if ( !Utils.validateCpf(cliente.getCpf()) ){
-            throw new ClienteServiceException("Cpf inválido!");
-        }
+        try{
 
-        if ( !Utils.validateEmail(cliente.getEmail()) ){
-            throw new ClienteServiceException("Email inválido!");
-        }
-
-        if (cliente.getId() == null || cliente.getId() < 1){
-            ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
-                    new Object[]{cliente.getCpf()});
-
-            if (cliCpf != null && !cliCpf.getId().equals(cliente.getId())){
-                throw new ClienteServiceException("Já existe um cliente cadastrado com esse CPF.");
+            if ( !Utils.validateCpf(cliente.getCpf()) ){
+                throw new ClienteServiceException("Cpf inválido!");
             }
 
-            ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
-                    new Object[]{cliente.getEmail()});
+            if (cliente.getId() == null || cliente.getId() < 1){
+                ClienteEntity cliCpf = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"cpf"},
+                        new Object[]{cliente.getCpf()});
 
-            if (cliEmail != null && !cliEmail.getId().equals(cliente.getId())){
-                throw new ClienteServiceException("Já existe um cliente cadastrado com esse EMAIL.");
+                if (cliCpf != null && !cliCpf.getId().equals(cliente.getId())){
+                    throw new ClienteServiceException("Já existe um cliente cadastrado com esse CPF.");
+                }
+
+                ClienteEntity cliEmail = commonDao.findByPropertiesSingleResult(ClienteEntity.class,new String[]{"email"},
+                        new Object[]{cliente.getEmail()});
+
+                if (cliEmail != null && !cliEmail.getId().equals(cliente.getId())){
+                    throw new ClienteServiceException("Já existe um cliente cadastrado com esse E-MAIL.");
+                }
+
+                if (cliente.getLogin() == null){
+                    throw new ClienteServiceException("Login é obrigatório para criar um novo cliente");
+                }
+
+                this.saveLogin(cliente.getLogin());
+
+                cliente.setAtivo(true);
+                cliente = commonDao.save(cliente);
+            }else{
+                ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());
+                BeanUtils.copyProperties(cliente,clienteMerged,"login");
+                commonDao.update(clienteMerged);
             }
-            cliente.setAtivo(true);
-            cliente = commonDao.save(cliente);
-        }else{
-            ClienteEntity clienteMerged = commonDao.get(ClienteEntity.class, cliente.getId());
-            BeanUtils.copyProperties(cliente,clienteMerged,"login");
-            commonDao.update(clienteMerged);
+
+            saveEnderecos(cliente);
+
+            return cliente;
+        }catch(ConstraintViolationException ex){
+            LOG.error("Erro de validação ", ex);
+            StringBuilder errors = new StringBuilder();
+            for (ConstraintViolation c : ex.getConstraintViolations() ){
+                errors.append(c.getMessage() + " ");
+            }
+            throw new ClienteServiceException(errors.toString());
+        }catch (ClienteServiceException ex){
+            throw ex;
+        }catch(Exception ex){
+            LOG.error("Erro ao salvar o cliente: ", ex);
+            throw new ClienteServiceException("Erro ao salvar o cliente");
+        }
+    }
+
+    private void saveLogin(@Valid LoginEntity login) throws ClienteServiceException {
+
+        Set<ConstraintViolation<LoginEntity>> violations = validator.validate(login);
+        if (!violations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (ConstraintViolation<LoginEntity> constraintViolation : violations) {
+                sb.append(constraintViolation.getMessage() + " ");
+            }
+            throw new ClienteServiceException("Erro de validação: " + sb.toString());
         }
 
-        saveEnderecos(cliente);
+        if (LoginType.PASSWORD.equals(login.getLoginType()) && StringUtils.isEmpty(login.getSenha())){
+            throw new ClienteServiceException("Para login do tipo PASSWORD cliente precisa criar uma senha.");
+        }
 
-        return cliente;
+        if (!LoginType.PASSWORD.equals(login.getLoginType()) && StringUtils.isEmpty(login.getSocialKey())){
+            throw new ClienteServiceException("Para login do tipo FACEBOOK & GPLUS o SocialKey é obrigatório.");
+        }
+
+        login.setDataCriacao(new Date());
+        login.setDataUltimoAcesso(new Date());
+        commonDao.save(login);
+
     }
 
     @Override
@@ -83,7 +140,7 @@ public class ClienteServiceImpl implements ClienteService{
 
 
 
-    private void saveEnderecos(ClienteEntity cliente) {
+    private void saveEnderecos(ClienteEntity cliente) throws ClienteServiceException {
         if (!CollectionUtils.isEmpty(cliente.getEnderecos())){
             for (EnderecoEntity enderecoEntity: cliente.getEnderecos()) {
                 if (enderecoEntity.getId() == null){
@@ -94,6 +151,8 @@ public class ClienteServiceImpl implements ClienteService{
                     commonDao.update(enderecoEntity);
                 }
             }
+        }else{
+            throw new ClienteServiceException("Endereço é obrigatório!");
         }
     }
 

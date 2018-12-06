@@ -62,6 +62,11 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      */
     @Override
     public CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
+
+        if (StringUtils.isEmpty(item.getKeyDevice()) && item.getIdCliente() == null){
+            throw new CarrinhoServiceException("Id do cliente ou keyDevice é obrigatório.");
+        }
+
         //chave da thread em questao.
         String key = br.com.mpr.ws.utils.StringUtils.createRandomHash();
         CarrinhoThreadExecutor.putExecute(key,item);
@@ -174,6 +179,11 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
             //CLIENTES PODEM ADICIONAR ACESSORIOS, SE NAO FOR UM ACESSORIO ENTÃO TEM FOTO.
             if ( !produtoService.isAcessorio(item.getIdProduto()) ){
+
+                if ( (item.getFoto() == null || item.getFoto().length == 0) && item.getIdCatalogo() == null){
+                    throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
+                }
+
                 itemCarrinhoEntity.setFoto(imagemService.uploadFotoCliente(item.getFoto(),item.getNomeArquivo()));
                 itemCarrinhoEntity.setIdCatalogo(item.getIdCatalogo());
             }
@@ -192,7 +202,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
         } catch (ImagemServiceException e) {
             LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", e);
-            throw new CarrinhoServiceException("Erro ao salvar a imagem do carrinho.");
+            throw new CarrinhoServiceException(e.getMessage());
         }
     }
 
@@ -232,6 +242,13 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Override
     public CarrinhoVo getCarrinho(Long idCliente, String keyDevice) {
         CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,keyDevice);
+
+        if (carrinhoEntity == null){
+            CarrinhoVo vo = new CarrinhoVo();
+            vo.setIdCliente(idCliente);
+            vo.setKeyDevice(keyDevice);
+            return vo;
+        }
 
         CarrinhoVo vo = CarrinhoVo.toVo(carrinhoEntity);
         List<ItemCarrinhoEntity> items =

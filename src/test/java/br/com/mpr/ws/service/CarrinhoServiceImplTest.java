@@ -137,6 +137,21 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
 
     /**
+     * 1. Adicionar dois produtos no carrinho de um cliente
+     * 2, Buscar o carrinho do cliente e validar todos os campos.
+     */
+    @Test
+    public void getNovoCarrinho() {
+
+        CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinho(null,"XXXXTTTTHHHHHH");
+        Assert.assertNotNull(carrinhoVo);
+        Assert.assertNull(carrinhoVo.getIdCarrinho());
+        Assert.assertEquals("XXXXTTTTHHHHHH",carrinhoVo.getKeyDevice());
+
+    }
+
+
+    /**
      * 1. Adicionando o ultimo produto(id=6) da base de teste para o Cliente1.
      * 2. Tentar adicionar o mesmo produto (id=6) para o Cliente2, e esperar um erro "Infelizmente..."
      * 3. Remover o item do Cliente1

@@ -132,8 +132,25 @@ public class CarrinhoRestTest extends BaseMvcTest {
             ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Produto é obrigatório"));
 
-            //TODO CONTINUAR AQUI
             //#2
+            item.setIdProduto(5l);
+            item.setFoto(null);
+            content = ObjectUtils.toJson(item);
+            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Para adicionar esse produto no carrinho, uma imagem é obrigatória"));
+
+            //#3
+            item.setFoto(new byte[]{10,10,10});
+            item.setNomeArquivo("");
+            content = ObjectUtils.toJson(item);
+            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Nome da imagem está vazio"));
+
+            //#4
+            item.setIdCliente(null);
+            content = ObjectUtils.toJson(item);
+            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Id do cliente ou keyDevice é obrigatório."));
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
@@ -154,9 +171,10 @@ public class CarrinhoRestTest extends BaseMvcTest {
     public void getCarrinhoSemClienteSemProduto(){
         String keyDevice = "AAABBBCCCDDD";
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/0/" + keyDevice);
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoService.getCarrinho(0l,keyDevice))));
-            System.out.println(content());
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + keyDevice);
+            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertNull(carrinhoVo.getItems());
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
@@ -166,23 +184,38 @@ public class CarrinhoRestTest extends BaseMvcTest {
     }
 
     /**
-     *
-     * 1. Buscar o carrinho cliente NAO cadastrado e COM produto.
+     * 1. Adicionar produto no carrinho do cliente nao cadastrado
+     * 2. Buscar o carrinho para cliente NAO cadastrado.
      *
      */
     @Test
     public void getCarrinhoSemClienteComProduto(){
-        String keyDevice = "AAABBBCCCDDD";
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/0/" + keyDevice);
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoService.getCarrinho(0l,keyDevice))));
-            System.out.println(content());
+
+            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            String content = ObjectUtils.toJson(item1);
+            getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(1,carrinhoVo.getItems().size());
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
         }
 
 
+    }
+
+
+    private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
+        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
+        itemCarrinhoForm.setIdProduto(idProduto);
+        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setFoto(new byte[]{0,0,0,0,0});
+        itemCarrinhoForm.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        return itemCarrinhoForm;
     }
 
     /**
@@ -193,11 +226,34 @@ public class CarrinhoRestTest extends BaseMvcTest {
      */
     @Test
     public void removeCarrinho(){
-        String keyDevice = "AAABBBCCCDDD";
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/0/" + keyDevice);
-            ra.andExpect(content().json(ObjectUtils.toJson(carrinhoService.getCarrinho(0l,keyDevice))));
-            System.out.println(content());
+            //#1
+            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            String content = ObjectUtils.toJson(item1);
+            getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+
+            //#2
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertTrue(carrinhoVo.getItems().size() == 1);
+
+            //#3
+            ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" + carrinhoVo.getItems().get(0).getId());
+            carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertTrue(carrinhoVo.getItems().size() == 0);
+
+            //#4
+            ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertTrue(carrinhoVo.getItems().size() == 0);
+
+
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);

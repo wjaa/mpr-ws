@@ -2,11 +2,16 @@ package br.com.mpr.ws.entity;
 
 import br.com.mpr.ws.constants.GeneroType;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
+import br.com.mpr.ws.utils.NumberUtils;
+import br.com.mpr.ws.utils.StringUtils;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +33,8 @@ public class ClienteEntity implements Serializable {
     private String nome;
 
     @Column(name = "EMAIL", nullable = false, length = 100)
-    @NotNull(message = "Email é obrigatório!")
+    @NotNull(message = "E-mail é obrigatório!")
+    @Email(message = "E-mail inválido!")
     private String email;
 
     @Column(name = "CPF", nullable = false, length = 11)
@@ -91,7 +97,7 @@ public class ClienteEntity implements Serializable {
     }
 
     public void setCpf(String cpf) {
-        this.cpf = cpf;
+        this.cpf = String.valueOf(StringUtils.getNumber(cpf));
     }
 
 

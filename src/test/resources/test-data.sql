@@ -1,7 +1,12 @@
 /*TABELAS PARA TESTES DE NEGOCIOS*/
+
+--LOGIN PARA O CLIENTE 1
+insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
+values (null, '2018-12-06', '2018-12-06', null, 'XDXDXDX', 1, null, 'ZAZAZAZA' );
+
 --CLIENTES
-insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO)
-values (null, '1983-09-30', '11999999999', '11111111111', 'wag182@gmail.com', 'Wagner', 1, 'M');
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO, ID_LOGIN)
+values (null, '1983-09-30', '11999999999', '11111111111', 'wag182@gmail.com', 'Wagner', 1, 'M', 1);
 insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO)
 values (null, '1983-09-30', '11999999999', '22222222222', 'wag183@gmail.com', 'Wagner', 1, 'M');
 insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO)
@@ -10,8 +15,10 @@ insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO)
 values (null, '1983-09-30', '11999999999', '44444444444', 'wag185@gmail.com', 'CLIENTE REMOVER', 1, 'M');
 
 --ENDERECO DO CLIENTE 1
-INSERT INTO ENDERECO (ID,CEP,LOGRADOURO,NUMERO,COMPLEMENTO,BAIRRO,CIDADE,UF,ID_CLIENTE,ATIVO, DESCRICAO,OBSERVACAO,PRINCIPAL)
-VALUES(NULL,"07093090","Rua das porpetas malucas","132a","sem complemento","bairro da pizza","guarulhos","sp",1,1,"principal","perto da rua das coxinhas",1);
+insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
+values (null,'07093090', 'Rua das porpetas malucas', '132a', 'sem complemento', 'bairro da pizza', 'guarulhos', 'sp', 1, 1, 'principal', 'perto da rua das coxinhas', 1);
+
+
 
 --FORNECEDORES
 insert into FORNECEDOR (ID, NOME, EMAIL, CNPJ, ENDERECO, TELEFONE_PRINCIPAL, TELEFONE_SECUNDARIO, ATIVO)

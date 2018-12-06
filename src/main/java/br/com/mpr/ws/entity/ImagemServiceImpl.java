@@ -102,6 +102,16 @@ public class ImagemServiceImpl implements ImagemService {
 
     private String saveImages(byte[] data, String originName, String folder ) throws ImagemServiceException {
 
+        if (data == null || data.length == 0){
+            LOG.warn("Bytes da imagem [" + originName + "] estao vazios.");
+            throw new ImagemServiceException("Imagem do upload está vazia!");
+        }
+
+        if (org.springframework.util.StringUtils.isEmpty(originName)){
+            LOG.warn("Nome da imagem está vazio.");
+            throw new ImagemServiceException("Nome da imagem está vazio.");
+        }
+
         File folderImgs = new File(properties.getPathImg());
 
         if ( !folderImgs.exists() || !folderImgs.isDirectory()){
@@ -112,19 +122,17 @@ public class ImagemServiceImpl implements ImagemService {
         }
 
         try{
-            if (data != null && data.length > 0){
-                File file = new File(properties.getPathImg() +
-                        File.separator +
-                        folder +
-                        File.separator +
-                        this.createFileName(originName) +
-                        this.getExtension(originName));
-                FileCopyUtils.copy(data, file);
 
-                return file.getName();
-            }else{
-                LOG.warn("Bytes da imagem [" + originName + "] estao vazios.");
-            }
+            File file = new File(properties.getPathImg() +
+                    File.separator +
+                    folder +
+                    File.separator +
+                    this.createFileName(originName) +
+                    this.getExtension(originName));
+            FileCopyUtils.copy(data, file);
+
+            return file.getName();
+
 
 
         }catch (Exception ex){
@@ -132,7 +140,6 @@ public class ImagemServiceImpl implements ImagemService {
             throw new ImagemServiceException("Erro ao salvar uma imagem no diretorio, detail:" + ex.getMessage());
         }
 
-        return null;
     }
 
     private String getExtension(String fileName) {

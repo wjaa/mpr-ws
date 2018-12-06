@@ -3,9 +3,11 @@ package br.com.mpr.ws.entity;
 import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
 import br.com.mpr.ws.helper.JacksonDateTimeSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -36,12 +38,14 @@ public class LoginEntity {
 
     @Column(name = "LOGIN_TYPE")
     @Enumerated(EnumType.ORDINAL)
+    @NotNull(message = "Tipo de login é obrigatório!")
     private LoginType loginType;
 
     @Column(name = "URL_FOTO", length = 1000)
     private String urlFoto;
 
     @Column(name = "KEY_DEVICE_GCM", length = 255)
+    @NotNull(message = "Key device é obrigatório")
     private String keyDeviceGcm;
 
 
@@ -69,6 +73,7 @@ public class LoginEntity {
         this.dataUltimoAcesso = dataUltimoAcesso;
     }
 
+    @JsonIgnore
     public String getSenha() {
         return senha;
     }
