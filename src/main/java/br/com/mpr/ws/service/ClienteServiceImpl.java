@@ -131,6 +131,18 @@ public class ClienteServiceImpl implements ClienteService{
         return commonDao.listAll(ClienteEntity.class);
     }
 
+    @Override
+    public ClienteEntity getClienteByKeyDevice(String keyDevice) {
+        ClienteEntity clienteEntity = commonDao.findByPropertiesSingleResult(ClienteEntity.class,
+                new String[]{"login.keyDeviceGcm"},
+                new Object[]{keyDevice});
+
+        if (clienteEntity != null){
+            clienteEntity.setEnderecos(this.getEnderecosByIdCliente(clienteEntity.getId()));
+        }
+        return clienteEntity;
+    }
+
 
     private List<EnderecoEntity> getEnderecosByIdCliente(Long idCliente) {
         return commonDao.findByProperties(EnderecoEntity.class,

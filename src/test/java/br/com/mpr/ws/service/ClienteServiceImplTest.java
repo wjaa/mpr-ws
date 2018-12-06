@@ -32,6 +32,27 @@ public class ClienteServiceImplTest extends BaseDBTest {
     @Autowired
     private CommonDao commonDao;
 
+    @Test
+    public void getClienteById(){
+        ClienteEntity clienteEntity = clienteService.getClienteById(1l);
+        Assert.assertEquals(new Long(1l),clienteEntity.getId());
+        Assert.assertNotNull(clienteEntity);
+        Assert.assertNotNull(clienteEntity.getEnderecos());
+        Assert.assertNotNull(clienteEntity.getLogin());
+    }
+
+    @Test
+    public void getClienteByKeyDevice(){
+        ClienteEntity clienteEntity = clienteService.getClienteByKeyDevice("ZAZAZAZA");
+        Assert.assertEquals(new Long(1l),clienteEntity.getId());
+        Assert.assertEquals("ZAZAZAZA",clienteEntity.getLogin().getKeyDeviceGcm());
+        Assert.assertNotNull(clienteEntity);
+        Assert.assertNotNull(clienteEntity.getEnderecos());
+        Assert.assertNotNull(clienteEntity.getLogin());
+    }
+
+
+
     /**
      *
      * CADASTRO SIMPLES DE CLIENTES PASSWORD

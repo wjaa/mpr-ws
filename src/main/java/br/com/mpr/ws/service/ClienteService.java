@@ -16,4 +16,6 @@ public interface ClienteService {
     ClienteEntity getClienteById(long l);
 
     List<ClienteEntity> listAllCliente();
+
+    ClienteEntity getClienteByKeyDevice(String keyDevice);
 }
