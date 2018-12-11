@@ -27,13 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CarrinhoRestTest extends BaseMvcTest {
 
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private CarrinhoService carrinhoService;
-
-
     /**
      * USANDO UM CLIENTE NAO CADASTRADO
      * 1. Adicionar um produto no carrinho

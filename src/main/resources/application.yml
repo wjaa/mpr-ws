@@ -84,3 +84,13 @@ mpr:
   baseUrlCliente: ${mpr.staticHost}/images/${mpr.folderCliente}/
   baseUrlCatalogo: ${mpr.staticHost}/images/${mpr.folderCatalogo}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png
+
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      hibernate: INFO
+    br:
+      com:
+        mpr: DEBUG
+

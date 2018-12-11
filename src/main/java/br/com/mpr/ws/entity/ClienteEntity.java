@@ -1,9 +1,11 @@
 package br.com.mpr.ws.entity;
 
 import br.com.mpr.ws.constants.GeneroType;
+import br.com.mpr.ws.helper.JacksonDateDeserializer;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
 import br.com.mpr.ws.utils.NumberUtils;
 import br.com.mpr.ws.utils.StringUtils;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
@@ -51,6 +53,7 @@ public class ClienteEntity implements Serializable {
 
     @Column(name = "ANIVERSARIO")
     @JsonSerialize(using = JacksonDateSerializer.class)
+    @JsonDeserialize(using = JacksonDateDeserializer.class)
     private Date aniversario;
 
     @Column(name = "GENERO", length = 1)
@@ -97,7 +100,11 @@ public class ClienteEntity implements Serializable {
     }
 
     public void setCpf(String cpf) {
-        this.cpf = String.valueOf(StringUtils.getNumber(cpf));
+        if (cpf != null){
+            this.cpf = String.valueOf(StringUtils.getNumber(cpf));
+        }else{
+            this.cpf = null;
+        }
     }
 
 

@@ -102,7 +102,7 @@ public class ClienteServiceImpl implements ClienteService{
             throw new ClienteServiceException("Erro de validação: " + sb.toString());
         }
 
-        if (LoginType.PASSWORD.equals(login.getLoginType()) && StringUtils.isEmpty(login.getSenha())){
+        if (LoginType.PASSWORD.equals(login.getLoginType()) && StringUtils.isEmpty(login.getPass())){
             throw new ClienteServiceException("Para login do tipo PASSWORD cliente precisa criar uma senha.");
         }
 

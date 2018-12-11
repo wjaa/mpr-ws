@@ -1,9 +1,10 @@
 package br.com.mpr.ws.entity;
 
 import br.com.mpr.ws.constants.LoginType;
-import br.com.mpr.ws.helper.JacksonDateSerializer;
+import br.com.mpr.ws.helper.JacksonDateTimeDeserializer;
 import br.com.mpr.ws.helper.JacksonDateTimeSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
@@ -24,10 +25,12 @@ public class LoginEntity {
 
     @Column(name = "DATA_CRIACAO", nullable = false)
     @JsonSerialize(using = JacksonDateTimeSerializer.class)
+    @JsonDeserialize(using = JacksonDateTimeDeserializer.class)
     private Date dataCriacao;
 
     @Column(name = "DATA_ULTIMO_ACESSO", nullable = false)
     @JsonSerialize(using = JacksonDateTimeSerializer.class)
+    @JsonDeserialize(using = JacksonDateTimeDeserializer.class)
     private Date dataUltimoAcesso;
 
     @Column(name = "SENHA", length = 64)
@@ -74,7 +77,7 @@ public class LoginEntity {
     }
 
     @JsonIgnore
-    public String getSenha() {
+    public String getPass() {
         return senha;
     }
 
