@@ -15,9 +15,9 @@ spring:
         format_sql: true
     show-sql: false
   profiles:
-    active: "prd"
+    active: "dev"
 
-#lembre-se se trocar esse path, precisa trocar o volume no docker-compose e o mkdir no Dockerfile
+#lembre-se de trocar esse path, precisa trocar o volume no docker-compose e o mkdir no Dockerfile
 mpr:
   pathImg: /var/www/static/mpr/images
   folderPreview: p
@@ -49,6 +49,10 @@ logging:
       com:
         mpr: DEBUG
 
+cielo:
+  merchantId: 224e8290-1485-4a9b-a1b0-8f05745b724d
+  merchantKey: SRQHPVROYXHQEWODLTJXOFAZPODLVNVOKEKAARZV
+
 ---
 
 spring:
@@ -65,6 +69,10 @@ logging:
     br:
       com:
         mpr: DEBUG
+
+cielo:
+  merchantId: 224e8290-1485-4a9b-a1b0-8f05745b724d
+  merchantKey: SRQHPVROYXHQEWODLTJXOFAZPODLVNVOKEKAARZV
 
 
 ---
@@ -94,3 +102,6 @@ logging:
       com:
         mpr: DEBUG
 
+cielo:
+  merchantId: 224e8290-1485-4a9b-a1b0-8f05745b724d
+  merchantKey: SRQHPVROYXHQEWODLTJXOFAZPODLVNVOKEKAARZV

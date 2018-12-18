@@ -34,6 +34,9 @@ public class PedidoEntity {
     @Column(name = "ID_CUPOM")
     private Long idCupom;
 
+
+    private Long idPagamento;
+
     @Transient
     private List<ItemPedidoEntity> itens;
 
@@ -136,5 +139,21 @@ public class PedidoEntity {
 
     public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Long getCodigoPedido() {
+        return codigoPedido;
+    }
+
+    public void setCodigoPedido(Long codigoPedido) {
+        this.codigoPedido = codigoPedido;
+    }
+
+    public Long getIdPagamento() {
+        return idPagamento;
+    }
+
+    public void setIdPagamento(Long idPagamento) {
+        this.idPagamento = idPagamento;
     }
 }

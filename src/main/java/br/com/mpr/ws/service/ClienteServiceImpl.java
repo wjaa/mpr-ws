@@ -6,6 +6,7 @@ import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.LoginEntity;
 import br.com.mpr.ws.exception.ClienteServiceException;
+import br.com.mpr.ws.utils.PasswordEncoderUtils;
 import br.com.mpr.ws.utils.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,6 +113,9 @@ public class ClienteServiceImpl implements ClienteService{
 
         login.setDataCriacao(new Date());
         login.setDataUltimoAcesso(new Date());
+        if (LoginType.PASSWORD.equals(login.getLoginType())){
+            login.setSenha(br.com.mpr.ws.utils.StringUtils.createMD5(login.getPass()));
+        }
         commonDao.save(login);
 
     }

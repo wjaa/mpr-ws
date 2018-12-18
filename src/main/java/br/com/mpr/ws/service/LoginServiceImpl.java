@@ -4,6 +4,7 @@ import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.exception.LoginServiceException;
+import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.LoginForm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,9 +43,10 @@ public class LoginServiceImpl implements LoginService {
                return clienteEntity;
             }
             case PASSWORD:{
-                ClienteEntity clienteEntity = this.findByPassword(loginForm.getEmail(),loginForm.getPassword());
+                ClienteEntity clienteEntity = this.findByPassword(loginForm.getEmail(),
+                        StringUtils.createMD5(loginForm.getPassword()));
                 if (clienteEntity == null){
-                    throw new LoginServiceException("Usuário ou senha inválido!");
+                    throw new LoginServiceException("Usuário ou senha inválida!");
                 }
                 return clienteEntity;
             }
@@ -72,6 +74,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private ClienteEntity findByPassword(String email, String pass) throws LoginServiceException {
+
+        if (org.springframework.util.StringUtils.isEmpty(email) || org.springframework.util.StringUtils.isEmpty(pass)){
+            throw new LoginServiceException("E-mail e senha são obrigatórios para o login.");
+        }
+
         List<ClienteEntity> clientes =  dao.findByProperties(ClienteEntity.class,
                 new String[]{"email","login.senha"},
                 new Object[]{email,pass});

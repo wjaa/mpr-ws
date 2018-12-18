@@ -130,6 +130,29 @@
 		</dependency>
 
 
+		<!--CIELO-->
+		<dependency>
+			<groupId>br.cielo.cieloecommerce</groupId>
+			<artifactId>api30.sdk</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/api30.sdk-0.0.1-SNAPSHOT.jar</systemPath>
+		</dependency>
+
+		<!-- DEPENDENCIAS DA CIELO -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+		<!-- FIM IMPORT CIELO -->
+
+
 	</dependencies>
 
 	<build>

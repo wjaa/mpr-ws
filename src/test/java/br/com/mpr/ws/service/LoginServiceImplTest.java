@@ -141,7 +141,7 @@ public class LoginServiceImplTest extends BaseDBTest {
 
         }catch (LoginServiceException ex){
             Assert.assertNotNull(ex);
-            Assert.assertTrue(ex.getMessage().contains("Usuário ou senha inválido"));
+            Assert.assertTrue(ex.getMessage().contains("Usuário ou senha inválida"));
         }
 
 
