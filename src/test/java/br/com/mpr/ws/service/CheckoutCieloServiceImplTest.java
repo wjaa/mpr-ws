@@ -29,6 +29,7 @@ public class CheckoutCieloServiceImplTest extends BaseDBTest {
             form.setIdCarrinho(1l);
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
+            form.setFormaPagamento(formaPagamentoVo);
             checkoutService.checkout(form);
         }catch (CheckoutCieloServiceException ex){
             Assert.assertTrue(ex.getMessage(), false);

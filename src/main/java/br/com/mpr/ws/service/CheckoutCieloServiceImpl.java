@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 /**
@@ -26,6 +27,13 @@ public class CheckoutCieloServiceImpl implements CheckoutService {
 
     private String merchantId;
     private String merchantKey;
+    private Merchant merchant;
+
+
+    @PostConstruct
+    private void init(){
+        merchant = new Merchant(merchantId, merchantKey);
+    }
 
     @Autowired
     private CommonDao commonDao;
@@ -36,24 +44,57 @@ public class CheckoutCieloServiceImpl implements CheckoutService {
 
     public PedidoEntity checkout(CheckoutForm form) throws CheckoutCieloServiceException {
 
-
-
         if (form.getFormaPagamento().isBoleto()){
             return this.pagamentoBoleto(form);
         }else{
             return this.pagamentoCartaoCredito(form);
         }
 
-
-
     }
 
-    private PedidoEntity pagamentoBoleto(CheckoutForm form) {
-        return null;
+    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws CheckoutCieloServiceException {
+        // Crie uma instância de Sale informando o ID do pagamento
+        Sale sale = new Sale("ID do pagamento");
+
+        // Crie uma instância de Customer informando o nome do cliente
+        Customer customer = sale.customer("Comprador Teste");
+
+        // Crie uma instância de Payment informando o valor do pagamento
+        Payment payment = sale.payment(15700);
+
+        CartaoCreditoVo cartaoCredito = form.getFormaPagamento().getCartaoCredito();
+        // Crie  uma instância de Credit Card utilizando os dados de teste
+        // esses dados estão disponíveis no manual de integração
+        payment.setType(Payment.Type.Boleto);
+
+        // Crie o pagamento na Cielo
+        try {
+            // Configure o SDK com seu merchant e o ambiente apropriado para criar a venda
+            sale = new CieloEcommerce(merchant, Environment.SANDBOX).createSale(sale);
+
+            // Com a venda criada na Cielo, já temos o ID do pagamento, TID e demais
+            // dados retornados pela Cielo
+            String paymentId = sale.getPayment().getPaymentId();
+            System.out.println(paymentId);
+
+            CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
+            PedidoEntity pedidoEntity = pedidoService.createPedido(carrinho,form.getFormaPagamento());
+
+            return pedidoEntity;
+        } catch (CieloRequestException e) {
+            // Em caso de erros de integração, podemos tratar o erro aqui.
+            // os códigos de erro estão todos disponíveis no manual de integração.
+            CieloError error = e.getError();
+            e.printStackTrace();
+
+            throw new CheckoutCieloServiceException(error.getMessage());
+        } catch (IOException e) {
+            throw new CheckoutCieloServiceException(e.getMessage());
+        }
+
     }
 
     private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws CheckoutCieloServiceException {
-        Merchant merchant = new Merchant(merchantId, merchantKey);
 
         // Crie uma instância de Sale informando o ID do pagamento
         Sale sale = new Sale("ID do pagamento");
