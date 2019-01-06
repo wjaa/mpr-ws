@@ -5,6 +5,7 @@ import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.CheckoutCieloServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
+import br.com.mpr.ws.vo.CheckoutVo;
 import br.com.mpr.ws.vo.FormaPagamentoVo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,6 +19,15 @@ public class CheckoutCieloServiceImplTest extends BaseDBTest {
 
     @Autowired
     private CheckoutService checkoutService;
+
+
+
+    public void getCheckout(){
+
+        CheckoutVo ckeckoutVo = this.checkoutService.detailCheckout();
+
+
+    }
 
 
 
