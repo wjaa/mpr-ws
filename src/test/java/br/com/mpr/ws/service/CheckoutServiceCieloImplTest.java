@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  *
  */
-public class CheckoutCieloServiceImplTest extends BaseDBTest {
+public class CheckoutServiceCieloImplTest extends BaseDBTest {
 
 
     @Autowired

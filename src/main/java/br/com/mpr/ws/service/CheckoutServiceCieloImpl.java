@@ -6,6 +6,7 @@ import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.CheckoutCieloServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
+import br.com.mpr.ws.vo.CheckoutVo;
 import cieloecommerce.sdk.Merchant;
 import cieloecommerce.sdk.ecommerce.*;
 import cieloecommerce.sdk.ecommerce.request.CieloError;
@@ -20,9 +21,9 @@ import java.io.IOException;
 /**
  *
  */
-@Service("CheckoutCieloServiceImpl")
+@Service("CheckoutServiceCieloImpl")
 @ConfigurationProperties("cielo")
-public class CheckoutCieloServiceImpl implements CheckoutService {
+public class CheckoutServiceCieloImpl implements CheckoutService {
 
     private String merchantId;
     private String merchantKey;
@@ -124,6 +125,11 @@ public class CheckoutCieloServiceImpl implements CheckoutService {
         } catch (IOException e) {
             throw new CheckoutCieloServiceException(e.getMessage());
         }
+    }
+
+    @Override
+    public CheckoutVo detailCheckout() {
+        return null;
     }
 
     public String getMerchantId() {

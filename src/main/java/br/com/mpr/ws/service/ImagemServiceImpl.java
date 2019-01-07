@@ -1,8 +1,7 @@
-package br.com.mpr.ws.entity;
+package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.properties.MprWsProperties;
-import br.com.mpr.ws.service.ImagemService;
 import br.com.mpr.ws.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
