@@ -1,5 +1,7 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.entity.EnderecoEntity;
+
 /**
  *
  */
@@ -8,6 +10,14 @@ public class EnderecoVo {
     private Long id;
     private String descricao;
     private String endereco;
+
+    public static EnderecoVo toVo(EnderecoEntity endereco) {
+        EnderecoVo enderecoVo = new EnderecoVo();
+        enderecoVo.setDescricao(endereco.getDescricao());
+        enderecoVo.setEndereco(endereco.getEnderecoFull());
+        enderecoVo.setId(endereco.getId());
+        return enderecoVo;
+    }
 
     public Long getId() {
         return id;

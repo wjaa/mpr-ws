@@ -157,4 +157,27 @@ public class ClienteEntity implements Serializable {
     public void setLogin(LoginEntity login) {
         this.login = login;
     }
+
+    @Transient
+    public EnderecoEntity getEnderecoPrincipal() {
+        if (enderecos == null){
+            return null;
+        }
+
+        if (enderecos.size() == 0){
+            return null;
+        }
+
+        if (enderecos.size() == 1){
+            return enderecos.get(0);
+        }
+
+        for (EnderecoEntity enderecoEntity : enderecos){
+            if (enderecoEntity.getPrincipal()){
+                return enderecoEntity;
+            }
+        }
+
+        return null;
+    }
 }

@@ -12,6 +12,6 @@ import org.springframework.stereotype.Service;
 public class PedidoServiceImpl implements PedidoService{
     @Override
     public PedidoEntity createPedido(CarrinhoEntity carrinho, FormaPagamentoVo formaPagamento) {
-        return null;
+        return new PedidoEntity();
     }
 }

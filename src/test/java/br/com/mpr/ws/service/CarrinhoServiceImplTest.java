@@ -111,7 +111,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             this.carrinhoService.addCarrinho(item2);
 
 
-            CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinho(null,item1.getKeyDevice());
+            CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoByKeyDevice(item1.getKeyDevice());
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNotNull(carrinhoVo.getIdCarrinho());
             Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
@@ -143,7 +143,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     @Test
     public void getNovoCarrinho() {
 
-        CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinho(null,"XXXXTTTTHHHHHH");
+        CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoByKeyDevice("XXXXTTTTHHHHHH");
         Assert.assertNotNull(carrinhoVo);
         Assert.assertNull(carrinhoVo.getIdCarrinho());
         Assert.assertEquals("XXXXTTTTHHHHHH",carrinhoVo.getKeyDevice());
