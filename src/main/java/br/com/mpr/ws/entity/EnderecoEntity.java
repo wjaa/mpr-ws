@@ -164,4 +164,15 @@ public class EnderecoEntity {
     public void setPrincipal(Boolean principal) {
         this.principal = principal;
     }
+
+    @Transient
+    public String getEnderecoFull() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.logradouro)
+                .append(this.numero != null ? ", " + this.numero : "")
+                .append(this.bairro != null ? " - " + this.bairro : "")
+                .append(this.cidade != null ? " - " + this.cidade : "")
+                .append(this.uf != null ? " - " + this.uf : "");
+        return sb.toString() ;
+    }
 }

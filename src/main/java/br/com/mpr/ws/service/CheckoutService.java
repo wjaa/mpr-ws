@@ -17,5 +17,5 @@ public interface CheckoutService {
 
     String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws CheckoutCieloServiceException;
 
-    CheckoutVo detailCheckout();
+    CheckoutVo detailCheckout(Long idCliente) throws CheckoutCieloServiceException;
 }

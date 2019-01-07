@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Calendar;
+
 /**
  *
  */
@@ -21,10 +23,24 @@ public class CheckoutCieloServiceImplTest extends BaseDBTest {
     private CheckoutService checkoutService;
 
 
-
+    @Test
     public void getCheckout(){
 
-        CheckoutVo ckeckoutVo = this.checkoutService.detailCheckout();
+        try {
+            CheckoutVo checkout = this.checkoutService.detailCheckout(1l);
+            Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
+            Assert.assertEquals(new Double(128.50), checkout.getTotal());
+            Assert.assertNotNull(checkout.getProdutos());
+            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getEnderecoVo());
+            Assert.assertNotNull(checkout.getEnderecoVo().getEndereco());
+            Assert.assertNotNull(checkout.getEnderecoVo().getDescricao());
+            Assert.assertNotNull(checkout.getPrevisaoEntrega());
+
+
+        } catch (CheckoutCieloServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        }
 
 
     }
@@ -55,7 +71,7 @@ public class CheckoutCieloServiceImplTest extends BaseDBTest {
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.CARTAO_CREDITO);
             CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
-            cartaoCreditoVo.setCardToken(getTokenCielo());
+            cartaoCreditoVo.setCardToken(this.getTokenCielo());
             formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
             form.setFormaPagamento(formaPagamentoVo);
             PedidoEntity pedidoEntity = checkoutService.checkout(form);
@@ -80,12 +96,13 @@ public class CheckoutCieloServiceImplTest extends BaseDBTest {
     }
 
     private String getTokenCielo() throws CheckoutCieloServiceException {
+        Integer year = Calendar.getInstance().get(Calendar.YEAR);
         CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
         cartaoCreditoVo.setBrand("Visa")
                 .setSecutiryCode("123")
                 .setCardNumber("4532117080573700")
                 .setHolder("Comprador T Cielo")
-                .setExpirationDate("12/2018");
+                .setExpirationDate("12/" + year );
 
         return checkoutService.getCardToken(cartaoCreditoVo);
 

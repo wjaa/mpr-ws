@@ -238,9 +238,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         return null;
     }
 
+    @Override
+    public CarrinhoVo getCarrinhoByIdCliente(Long idCliente){
+        return getCarrinho(idCliente,null);
+    }
 
     @Override
-    public CarrinhoVo getCarrinho(Long idCliente, String keyDevice) {
+    public CarrinhoVo getCarrinhoByKeyDevice(String keyDevice){
+        return getCarrinho(null, keyDevice);
+    }
+
+    private CarrinhoVo getCarrinho(Long idCliente, String keyDevice) {
         CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,keyDevice);
 
         if (carrinhoEntity == null){

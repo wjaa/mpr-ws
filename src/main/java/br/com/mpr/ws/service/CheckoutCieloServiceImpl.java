@@ -2,10 +2,11 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.CarrinhoEntity;
+import br.com.mpr.ws.entity.ClienteEntity;
+import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.CheckoutCieloServiceException;
-import br.com.mpr.ws.vo.CartaoCreditoVo;
-import br.com.mpr.ws.vo.CheckoutForm;
+import br.com.mpr.ws.vo.*;
 import cieloecommerce.sdk.Merchant;
 import cieloecommerce.sdk.ecommerce.*;
 import cieloecommerce.sdk.ecommerce.request.CieloError;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -40,6 +43,15 @@ public class CheckoutCieloServiceImpl implements CheckoutService {
 
     @Autowired
     private PedidoService pedidoService;
+
+    @Autowired
+    private CarrinhoService carrinhoService;
+
+    @Autowired
+    private FreteService freteService;
+
+    @Autowired
+    private ClienteService clienteService;
 
 
     public PedidoEntity checkout(CheckoutForm form) throws CheckoutCieloServiceException {
@@ -166,6 +178,42 @@ public class CheckoutCieloServiceImpl implements CheckoutService {
             throw new CheckoutCieloServiceException(e.getMessage());
         }
     }
+
+    @Override
+    public CheckoutVo detailCheckout(Long idCliente) throws CheckoutCieloServiceException {
+
+        CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoByIdCliente(idCliente);
+
+        if (carrinhoVo == null || carrinhoVo.getItems() == null || carrinhoVo.getItems().size() == 0){
+            throw new CheckoutCieloServiceException("Carrinho está vazio!");
+        }
+
+        CheckoutVo checkout = new CheckoutVo();
+
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
+        EnderecoEntity endereco = cliente.getEnderecoPrincipal();
+
+        if (endereco == null){
+            throw new CheckoutCieloServiceException("Cliente não tem endereço cadastrado!");
+        }
+
+        //TODO: CRIAR UMA TABELA DE CONFIGURACOES DO SISTEMA
+        ResultFreteVo resultFrete = freteService.calcFrete("07093090", endereco.getCep());
+        checkout.setValorFrete(resultFrete.getValor());
+        checkout.setPrevisaoEntrega(resultFrete.getPrevisaoEntrega());
+        checkout.setProdutos(new ArrayList<>());
+        Double valorProdutos = 0.0;
+        for (ItemCarrinhoVo item : carrinhoVo.getItems()){
+            checkout.getProdutos().add(item.getProduto());
+            valorProdutos += item.getProduto().getPreco();
+        }
+
+        checkout.setEnderecoVo(EnderecoVo.toVo(endereco));
+        checkout.setValorProdutos(valorProdutos);
+
+        return checkout;
+    }
+
 
     public String getMerchantId() {
         return merchantId;

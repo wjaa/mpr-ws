@@ -1,11 +1,11 @@
 package br.com.mpr.ws.suite;
 
+import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.rest.AdminRestTest;
 import br.com.mpr.ws.rest.CarrinhoRestTest;
+import br.com.mpr.ws.rest.LoginRestTest;
 import br.com.mpr.ws.rest.ProdutoRestTest;
-import br.com.mpr.ws.service.AdminServiceImplTest;
-import br.com.mpr.ws.service.ClienteServiceImplTest;
-import br.com.mpr.ws.service.ProdutoServiceImplTest;
+import br.com.mpr.ws.service.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -19,7 +19,11 @@ import org.junit.runners.Suite;
         ProdutoServiceImplTest.class,
         ProdutoRestTest.class,
 
+        CarrinhoServiceImplTest.class,
         CarrinhoRestTest.class,
+
+        LoginServiceImplTest.class,
+        LoginRestTest.class,
 
 })
 public class SuiteTest {

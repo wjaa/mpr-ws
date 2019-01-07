@@ -12,9 +12,9 @@ public interface CarrinhoService {
 
     CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException;
 
-    //CarrinhoVo addCarrinho(ItemCarrinhoForm item, String threadName) throws CarrinhoServiceException;
+    CarrinhoVo getCarrinhoByIdCliente(Long idCliente);
 
-    CarrinhoVo getCarrinho(Long idCliente, String keyDevice);
+    CarrinhoVo getCarrinhoByKeyDevice(String keyDevice);
 
     CarrinhoVo removeItem(Long idItem) throws CarrinhoServiceException;
 }
