@@ -101,4 +101,13 @@ public class CheckoutVo {
         }
         return 0;
     }
+
+    public ResultFreteVo getFreteSelecionado() {
+        for (ResultFreteVo frete : this.listResultFrete){
+            if (frete.getSelecionado()){
+                return frete;
+            }
+        }
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.exception.CheckoutServiceException;
 import br.com.mpr.ws.vo.CheckoutVo;
 
@@ -17,5 +18,7 @@ public interface CheckoutService {
     CheckoutVo alterarEndereco(Long idCheckout, Long idEndereco) throws CheckoutServiceException;
 
     CheckoutVo adicionarCupom(Long idCheckout, String codigoCupom) throws CheckoutServiceException;
+
+    CheckoutVo alterarFrete(Long idCheckout, FreteType freteType) throws CheckoutServiceException;
 
 }

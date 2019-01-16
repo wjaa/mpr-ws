@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by wagner on 11/01/19.
@@ -19,6 +20,7 @@ public class CheckoutEntity {
     private Long idEndereco;
     private Integer diasEntrega;
     private FreteType freteType;
+    private List<CheckoutFreteEntity> listFrete;
 
 
     @Id
@@ -112,5 +114,14 @@ public class CheckoutEntity {
 
     public void setFreteType(FreteType freteType) {
         this.freteType = freteType;
+    }
+
+    @OneToMany(mappedBy = "checkout", orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public List<CheckoutFreteEntity> getListFrete() {
+        return listFrete;
+    }
+
+    public void setListFrete(List<CheckoutFreteEntity> listFrete) {
+        this.listFrete = listFrete;
     }
 }

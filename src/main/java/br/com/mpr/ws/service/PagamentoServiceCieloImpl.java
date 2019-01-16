@@ -2,11 +2,10 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.CarrinhoEntity;
-import br.com.mpr.ws.entity.ClienteEntity;
-import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceCieloException;
-import br.com.mpr.ws.vo.*;
+import br.com.mpr.ws.vo.CartaoCreditoVo;
+import br.com.mpr.ws.vo.CheckoutForm;
 import cieloecommerce.sdk.Merchant;
 import cieloecommerce.sdk.ecommerce.*;
 import cieloecommerce.sdk.ecommerce.request.CieloError;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  *

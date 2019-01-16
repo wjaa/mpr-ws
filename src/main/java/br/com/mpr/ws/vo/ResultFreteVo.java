@@ -1,5 +1,6 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.entity.FreteType;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ public class ResultFreteVo {
     private Double valor;
     private Date previsaoEntrega;
     private String messageError;
+    private FreteType freteType;
 
 
     public Integer getDiasUteis() {
@@ -73,5 +75,13 @@ public class ResultFreteVo {
                 ", previsaoEntrega=" + previsaoEntrega +
                 ", messageError='" + messageError + '\'' +
                 '}';
+    }
+
+    public FreteType getFreteType() {
+        return freteType;
+    }
+
+    public void setFreteType(FreteType freteType) {
+        this.freteType = freteType;
     }
 }

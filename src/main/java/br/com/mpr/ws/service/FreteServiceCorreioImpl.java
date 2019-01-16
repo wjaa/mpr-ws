@@ -40,11 +40,11 @@ public class FreteServiceCorreioImpl implements FreteService {
             resultado = ws.getCalcPrecoPrazoWSSoap().calcPrecoPrazoData(
                     "", //codigo da empresa
                     "", //senha da empresa
-                    StringUtils.isEmpty(FreteType.ECONOMICO.equals(param.getFreteType())) ? PAC :
+                    FreteType.ECONOMICO.equals(param.getFreteType()) ? PAC :
                             SEDEX , //40010 sedex | 41106 pac
                     parameterService.getParameter(MprParameterService.MprParameter.CEP_ORIGEM, "07093090"), //cep de origem (nosso cep)
                     param.getCepDestino(), //cep do cliente
-                    param.getPeso() != null ? "1" : NumberUtils.formatPTbr(param.getPeso()), //peso do produto
+                    param.getPeso() == null ? "1" : NumberUtils.formatPTbr(param.getPeso()), //peso do produto
                     1, // 1 é pacote.
                     param.getComp() != null ? new BigDecimal(30) : new BigDecimal(param.getComp()), //Comprimento da encomenda (incluindo embalagem),em centímetros (comp min 16cm)
                     param.getAlt() != null ? new BigDecimal(4) : new BigDecimal(param.getAlt()), //Altura da encomenda (incluindo embalagem), em centímetros. (comp min 2cm)

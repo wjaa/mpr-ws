@@ -69,10 +69,17 @@ public class CheckoutServiceImpl implements CheckoutService {
         //SOMA DOS PRODUTOS
         vo.setValorProdutos(valorProdutos);
 
-        //LISTA DE FRETES (ECONOMICO E RAPIDO).
-        vo.setListResultFrete(this.getListResultFrete(vo.getEndereco().getCep(),
-                checkout != null ? checkout.getFreteType() : FreteType.ECONOMICO,
-                carrinhoVo.getItems()));
+
+        //VALORES DE FRETE
+        if (checkout == null){
+            //CALCULA OS FRETES PARA (ECONOMICO E RAPIDO).
+            vo.setListResultFrete(this.calcularFretes(vo.getEndereco().getCep(),
+                    checkout != null ? checkout.getFreteType() : FreteType.ECONOMICO,
+                    carrinhoVo.getItems()));
+        }else{
+            //SE JÁ EXISTIR UM CHECKOU, ENTAO NAO RECALCULAMOS O FRETE, UTILIZAMOS O QUE FOI GRAVADO NA BASE.
+            vo.setListResultFrete(this.getListResultFrete(checkout));
+        }
 
         //Calculando o cupom de desconto se o cliente adicionou antes de modificar o carrinho
         if (checkout != null && checkout.getIdCupom() != null){
@@ -88,8 +95,19 @@ public class CheckoutServiceImpl implements CheckoutService {
         return vo;
     }
 
-    private List<ResultFreteVo> getListResultFrete(String cep, FreteType freteType,
-                                                   List<ItemCarrinhoVo> itensCarrinho) {
+    private List<ResultFreteVo> getListResultFrete(CheckoutEntity checkout) {
+        List<ResultFreteVo> listResult = new ArrayList<>();
+        for (CheckoutFreteEntity frete : checkout.getListFrete()){
+            ResultFreteVo freteVo = new ResultFreteVo();
+            BeanUtils.copyProperties(frete, freteVo);
+            freteVo.setSelecionado(checkout.getFreteType().equals(frete.getFreteType()));
+            listResult.add(freteVo);
+        }
+        return listResult;
+    }
+
+    private List<ResultFreteVo> calcularFretes(String cep, FreteType freteType,
+                                               List<ItemCarrinhoVo> itensCarrinho) {
         Double peso = 0.0;
         List<ProdutoEntity> produtosFrete = new ArrayList<>();
         for (ItemCarrinhoVo item : itensCarrinho){
@@ -126,12 +144,13 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         //VERIFICANDO O FRETE SELECIONADO PELO CLIENTE. (DEFAULT ECONOMICO)
         freteEconomico.setSelecionado(FreteType.ECONOMICO.equals(freteType));
+        freteEconomico.setFreteType(FreteType.ECONOMICO);
         freteRapido.setSelecionado(FreteType.RAPIDO.equals(freteType));
+        freteRapido.setFreteType(FreteType.RAPIDO);
 
         List<ResultFreteVo> listResultFrete = new ArrayList<>(2);
         listResultFrete.add(freteEconomico);
         listResultFrete.add(freteRapido);
-
         return listResultFrete;
     }
 
@@ -179,6 +198,28 @@ public class CheckoutServiceImpl implements CheckoutService {
             }
 
             checkoutEntity.setIdEndereco(idEndereco);
+
+            //RECALCULANDO OS FRETES ECONOMICO E RAPIDO.
+            List<ResultFreteVo> novoResultList = this.calcularFretes(this.getNovoCep(cliente.getEnderecos(),idEndereco),
+                    checkoutEntity.getFreteType(),carrinhoVo.getItems());
+
+
+            //COPIANDO OS VALORES PARA A LISTA DE FRETES DO CHECKOUT.
+            for (CheckoutFreteEntity checkoutFrete : checkoutEntity.getListFrete() ){
+                for (ResultFreteVo resultFrete : novoResultList){
+                    //ALTERANDO OS VALORES DOS RESULTADOS ANTERIORES
+                    if (resultFrete.getFreteType().equals(checkoutFrete.getFreteType())){
+                        BeanUtils.copyProperties(resultFrete,checkoutFrete, "id", "checkout");
+                    }
+                    //ALTERANDO OS VALORES DO CHECKOUT.
+                    if (resultFrete.getFreteType().equals(checkoutEntity.getFreteType())){
+                        checkoutEntity.setDiasEntrega(resultFrete.getDiasUteis());
+                        checkoutEntity.setValorFrete(resultFrete.getValor());
+                    }
+                }
+            }
+
+            //ATUALIZANDO O CHECKOUT.
             commonDao.update(checkoutEntity);
 
             return this.checkout(checkoutEntity.getIdCarrinho());
@@ -186,6 +227,16 @@ public class CheckoutServiceImpl implements CheckoutService {
         } catch (CarrinhoServiceException e) {
             throw new CheckoutServiceException("Carrinho não encontrado para o checkout informado.");
         }
+
+    }
+
+    private String getNovoCep(List<EnderecoEntity> enderecos, Long idEndereco) {
+        for (EnderecoEntity endereco : enderecos){
+            if ( endereco.getId().equals(idEndereco) ){
+                return endereco.getCep();
+            }
+        }
+        return "";
 
     }
 
@@ -215,11 +266,32 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     }
 
+    @Override
+    public CheckoutVo alterarFrete(Long idCheckout, FreteType freteType) throws CheckoutServiceException {
+
+        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
+        Assert.notNull(checkoutEntity,"Checkout não encontrado!");
+
+        checkoutEntity.setFreteType(freteType);
+
+        for (CheckoutFreteEntity frete: checkoutEntity.getListFrete()){
+            if (frete.getFreteType().equals(freteType)){
+                checkoutEntity.setValorFrete(frete.getValor());
+                checkoutEntity.setDiasEntrega(frete.getDiasUteis());
+            }
+        }
+        commonDao.update(checkoutEntity);
+
+        return this.checkout(checkoutEntity.getIdCarrinho());
+    }
+
     private void saveCheckout(CheckoutEntity checkout, CheckoutVo vo) {
         if (checkout == null){
             checkout = new CheckoutEntity();
             //DEFAULT PARA CHECKOUT INICIAL.
             checkout.setFreteType(FreteType.ECONOMICO);
+            this.createDadosFrete(checkout,vo);
+
         }
         BeanUtils.copyProperties(vo,checkout,"id");
         checkout.setValorFrete(vo.getValorFrete());
@@ -235,6 +307,20 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         vo.setId(checkout.getId());
     }
+
+    private void createDadosFrete(CheckoutEntity checkout, CheckoutVo vo) {
+        checkout.setValorFrete(vo.getValorFrete());
+        checkout.setDiasEntrega(vo.getDiasEntrega());
+        checkout.setListFrete(new ArrayList<>());
+
+        for (ResultFreteVo freteVo : vo.getListResultFrete()){
+            CheckoutFreteEntity frete = new CheckoutFreteEntity();
+            frete.setCheckout(checkout);
+            BeanUtils.copyProperties(freteVo, frete);
+            checkout.getListFrete().add(frete);
+        }
+    }
+
 
 
 }
