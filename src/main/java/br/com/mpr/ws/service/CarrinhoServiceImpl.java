@@ -258,6 +258,10 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             return vo;
         }
 
+        return this.getCarrinhoVo(carrinhoEntity);
+    }
+
+    private CarrinhoVo getCarrinhoVo(CarrinhoEntity carrinhoEntity) {
         CarrinhoVo vo = CarrinhoVo.toVo(carrinhoEntity);
         List<ItemCarrinhoEntity> items =
                 commonDao.findByProperties(
@@ -300,5 +304,16 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             LOG.error("Erro ao remover um item do carrinho.", ex);
             throw new CarrinhoServiceException("Erro ao remover o item do carrinho");
         }
+    }
+
+    @Override
+    public CarrinhoVo getCarrinhoById(Long idCarrinho) throws CarrinhoServiceException {
+        CarrinhoEntity carrinhoEntity = commonDao.get(CarrinhoEntity.class, idCarrinho);
+
+        if (carrinhoEntity == null){
+            throw new CarrinhoServiceException("Carrinho não encontrado com o ID = " + idCarrinho);
+        }
+
+        return this.getCarrinhoVo(carrinhoEntity);
     }
 }

@@ -75,6 +75,18 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "ATIVO", nullable = false)
     private Boolean ativo;
 
+    @Range(min = 0, max = 999)
+    @Column(name = "COMP", nullable = false)
+    private Double comp;
+
+    @Range(min = 0, max = 999)
+    @Column(name = "LARG", nullable = false)
+    private Double larg;
+
+    @Range(min = 0, max = 999)
+    @Column(name = "ALT", nullable = false)
+    private Double alt;
+
     @Transient
     private byte [] byteImgPreview;
 
@@ -263,4 +275,27 @@ public class ProdutoEntity implements Serializable {
         return new ProdutoVo(this);
     }
 
+    public Double getComp() {
+        return comp;
+    }
+
+    public void setComp(Double comp) {
+        this.comp = comp;
+    }
+
+    public Double getLarg() {
+        return larg;
+    }
+
+    public void setLarg(Double larg) {
+        this.larg = larg;
+    }
+
+    public Double getAlt() {
+        return alt;
+    }
+
+    public void setAlt(Double alt) {
+        this.alt = alt;
+    }
 }

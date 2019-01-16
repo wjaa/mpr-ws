@@ -1,21 +1,21 @@
 package br.com.mpr.ws.service;
 
-import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.CheckoutCieloServiceException;
-import br.com.mpr.ws.vo.CartaoCreditoVo;
-import br.com.mpr.ws.vo.CheckoutForm;
+import br.com.mpr.ws.exception.CheckoutServiceException;
 import br.com.mpr.ws.vo.CheckoutVo;
 
-
 /**
- *
+ * Created by wagner on 11/01/19.
  */
 public interface CheckoutService {
 
+    /**
+     * @param idCarrinho
+     * @return
+     */
+    CheckoutVo checkout(Long idCarrinho) throws CheckoutServiceException;
 
-    PedidoEntity checkout(CheckoutForm form) throws CheckoutCieloServiceException;
+    CheckoutVo alterarEndereco(Long idCheckout, Long idEndereco) throws CheckoutServiceException;
 
-    String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws CheckoutCieloServiceException;
+    CheckoutVo adicionarCupom(Long idCheckout, String codigoCupom) throws CheckoutServiceException;
 
-    CheckoutVo detailCheckout(Long idCliente) throws CheckoutCieloServiceException;
 }

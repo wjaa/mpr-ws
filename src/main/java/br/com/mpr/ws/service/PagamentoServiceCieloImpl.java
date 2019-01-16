@@ -5,7 +5,7 @@ import br.com.mpr.ws.entity.CarrinhoEntity;
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.CheckoutCieloServiceException;
+import br.com.mpr.ws.exception.PagamentoServiceCieloException;
 import br.com.mpr.ws.vo.*;
 import cieloecommerce.sdk.Merchant;
 import cieloecommerce.sdk.ecommerce.*;
@@ -23,9 +23,9 @@ import java.util.ArrayList;
 /**
  *
  */
-@Service("CheckoutServiceCieloImpl")
+@Service("PagamentoServiceCieloImpl")
 @ConfigurationProperties("cielo")
-public class CheckoutServiceCieloImpl implements CheckoutService {
+public class PagamentoServiceCieloImpl implements PagamentoService {
 
     private String merchantId;
     private String merchantKey;
@@ -53,7 +53,7 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
     private ClienteService clienteService;
 
 
-    public PedidoEntity checkout(CheckoutForm form) throws CheckoutCieloServiceException {
+    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceCieloException {
 
         if (form.getFormaPagamento().isBoleto()){
             return this.pagamentoBoleto(form);
@@ -63,7 +63,7 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
 
     }
 
-    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws CheckoutCieloServiceException {
+    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws PagamentoServiceCieloException {
         // Crie uma instância de Sale informando o ID do pagamento
         Sale sale = new Sale("ID do pagamento");
 
@@ -89,7 +89,7 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
             System.out.println(paymentId);
 
             CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
-            PedidoEntity pedidoEntity = pedidoService.createPedido(carrinho,form.getFormaPagamento());
+            PedidoEntity pedidoEntity = pedidoService.createPedido(form);
 
             return pedidoEntity;
         } catch (CieloRequestException e) {
@@ -98,17 +98,21 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
             CieloError error = e.getError();
             e.printStackTrace();
 
-            throw new CheckoutCieloServiceException(error.getMessage());
+            throw new PagamentoServiceCieloException(error.getMessage());
         } catch (IOException e) {
-            throw new CheckoutCieloServiceException(e.getMessage());
+            throw new PagamentoServiceCieloException(e.getMessage());
         }
 
     }
 
-    private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws CheckoutCieloServiceException {
+    private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceCieloException {
+
+        CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
+        //no momento da tentativa de pagamento, precisamos criar o pedido para enviar o ID para a cielo.
+        PedidoEntity pedidoEntity = pedidoService.createPedido(form);
 
         // Crie uma instância de Sale informando o ID do pagamento
-        Sale sale = new Sale("ID do pagamento");
+        Sale sale = new Sale(pedidoEntity.getId().toString());
 
         // Crie uma instância de Customer informando o nome do cliente
         Customer customer = sale.customer("Comprador Teste");
@@ -136,8 +140,8 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
             String paymentId = sale.getPayment().getPaymentId();
             System.out.println(paymentId);
 
-            CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
-            PedidoEntity pedidoEntity = pedidoService.createPedido(carrinho,form.getFormaPagamento());
+
+
 
             return pedidoEntity;
         } catch (CieloRequestException e) {
@@ -146,15 +150,15 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
             CieloError error = e.getError();
             e.printStackTrace();
 
-            throw new CheckoutCieloServiceException(error.getMessage());
+            throw new PagamentoServiceCieloException(error.getMessage());
         } catch (IOException e) {
-            throw new CheckoutCieloServiceException(e.getMessage());
+            throw new PagamentoServiceCieloException(e.getMessage());
         }
 
     }
 
     @Override
-    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws CheckoutCieloServiceException {
+    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceCieloException {
         // Configure seu merchant
         Merchant merchant = new Merchant(this.merchantId, this.merchantKey);
 
@@ -172,47 +176,11 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
 
         } catch (CieloRequestException e) {
             CieloError error = e.getError();
-            throw new CheckoutCieloServiceException(error.getMessage());
+            throw new PagamentoServiceCieloException(error.getMessage());
         } catch (IOException e) {
-            throw new CheckoutCieloServiceException(e.getMessage());
+            throw new PagamentoServiceCieloException(e.getMessage());
         }
     }
-
-    @Override
-    public CheckoutVo detailCheckout(Long idCliente) throws CheckoutCieloServiceException {
-
-        CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoByIdCliente(idCliente);
-
-        if (carrinhoVo == null || carrinhoVo.getItems() == null || carrinhoVo.getItems().size() == 0){
-            throw new CheckoutCieloServiceException("Carrinho está vazio!");
-        }
-
-        CheckoutVo checkout = new CheckoutVo();
-
-        ClienteEntity cliente = clienteService.getClienteById(idCliente);
-        EnderecoEntity endereco = cliente.getEnderecoPrincipal();
-
-        if (endereco == null){
-            throw new CheckoutCieloServiceException("Cliente não tem endereço cadastrado!");
-        }
-
-        //TODO: CRIAR UMA TABELA DE CONFIGURACOES DO SISTEMA
-        ResultFreteVo resultFrete = freteService.calcFrete("07093090", endereco.getCep());
-        checkout.setValorFrete(resultFrete.getValor());
-        checkout.setPrevisaoEntrega(resultFrete.getPrevisaoEntrega());
-        checkout.setProdutos(new ArrayList<>());
-        Double valorProdutos = 0.0;
-        for (ItemCarrinhoVo item : carrinhoVo.getItems()){
-            checkout.getProdutos().add(item.getProduto());
-            valorProdutos += item.getProduto().getPreco();
-        }
-
-        checkout.setEnderecoVo(EnderecoVo.toVo(endereco));
-        checkout.setValorProdutos(valorProdutos);
-
-        return checkout;
-    }
-
 
     public String getMerchantId() {
         return merchantId;
@@ -229,4 +197,5 @@ public class CheckoutServiceCieloImpl implements CheckoutService {
     public void setMerchantKey(String merchantKey) {
         this.merchantKey = merchantKey;
     }
+
 }

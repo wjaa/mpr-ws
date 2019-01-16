@@ -23,6 +23,10 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID_ESTOQUE_ITEM", nullable = false, unique = true)
     private Long idEstoqueItem;
 
+    @ManyToOne
+    @JoinColumn(name = "ID_ESTOQUE_ITEM", updatable = false, insertable = false)
+    private EstoqueItemEntity estoqueItem;
+
     @Column(name = "ID_CARRINHO", nullable = false)
     private Long idCarrinho;
 
@@ -70,5 +74,13 @@ public class ItemCarrinhoEntity {
 
     public void setIdCatalogo(Long idCatalogo) {
         this.idCatalogo = idCatalogo;
+    }
+
+    public EstoqueItemEntity getEstoqueItem() {
+        return estoqueItem;
+    }
+
+    public void setEstoqueItem(EstoqueItemEntity estoqueItem) {
+        this.estoqueItem = estoqueItem;
     }
 }

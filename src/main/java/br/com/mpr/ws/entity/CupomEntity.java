@@ -44,6 +44,10 @@ public class CupomEntity implements Serializable {
     @NotNull(message = "Porcentagem é obrigatório!")
     private Double porcentagem;
 
+    @Column(name = "QUANTIDADE", nullable = false)
+    @NotNull(message = "Quantidade é obrigatória!")
+    private Integer quantidade;
+
 
     public Long getId() {
         return id;
@@ -105,5 +109,13 @@ public class CupomEntity implements Serializable {
 
     public void setPorcentagem(Double porcentagem) {
         this.porcentagem = porcentagem;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
     }
 }

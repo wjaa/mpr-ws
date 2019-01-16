@@ -5,6 +5,7 @@ import br.com.mpr.ws.helper.JacksonDateDeserializer;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
 import br.com.mpr.ws.utils.NumberUtils;
 import br.com.mpr.ws.utils.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -158,7 +159,13 @@ public class ClienteEntity implements Serializable {
         this.login = login;
     }
 
+
+    /**
+     * Endereco cadastrado com principal.
+     * @return
+     */
     @Transient
+    @JsonIgnore
     public EnderecoEntity getEnderecoPrincipal() {
         if (enderecos == null){
             return null;

@@ -17,4 +17,6 @@ public interface CarrinhoService {
     CarrinhoVo getCarrinhoByKeyDevice(String keyDevice);
 
     CarrinhoVo removeItem(Long idItem) throws CarrinhoServiceException;
+
+    CarrinhoVo getCarrinhoById(Long idCarrinho) throws CarrinhoServiceException;
 }

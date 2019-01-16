@@ -25,6 +25,12 @@ import org.junit.runners.Suite;
         LoginServiceImplTest.class,
         LoginRestTest.class,
 
+        EmbalagemServiceImplTest.class,
+        FreteServiceCorreioImplTest.class,
+
+        CheckoutServiceImplTest.class,
+
+
 })
 public class SuiteTest {
 }

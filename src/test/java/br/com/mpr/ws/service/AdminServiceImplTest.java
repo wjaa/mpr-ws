@@ -658,6 +658,9 @@ public class AdminServiceImplTest extends BaseDBTest {
         listImgDestaque.add(imgDestaque);
         produtoEntity.setListImgDestaque(listImgDestaque);
         produtoEntity.setPeso(0.30);
+        produtoEntity.setAlt(10.0);
+        produtoEntity.setComp(10.0);
+        produtoEntity.setLarg(10.0);
         return produtoEntity;
     }
 

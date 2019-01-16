@@ -1,6 +1,8 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.vo.ResultFreteVo;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,29 @@ public class FreteServiceCorreioImplTest{
 
     @Test
     public void calcFrete() throws Exception {
-        ResultFreteVo frete = freteService.calcFrete("07093090","02323000");
-        System.out.println(frete);
+        ResultFreteVo frete = freteService.calcFrete(
+                new FreteService.FreteParam(FreteType.ECONOMICO,
+                        "04634-900",
+                        0.3,
+                        30.0,
+                        25.0,
+                        4.0));
+        Assert.assertNotNull(frete.getValor());
+        Assert.assertNotNull(frete.getDiasUteis());
+        Assert.assertNotNull(frete.getPrevisaoEntrega());
+    }
+
+    @Test
+    public void calcFreteCepInvalido() throws Exception {
+        ResultFreteVo frete = freteService.calcFrete(
+                new FreteService.FreteParam(FreteType.ECONOMICO,
+                        "0000-000",
+                        0.3,
+                        30.0,
+                        25.0,
+                        4.0));
+        Assert.assertTrue(frete.hasError());
+        Assert.assertTrue(frete.getMessageError().contains("CEP de destino invalido"));
     }
 
 }

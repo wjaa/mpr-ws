@@ -10,12 +10,14 @@ public class EnderecoVo {
     private Long id;
     private String descricao;
     private String endereco;
+    private String cep;
 
     public static EnderecoVo toVo(EnderecoEntity endereco) {
         EnderecoVo enderecoVo = new EnderecoVo();
         enderecoVo.setDescricao(endereco.getDescricao());
         enderecoVo.setEndereco(endereco.getEnderecoFull());
         enderecoVo.setId(endereco.getId());
+        enderecoVo.setCep(endereco.getCep());
         return enderecoVo;
     }
 
@@ -41,5 +43,13 @@ public class EnderecoVo {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 }

@@ -1,8 +1,9 @@
 package br.com.mpr.ws.service;
 
-import br.com.mpr.ws.entity.CarrinhoEntity;
+import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.vo.FormaPagamentoVo;
+import br.com.mpr.ws.vo.CheckoutForm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,8 +11,23 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PedidoServiceImpl implements PedidoService{
+
+    @Autowired
+    private CommonDao commonDao;
+
+    @Autowired
+    private CupomService cupomService;
+
+    @Autowired
+    private CarrinhoService carrinhoService;
+
+    @Autowired
+    private ProdutoService produtoService;
+
     @Override
-    public PedidoEntity createPedido(CarrinhoEntity carrinho, FormaPagamentoVo formaPagamento) {
-        return new PedidoEntity();
+    public PedidoEntity createPedido(CheckoutForm checkoutForm) {
+                return new PedidoEntity();
     }
+
+
 }

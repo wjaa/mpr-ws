@@ -2,10 +2,9 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.CheckoutCieloServiceException;
+import br.com.mpr.ws.exception.PagamentoServiceCieloException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
-import br.com.mpr.ws.vo.CheckoutVo;
 import br.com.mpr.ws.vo.FormaPagamentoVo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,35 +15,11 @@ import java.util.Calendar;
 /**
  *
  */
-public class CheckoutServiceCieloImplTest extends BaseDBTest {
+public class PagamentoServiceCieloImplTest extends BaseDBTest {
 
 
     @Autowired
-    private CheckoutService checkoutService;
-
-
-    @Test
-    public void getCheckout(){
-
-        try {
-            CheckoutVo checkout = this.checkoutService.detailCheckout(1l);
-            Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
-            Assert.assertEquals(new Double(128.50), checkout.getTotal());
-            Assert.assertNotNull(checkout.getProdutos());
-            Assert.assertEquals(1, checkout.getProdutos().size());
-            Assert.assertNotNull(checkout.getEnderecoVo());
-            Assert.assertNotNull(checkout.getEnderecoVo().getEndereco());
-            Assert.assertNotNull(checkout.getEnderecoVo().getDescricao());
-            Assert.assertNotNull(checkout.getPrevisaoEntrega());
-
-
-        } catch (CheckoutCieloServiceException e) {
-            Assert.assertTrue(e.getMessage(), false);
-        }
-
-
-    }
-
+    private PagamentoService pagamentoService;
 
 
     @Test
@@ -56,8 +31,8 @@ public class CheckoutServiceCieloImplTest extends BaseDBTest {
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
             form.setFormaPagamento(formaPagamentoVo);
-            checkoutService.checkout(form);
-        }catch (CheckoutCieloServiceException ex){
+            pagamentoService.pagamento(form);
+        }catch (PagamentoServiceCieloException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }
     }
@@ -74,10 +49,10 @@ public class CheckoutServiceCieloImplTest extends BaseDBTest {
             cartaoCreditoVo.setCardToken(this.getTokenCielo());
             formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
             form.setFormaPagamento(formaPagamentoVo);
-            PedidoEntity pedidoEntity = checkoutService.checkout(form);
+            PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
             Assert.assertNotNull(pedidoEntity);
             Assert.assertNotNull(pedidoEntity.getIdPagamento());
-        }catch (CheckoutCieloServiceException ex){
+        }catch (PagamentoServiceCieloException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }
     }
@@ -95,7 +70,7 @@ public class CheckoutServiceCieloImplTest extends BaseDBTest {
 
     }
 
-    private String getTokenCielo() throws CheckoutCieloServiceException {
+    private String getTokenCielo() throws PagamentoServiceCieloException {
         Integer year = Calendar.getInstance().get(Calendar.YEAR);
         CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
         cartaoCreditoVo.setBrand("Visa")
@@ -104,7 +79,7 @@ public class CheckoutServiceCieloImplTest extends BaseDBTest {
                 .setHolder("Comprador T Cielo")
                 .setExpirationDate("12/" + year );
 
-        return checkoutService.getCardToken(cartaoCreditoVo);
+        return pagamentoService.getCardToken(cartaoCreditoVo);
 
     }
 

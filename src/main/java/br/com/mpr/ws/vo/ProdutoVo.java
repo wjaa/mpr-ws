@@ -21,9 +21,13 @@ public class ProdutoVo {
     private String imgDestaque;
     private String imgSemFoto;
     private Double preco;
+    private Double peso;
     private Integer quantidade;
     private String hexaCor;
     private String nomeCor;
+    private Double comp;
+    private Double larg;
+    private Double alt;
     private List<ProdutoVo> produtosRelacionados;
 
     public ProdutoVo(){}
@@ -127,5 +131,37 @@ public class ProdutoVo {
 
     public void setNomeCor(String nomeCor) {
         this.nomeCor = nomeCor;
+    }
+
+    public Double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(Double peso) {
+        this.peso = peso;
+    }
+
+    public Double getComp() {
+        return comp;
+    }
+
+    public void setComp(Double comp) {
+        this.comp = comp;
+    }
+
+    public Double getLarg() {
+        return larg;
+    }
+
+    public void setLarg(Double larg) {
+        this.larg = larg;
+    }
+
+    public Double getAlt() {
+        return alt;
+    }
+
+    public void setAlt(Double alt) {
+        this.alt = alt;
     }
 }

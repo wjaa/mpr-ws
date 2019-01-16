@@ -8,7 +8,7 @@ public class ItemCarrinhoVo {
     private Long id;
     private Long idCarrinho;
     private ProdutoVo produto;
-    //TODO teremos a foto com PR ? ou só a foto do cliente ?
+    //TODO: teremos a foto com PR ? ou só a foto do cliente ?
     private String urlFoto;
     private Long idCatalogo;
 

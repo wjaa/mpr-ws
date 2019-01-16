@@ -53,4 +53,5 @@ public class EstoqueItemEntity {
     public void setIdEstoque(Long idEstoque) {
         this.idEstoque = idEstoque;
     }
+
 }

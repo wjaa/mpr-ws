@@ -48,7 +48,9 @@ public class CommonDaoImpl implements CommonDao {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public <T> T update(T o) {
-        return entityManager.merge(o);
+        o = entityManager.merge(o);
+        entityManager.flush();
+        return o;
     }
 
     @Override

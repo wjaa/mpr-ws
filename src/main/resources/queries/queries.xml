@@ -151,7 +151,11 @@
                     AND EI.ID NOT IN  (SELECT ICA.ID_ESTOQUE_ITEM
                                          FROM item_carrinho ICA
                                          WHERE ICA.ID_ESTOQUE_ITEM = EI.ID)
-                ) AS QUANTIDADE
+                ) AS QUANTIDADE,
+                P.PESO,
+                P.COMP,
+                P.LARG,
+                P.ALT
                 FROM produto P
                 JOIN tabela_preco TP ON TP.ID_PRODUTO = P.ID AND TP.DATA_VIGENCIA =
                 (SELECT MAX(DATA_VIGENCIA) FROM tabela_preco TTP WHERE TTP.ID_PRODUTO = P.ID
@@ -216,7 +220,49 @@
     </bean>
 
 
+    <bean name="EmbalagemService.findEmbalagem" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT
+                    E.ID,
+                    E.COMP,
+                    E.LARG,
+                    E.ALT,
+                    E.DESCRICAO,
+                    E.ATIVO
+                FROM
+                embalagem E
+                WHERE E.ATIVO = 1
+                AND E.COMP >= :comp
+                AND E.LARG >= :larg
+                AND E.ALT >= :alt
+                ORDER BY E.COMP, E.LARG, E.ALT
+                LIMIT 1
+            </value>
+        </constructor-arg>
+    </bean>
 
+    <bean name="CupomService.findCupomByName" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT
+                    ID,
+                    DESCRICAO,
+                    HASH,
+                    DATA_INICIO,
+                    DATA_FIM,
+                    PROMOCAO,
+                    PORCENTAGEM,
+                    QUANTIDADE
+                FROM cupom_desconto C
+                where C.DATA_FIM &gt;= sysdate()
+                and C.QUANTIDADE &gt;= (
+                (SELECT COUNT(1) FROM pedido P WHERE P.ID_CUPOM = C.ID) +
+                (SELECT COUNT(1) FROM checkout CO WHERE CO.ID_CUPOM = C.ID) )
+                and C.HASH = :hash
+            </value>
+        </constructor-arg>
+    </bean>
 
     <!-- FIM PRODUTO SERVICE -->
 
