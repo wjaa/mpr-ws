@@ -88,4 +88,6 @@ public class CheckoutFreteEntity {
     public void setMessageError(String messageError) {
         this.messageError = messageError;
     }
+
+
 }
