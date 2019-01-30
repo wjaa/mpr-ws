@@ -39,14 +39,14 @@ public class CarrinhoRest extends BaseRest {
     @RequestMapping(value = "/carrinho/byIdCliente/{idCliente}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoCliente(@PathVariable Long idCliente){
+    public CarrinhoVo getCarrinhoClienteById(@PathVariable Long idCliente){
         return this.carrinhoService.getCarrinhoByIdCliente(idCliente);
     }
 
     @RequestMapping(value = "/carrinho/byKeyDevice/{keyDevice}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoCliente(@PathVariable String keyDevice){
+    public CarrinhoVo getCarrinhoClienteByKeyDevice(@PathVariable String keyDevice){
         return this.carrinhoService.getCarrinhoByKeyDevice(keyDevice);
     }
 

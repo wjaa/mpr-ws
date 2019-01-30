@@ -37,7 +37,7 @@ public class ClienteRest extends BaseRest {
     @RequestMapping(value = "/cliente/byId/{idCliente}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public ClienteEntity getCliente(@PathVariable Long idCliente){
+    public ClienteEntity getClienteById(@PathVariable Long idCliente){
         return this.clienteService.getClienteById(idCliente);
     }
 
@@ -45,7 +45,7 @@ public class ClienteRest extends BaseRest {
     @RequestMapping(value = "/cliente/byKeyDevice/{keyDevice}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public ClienteEntity getCliente(@PathVariable String keyDevice){
+    public ClienteEntity getClienteByKeyDevice(@PathVariable String keyDevice){
         return this.clienteService.getClienteByKeyDevice(keyDevice);
     }
 
