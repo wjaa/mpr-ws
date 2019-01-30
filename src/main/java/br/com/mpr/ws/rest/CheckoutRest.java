@@ -38,15 +38,15 @@ public class CheckoutRest extends BaseRest {
         return this.checkoutService.checkout(idCarrinho);
     }
 
-    @RequestMapping(value = "/checkout/{idCarrinho}/cupom",
+    @RequestMapping(value = "/checkout/addCupom/{idCheckout}/{cupom}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
-    public CheckoutVo adicionarCupom(@PathVariable Long idCarrinho,
+    public CheckoutVo adicionarCupom(@PathVariable Long idCheckout,
                                @PathVariable String cupom) throws CheckoutServiceException {
-        return this.checkoutService.adicionarCupom(idCarrinho,cupom);
+        return this.checkoutService.adicionarCupom(idCheckout,cupom);
     }
 
-    @RequestMapping(value = "/checkout/{idCheckout}/{idEndereco}",
+    @RequestMapping(value = "/checkout/alterarEndereco/{idCheckout}/{idEndereco}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
     public CheckoutVo alterarEndereco(@PathVariable Long idCheckout,
@@ -54,11 +54,12 @@ public class CheckoutRest extends BaseRest {
         return this.checkoutService.alterarEndereco(idCheckout, idEndereco);
     }
 
-    @RequestMapping(value = "/checkout/{idCheckout}/{freteType}",
+    @RequestMapping(value = "/checkout/alterarFrete/{idCheckout}/{freteType}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
     public CheckoutVo alterarFrete(@PathVariable Long idCheckout,
                                       @PathVariable FreteType freteType) throws CheckoutServiceException {
         return this.checkoutService.alterarFrete(idCheckout, freteType);
     }
+
 }

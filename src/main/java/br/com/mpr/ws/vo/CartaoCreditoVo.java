@@ -10,7 +10,8 @@ public class CartaoCreditoVo {
     private String expirationDate;
     private String cardNumber;
     private String holder;
-    private String cardToken;
+    private String token;
+    private Integer quantity;
 
 
     public String getSecutiryCode() {
@@ -58,12 +59,20 @@ public class CartaoCreditoVo {
         return this;
     }
 
-    public String getCardToken() {
-        return cardToken;
+    public String getToken() {
+        return token;
     }
 
-    public CartaoCreditoVo setCardToken(String cardToken) {
-        this.cardToken = cardToken;
+    public CartaoCreditoVo setToken(String token) {
+        this.token = token;
         return this;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

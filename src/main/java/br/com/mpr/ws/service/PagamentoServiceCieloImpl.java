@@ -1,7 +1,6 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
-import br.com.mpr.ws.entity.CarrinhoEntity;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceCieloException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
@@ -81,12 +80,12 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             // Configure o SDK com seu merchant e o ambiente apropriado para criar a venda
             sale = new CieloEcommerce(merchant, Environment.SANDBOX).createSale(sale);
 
+
             // Com a venda criada na Cielo, já temos o ID do pagamento, TID e demais
             // dados retornados pela Cielo
             String paymentId = sale.getPayment().getPaymentId();
             System.out.println(paymentId);
 
-            CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
             PedidoEntity pedidoEntity = pedidoService.createPedido(form);
 
             return pedidoEntity;
@@ -105,7 +104,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
     private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceCieloException {
 
-        CarrinhoEntity carrinho = commonDao.get(CarrinhoEntity.class,form.getIdCarrinho());
+
         //no momento da tentativa de pagamento, precisamos criar o pedido para enviar o ID para a cielo.
         PedidoEntity pedidoEntity = pedidoService.createPedido(form);
 
@@ -122,11 +121,11 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
         // Crie  uma instância de Credit Card utilizando os dados de teste
         // esses dados estão disponíveis no manual de integração
         payment.creditCard(cartaoCredito.getSecutiryCode(), cartaoCredito.getBrand())
-                .setCardToken(cartaoCredito.getCardToken());
+                .setCardToken(cartaoCredito.getToken());
 
         //fazer uma requisicao antes para esconder os dados do cartao de credito do cliente.
         //assim d[a para utilizar o token.
-        //.setCardToken("TOKEN");
+        //.setToken("TOKEN");
 
         // Crie o pagamento na Cielo
         try {

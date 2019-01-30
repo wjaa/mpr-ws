@@ -27,7 +27,7 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
 
         try{
             CheckoutForm form = new CheckoutForm();
-            form.setIdCarrinho(1l);
+            //form.setIdCarrinho(1l);
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
             form.setFormaPagamento(formaPagamentoVo);
@@ -42,11 +42,11 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
 
         try{
             CheckoutForm form = new CheckoutForm();
-            form.setIdCarrinho(2l);
+            //form.setIdCarrinho(2l);
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.CARTAO_CREDITO);
             CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
-            cartaoCreditoVo.setCardToken(this.getTokenCielo());
+            cartaoCreditoVo.setToken(this.getTokenCielo());
             formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
             form.setFormaPagamento(formaPagamentoVo);
             PedidoEntity pedidoEntity = pagamentoService.pagamento(form);

@@ -139,6 +139,14 @@
 			<systemPath>${project.basedir}/libs/api30.sdk-0.0.1-SNAPSHOT.jar</systemPath>
 		</dependency>
 
+		<dependency>
+			<groupId>br.com.uol.pagseguro</groupId>
+			<artifactId>pagseguro-api</artifactId>
+			<version>4.1.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/pagseguro-api-4.1.1.jar</systemPath>
+		</dependency>
+
 		<!-- DEPENDENCIAS DA CIELO -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

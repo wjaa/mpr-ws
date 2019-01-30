@@ -1,10 +1,14 @@
 package br.com.mpr.ws.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CheckoutVo {
 
     private Long id;
@@ -15,6 +19,7 @@ public class CheckoutVo {
     private Double valorDesconto;
     private Long idCupom;
     private Long idCarrinho;
+    private Long idCliente;
 
     public Long getId() {
         return id;
@@ -84,6 +89,15 @@ public class CheckoutVo {
         this.listResultFrete = listResultFrete;
     }
 
+    public Long getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(Long idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    @JsonProperty
     public Double getValorFrete() {
         for (ResultFreteVo frete : this.listResultFrete){
             if (frete.getSelecionado()){
@@ -93,6 +107,7 @@ public class CheckoutVo {
         return 0.0;
     }
 
+    @JsonProperty
     public Integer getDiasEntrega() {
         for (ResultFreteVo frete : this.listResultFrete){
             if (frete.getSelecionado()){
@@ -102,6 +117,7 @@ public class CheckoutVo {
         return 0;
     }
 
+    @JsonProperty
     public ResultFreteVo getFreteSelecionado() {
         for (ResultFreteVo frete : this.listResultFrete){
             if (frete.getSelecionado()){

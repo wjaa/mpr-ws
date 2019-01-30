@@ -21,4 +21,5 @@ public interface CheckoutService {
 
     CheckoutVo alterarFrete(Long idCheckout, FreteType freteType) throws CheckoutServiceException;
 
+    CheckoutVo getCheckout(Long idCheckout);
 }

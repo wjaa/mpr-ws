@@ -60,8 +60,8 @@ public class DateUtils {
         return c.getTime();
     }
 
-    public static String formatddMMyyyy(Date dataAgendamento) {
-        return sdfddMMyyyy.format(dataAgendamento);
+    public static String formatddMMyyyy(Date data) {
+        return sdfddMMyyyy.format(data);
     }
 
     public static String formatDateISO8601(Date date) {
@@ -101,4 +101,12 @@ public class DateUtils {
        return time / 1000 / 60 / 60 / 24;
     }
 
+    public static Date getDateddMMyyyy(String s) {
+        try {
+            return sdfddMMyyyy.parse(s);
+        } catch (ParseException e) {
+            LOG.error("Erro no parse da data", e);
+        }
+        return null;
+    }
 }

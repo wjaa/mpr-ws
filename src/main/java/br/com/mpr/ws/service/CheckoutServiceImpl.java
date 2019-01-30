@@ -285,6 +285,16 @@ public class CheckoutServiceImpl implements CheckoutService {
         return this.checkout(checkoutEntity.getIdCarrinho());
     }
 
+    @Override
+    public CheckoutVo getCheckout(Long idCheckout) {
+        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
+
+
+        checkoutEntity
+
+        return null;
+    }
+
     private void saveCheckout(CheckoutEntity checkout, CheckoutVo vo) {
         if (checkout == null){
             checkout = new CheckoutEntity();
