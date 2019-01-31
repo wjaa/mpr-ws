@@ -2,7 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.PagamentoServiceCieloException;
+import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
 import cieloecommerce.sdk.Merchant;
@@ -50,7 +50,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
     private ClienteService clienteService;
 
 
-    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceCieloException {
+    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceException {
 
         if (form.getFormaPagamento().isBoleto()){
             return this.pagamentoBoleto(form);
@@ -60,7 +60,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
     }
 
-    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws PagamentoServiceCieloException {
+    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws PagamentoServiceException {
         // Crie uma instância de Sale informando o ID do pagamento
         Sale sale = new Sale("ID do pagamento");
 
@@ -95,14 +95,14 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             CieloError error = e.getError();
             e.printStackTrace();
 
-            throw new PagamentoServiceCieloException(error.getMessage());
+            throw new PagamentoServiceException(error.getMessage());
         } catch (IOException e) {
-            throw new PagamentoServiceCieloException(e.getMessage());
+            throw new PagamentoServiceException(e.getMessage());
         }
 
     }
 
-    private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceCieloException {
+    private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceException {
 
 
         //no momento da tentativa de pagamento, precisamos criar o pedido para enviar o ID para a cielo.
@@ -147,15 +147,15 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             CieloError error = e.getError();
             e.printStackTrace();
 
-            throw new PagamentoServiceCieloException(error.getMessage());
+            throw new PagamentoServiceException(error.getMessage());
         } catch (IOException e) {
-            throw new PagamentoServiceCieloException(e.getMessage());
+            throw new PagamentoServiceException(e.getMessage());
         }
 
     }
 
     @Override
-    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceCieloException {
+    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceException {
         // Configure seu merchant
         Merchant merchant = new Merchant(this.merchantId, this.merchantKey);
 
@@ -173,9 +173,9 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
         } catch (CieloRequestException e) {
             CieloError error = e.getError();
-            throw new PagamentoServiceCieloException(error.getMessage());
+            throw new PagamentoServiceException(error.getMessage());
         } catch (IOException e) {
-            throw new PagamentoServiceCieloException(e.getMessage());
+            throw new PagamentoServiceException(e.getMessage());
         }
     }
 

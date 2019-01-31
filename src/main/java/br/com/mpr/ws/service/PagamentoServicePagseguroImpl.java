@@ -5,8 +5,7 @@ import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.PagamentoServiceCieloException;
-import br.com.mpr.ws.utils.DateUtils;
+import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.vo.*;
 import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
@@ -57,7 +56,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
 
 
     @Override
-    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceCieloException {
+    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceException {
 
         if ( form.getFormaPagamento().isBoleto() ){
             return checkoutBoleto(form);
@@ -141,6 +140,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                         .withReference("LIBJAVA_DIRECT_PAYMENT")
                         .withSender(this.getSender(cliente))
                         .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))
+
                 ).withBankSlip();
         System.out.println(bankSlipTransaction);
 
@@ -190,7 +190,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     }
 
     @Override
-    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceCieloException {
+    public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceException {
         return null;
     }
 }

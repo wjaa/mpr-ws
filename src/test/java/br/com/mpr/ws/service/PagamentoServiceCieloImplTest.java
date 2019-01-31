@@ -2,7 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.exception.PagamentoServiceCieloException;
+import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
 import br.com.mpr.ws.vo.FormaPagamentoVo;
@@ -32,7 +32,7 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
             formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
             form.setFormaPagamento(formaPagamentoVo);
             pagamentoService.pagamento(form);
-        }catch (PagamentoServiceCieloException ex){
+        }catch (PagamentoServiceException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }
     }
@@ -52,7 +52,7 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
             PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
             Assert.assertNotNull(pedidoEntity);
             Assert.assertNotNull(pedidoEntity.getIdPagamento());
-        }catch (PagamentoServiceCieloException ex){
+        }catch (PagamentoServiceException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }
     }
@@ -70,7 +70,7 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
 
     }
 
-    private String getTokenCielo() throws PagamentoServiceCieloException {
+    private String getTokenCielo() throws PagamentoServiceException {
         Integer year = Calendar.getInstance().get(Calendar.YEAR);
         CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
         cartaoCreditoVo.setBrand("Visa")

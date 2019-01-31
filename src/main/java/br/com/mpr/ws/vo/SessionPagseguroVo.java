@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "session")
-public class SessionPagseguro {
+public class SessionPagseguroVo {
 
 
     private String id;

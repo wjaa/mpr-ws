@@ -21,6 +21,7 @@ public class CheckoutEntity {
     private Integer diasEntrega;
     private FreteType freteType;
     private List<CheckoutFreteEntity> listFrete;
+    private String checkoutToken;
 
 
     @Id
@@ -123,5 +124,15 @@ public class CheckoutEntity {
 
     public void setListFrete(List<CheckoutFreteEntity> listFrete) {
         this.listFrete = listFrete;
+    }
+
+
+    @Column(name = "TOKEN", nullable = false, length = 64)
+    public String getCheckoutToken() {
+        return checkoutToken;
+    }
+
+    public void setCheckoutToken(String checkoutToken) {
+        this.checkoutToken = checkoutToken;
     }
 }

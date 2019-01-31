@@ -5,8 +5,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      minimumIdle: 20
-      maximumPoolSize: 100
+      minimumIdle: 10 #default 20
+      maximumPoolSize: 30 #30 por causa do limite free da amazon producao = 100
       maxLifetime: 120000
   jpa:
     properties:
@@ -36,9 +36,9 @@ mpr:
 spring:
   profiles: "dev"
   datasource:
-    url: jdbc:mysql://192.168.1.32:3306/mpr?autoReconnect=true&useSSL=false
-    username: root
-    password: 753951
+    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
+    username: mpr
+    password: "*753951*"
 
 logging:
   level:

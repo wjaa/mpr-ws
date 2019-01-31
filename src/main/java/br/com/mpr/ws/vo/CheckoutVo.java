@@ -20,6 +20,7 @@ public class CheckoutVo {
     private Long idCupom;
     private Long idCarrinho;
     private Long idCliente;
+    private String checkoutToken;
 
     public Long getId() {
         return id;
@@ -125,5 +126,13 @@ public class CheckoutVo {
             }
         }
         return null;
+    }
+
+    public String getCheckoutToken() {
+        return checkoutToken;
+    }
+
+    public void setCheckoutToken(String checkoutToken) {
+        this.checkoutToken = checkoutToken;
     }
 }

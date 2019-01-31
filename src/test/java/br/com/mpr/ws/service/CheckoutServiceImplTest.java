@@ -37,6 +37,8 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(FreteType.ECONOMICO, checkout.getFreteSelecionado().getFreteType());
             Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
             Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
+            Assert.assertNotNull(checkout.getCheckoutToken());
+            Assert.assertEquals(32,checkout.getCheckoutToken().length());
 
 
         } catch (CheckoutServiceException e) {
@@ -70,6 +72,8 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(FreteType.ECONOMICO, checkout.getFreteSelecionado().getFreteType());
             Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
             Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
+            Assert.assertNotNull(checkout.getCheckoutToken());
+            Assert.assertEquals(32,checkout.getCheckoutToken().length());
 
 
         }catch(Exception ex){
@@ -105,6 +109,8 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(FreteType.ECONOMICO, checkout.getFreteSelecionado().getFreteType());
             Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
             Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
+            Assert.assertNotNull(checkout.getCheckoutToken());
+            Assert.assertEquals(32,checkout.getCheckoutToken().length());
 
 
         }catch(Exception ex){
@@ -157,6 +163,8 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(FreteType.RAPIDO, checkout.getFreteSelecionado().getFreteType());
             Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
             Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
+            Assert.assertNotNull(checkout.getCheckoutToken());
+            Assert.assertEquals(32,checkout.getCheckoutToken().length());
 
             CheckoutVo checkoutAtual = checkoutService.alterarFrete(checkout.getId(), FreteType.ECONOMICO);
             Assert.assertNotNull(checkoutAtual.getValorFrete());
@@ -174,6 +182,53 @@ public class CheckoutServiceImplTest extends BaseDBTest {
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(), false);
         }
+    }
+
+    @Test
+    public void testGetCheckoutToken(){
+        try{
+            String token = this.checkoutService.getCheckoutToken();
+            Assert.assertNotNull(token);
+            Assert.assertEquals(32,token.length());
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+    }
+
+
+    @Test
+    public void testGetCheckout(){
+
+        try {
+            CheckoutVo checkout = this.checkoutService.checkout(1l);
+
+            checkout = this.checkoutService.getCheckout(checkout.getId());
+
+            Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
+            Assert.assertTrue(checkout.getValorFrete() > 0);
+            Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
+            Assert.assertEquals(new Double(0.0),checkout.getValorDesconto());
+            Assert.assertNotNull(checkout.getProdutos());
+            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getEndereco());
+            Assert.assertNotNull(checkout.getEndereco().getEndereco());
+            Assert.assertNotNull(checkout.getEndereco().getDescricao());
+            Assert.assertNotNull(checkout.getValorFrete());
+            Assert.assertNotNull(checkout.getListResultFrete());
+            Assert.assertEquals(2, checkout.getListResultFrete().size());
+            Assert.assertEquals(FreteType.ECONOMICO, checkout.getFreteSelecionado().getFreteType());
+            Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
+            Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
+            Assert.assertNotNull(checkout.getCheckoutToken());
+            Assert.assertEquals(32,checkout.getCheckoutToken().length());
+
+
+        } catch (CheckoutServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        }
+
+
     }
 
 }

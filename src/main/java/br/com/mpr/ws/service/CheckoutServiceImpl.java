@@ -4,6 +4,8 @@ import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.CheckoutServiceException;
+import br.com.mpr.ws.exception.RestException;
+import br.com.mpr.ws.utils.RestUtils;
 import br.com.mpr.ws.vo.*;
 import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.logging.Log;
@@ -12,8 +14,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wagner on 11/01/19.
@@ -40,6 +48,9 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Autowired
     private EmbalagemService embalagemService;
+
+    @Autowired
+    private MprParameterService parameterService;
 
 
     @Override
@@ -89,6 +100,9 @@ public class CheckoutServiceImpl implements CheckoutService {
                 vo.setValorDesconto((vo.getValorProdutos() * cupom.getPorcentagem())/100.0);
             }
         }
+        //adicionando o token de checkout para o gateway pagamento
+        vo.setCheckoutToken(this.getCheckoutToken());
+
         //criando ou atualizando os dados do checkout.
         this.saveCheckout(checkout, vo);
 
@@ -247,6 +261,37 @@ public class CheckoutServiceImpl implements CheckoutService {
             }
         }
         return true;
+    }
+
+    @Override
+    public String getCheckoutToken() throws CheckoutServiceException {
+
+        //TODO AQUI ESTÁ AMARRADO AO PAGSEGURO, PRECISA SER CORRIGIDO.
+
+        String tokenPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_TOKEN,
+                "66B5E9A69A3145F9B60DCF964E84733E");
+        String emailPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_EMAIL,
+                "wag182@gmail.com");
+        String urlPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_SESSION_URL,
+                "https://ws.sandbox.pagseguro.uol.com.br/v2/sessions/");
+
+        Map<String,String> param = new HashMap();
+        param.put("email",emailPS);
+        param.put("token",tokenPS);
+
+        try {
+            String xml = RestUtils.post(urlPS,param);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SessionPagseguroVo.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            SessionPagseguroVo sessionPagseguro = (SessionPagseguroVo) jaxbUnmarshaller.unmarshal(new StringReader(xml));
+            return sessionPagseguro.getId();
+        } catch (RestException e) {
+            LOG.error("Erro ao pegar o token de checkout", e);
+            throw new CheckoutServiceException("Erro ao pegar o token de checkout: " + e.getMessage());
+        } catch (JAXBException e) {
+            LOG.error("Erro no parse do xml do token", e);
+            throw new CheckoutServiceException("Erro no parse do xml do token: " + e.getMessage());
+        }
     }
 
     @Override

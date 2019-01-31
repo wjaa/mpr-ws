@@ -5,7 +5,6 @@ import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.RestException;
 import br.com.mpr.ws.utils.RestUtils;
 import br.com.mpr.ws.vo.*;
-import cieloecommerce.sdk.ecommerce.Customer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by wagner on 21/01/19.
@@ -35,17 +31,14 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
 
 
     @Test
-    public void pagamento() throws Exception {
+    public void pagamentoBoleto() throws Exception {
 
         CheckoutVo checkoutVo = checkoutService.checkout(1l);
 
         CheckoutForm form = new CheckoutForm();
         form.setIdCheckout(checkoutVo.getId());
         FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-        formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.CARTAO_CREDITO);
-        CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
-        cartaoCreditoVo.setToken(this.getToken());
-        formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
+        formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
         form.setFormaPagamento(formaPagamentoVo);
         PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
         Assert.assertNotNull(pedidoEntity);
@@ -63,12 +56,12 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
 
         try {
             String xml = RestUtils.post(urlPS,param);
-            JAXBContext jaxbContext = JAXBContext.newInstance(SessionPagseguro.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SessionPagseguroVo.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            SessionPagseguro sessionPagseguro = (SessionPagseguro) jaxbUnmarshaller.unmarshal(new StringReader(xml));
+            SessionPagseguroVo sessionPagseguro = (SessionPagseguroVo) jaxbUnmarshaller.unmarshal(new StringReader(xml));
 
             System.out.println("session pagseguro = " + sessionPagseguro.getId());
-            PagSeguro
+           // PagSeguro
 
         } catch (RestException e) {
             e.printStackTrace();

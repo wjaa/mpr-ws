@@ -233,4 +233,18 @@ public class CheckoutRestTest extends BaseMvcTest {
         }
     }
 
+    @Test
+    public void testGetCheckoutToken(){
+        try{
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/token");
+
+            String token = ra.andReturn().getResponse().getContentAsString();
+            Assert.assertNotNull(token);
+            Assert.assertEquals(32,token.length());
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+    }
+
 }

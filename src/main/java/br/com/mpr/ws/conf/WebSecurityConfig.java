@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/admin/**")
                 .hasRole("ADMIN")
                 .antMatchers("/api/v1/core/**")
-                .hasRole("USER")
+                .hasAnyRole("USER","ADMIN")
                 .and().httpBasic().realmName(MprConstants.REALM_MPR).authenticationEntryPoint(getBasicAuthEntryPoint())
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//We don't need sessions to be created.
     }

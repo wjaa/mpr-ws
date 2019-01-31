@@ -62,4 +62,11 @@ public class CheckoutRest extends BaseRest {
         return this.checkoutService.alterarFrete(idCheckout, freteType);
     }
 
+    @RequestMapping(value = "/checkout/token",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public String checkoutToken() throws CheckoutServiceException {
+        return this.checkoutService.getCheckoutToken();
+    }
+
 }
