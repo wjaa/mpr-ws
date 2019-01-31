@@ -22,6 +22,7 @@ import br.com.uol.pagseguro.api.transaction.register.DirectPaymentRegistrationBu
 import br.com.uol.pagseguro.api.transaction.search.TransactionDetail;
 import br.com.uol.pagseguro.api.utils.logging.SimpleLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ import java.util.List;
 /**
  * Created by wagner on 21/01/19.
  */
+@Service("PagamentoServicePagseguroImpl")
 public class PagamentoServicePagseguroImpl implements PagamentoService {
 
     private PagSeguro pagSeguro;
@@ -117,7 +119,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
         return new AddressBuilder()
                 .withPostalCode(endereco.getCep())
                 .withCountry("BRA")
-                .withState(State.valueOf(endereco.getUf()))
+                .withState(State.valueOf(endereco.getUf().toUpperCase()))
                 .withCity(endereco.getCidade())
                 .withComplement(endereco.getComplemento())
                 .withDistrict(endereco.getBairro())
@@ -180,7 +182,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                     .withDescription(pvo.getDescricao())
                     .withAmount(new BigDecimal(pvo.getPreco()))
                     .withQuantity(1)
-                    .withWeight(pvo.getPeso().intValue())
+                    .withWeight(pvo.getPeso().intValue()).build()
             );
 
         }

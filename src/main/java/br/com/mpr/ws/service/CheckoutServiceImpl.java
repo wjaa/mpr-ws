@@ -77,10 +77,10 @@ public class CheckoutServiceImpl implements CheckoutService {
                     checkout != null ? checkout.getFreteType() : FreteType.ECONOMICO,
                     carrinhoVo.getItems()));
         }else{
-            //SE JÁ EXISTIR UM CHECKOU, ENTAO NAO RECALCULAMOS O FRETE, UTILIZAMOS O QUE FOI GRAVADO NA BASE.
             vo.setListResultFrete(this.getListResultFrete(checkout));
         }
 
+        //SE JÁ EXISTIR UM CHECKOU, ENTAO NAO RECALCULAMOS O FRETE, UTILIZAMOS O QUE FOI GRAVADO NA BASE.
         //Calculando o cupom de desconto se o cliente adicionou antes de modificar o carrinho
         if (checkout != null && checkout.getIdCupom() != null){
             CupomEntity cupom = cupomService.getCupomById(checkout.getIdCupom());
@@ -287,12 +287,25 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     public CheckoutVo getCheckout(Long idCheckout) {
-        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
 
+        CheckoutVo vo = new CheckoutVo();
+        try {
+            CheckoutEntity checkout = commonDao.get(CheckoutEntity.class, idCheckout);
+            BeanUtils.copyProperties(checkout,vo);
+            CarrinhoVo carrinhoVo = this.getCarrinhoVo(checkout.getIdCarrinho());
+            vo.setIdCliente(carrinhoVo.getIdCliente());
+            vo.setProdutos(new ArrayList<>());
+            for (ItemCarrinhoVo item : carrinhoVo.getItems()){
+                vo.getProdutos().add(item.getProduto());
+            }
+            vo.setEndereco(this.getEnderecoVo(checkout,carrinhoVo.getIdCliente()));
+            vo.setListResultFrete(this.getListResultFrete(checkout));
 
-        checkoutEntity
+        } catch (CheckoutServiceException e) {
+           LOG.error("Erro ao buscar o checkout", e);
+        }
 
-        return null;
+        return vo;
     }
 
     private void saveCheckout(CheckoutEntity checkout, CheckoutVo vo) {
