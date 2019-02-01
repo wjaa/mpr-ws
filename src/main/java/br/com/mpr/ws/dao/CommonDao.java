@@ -1,8 +1,5 @@
 package br.com.mpr.ws.dao;
 
-import br.com.mpr.ws.entity.FornecedorEntity;
-import br.com.mpr.ws.entity.ProdutoEntity;
-
 import java.io.Serializable;
 import java.util.List;
 

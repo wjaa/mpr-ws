@@ -76,14 +76,17 @@ public class ProdutoEntity implements Serializable {
     private Boolean ativo;
 
     @Range(min = 0, max = 999)
+    @NotNull(message = "Comprimento do produto é obrigatória!")
     @Column(name = "COMP", nullable = false)
     private Double comp;
 
     @Range(min = 0, max = 999)
+    @NotNull(message = "Largura do produto é obrigatória!")
     @Column(name = "LARG", nullable = false)
     private Double larg;
 
     @Range(min = 0, max = 999)
+    @NotNull(message = "Altura do produto é obrigatória!")
     @Column(name = "ALT", nullable = false)
     private Double alt;
 

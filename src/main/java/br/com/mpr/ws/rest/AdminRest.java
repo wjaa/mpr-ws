@@ -43,7 +43,7 @@ public class AdminRest extends BaseRest{
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
     @ResponseBody
-    public Serializable geEntityById(@PathVariable String entity, @PathVariable Long id) throws AdminServiceException {
+    public Serializable getEntityById(@PathVariable String entity, @PathVariable Long id) throws AdminServiceException {
         Serializable obj = this.adminService.getEntityById(entity, id);
         return obj == null ? "{}" : obj;
     }

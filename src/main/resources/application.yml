@@ -5,9 +5,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      minimumIdle: 10 #default 20
-      maximumPoolSize: 30 #30 por causa do limite free da amazon producao = 100
-      maxLifetime: 120000
+      minimumIdle: 20 #default 20
+      maximumPoolSize: 40 #30 por causa do limite free da amazon producao = 100
+      leakDetectionThreshold: 20000
+      #maxLifetime: 60000 #1min
+      #connectionTimeout: 20000 #20s
+      #idleTimeout: 30000 #30s
+
   jpa:
     properties:
       hibernate:
@@ -36,7 +40,7 @@ mpr:
 spring:
   profiles: "dev"
   datasource:
-    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?autoReconnect=true&useSSL=false
+    url: jdbc:mysql://mysql.meuportaretrato.com:3306/mpr?useSSL=false
     username: mpr
     password: "*753951*"
 
@@ -48,6 +52,9 @@ logging:
     br:
       com:
         mpr: DEBUG
+    com:
+      zaxxer:
+        hikari: DEBUG
 
 cielo:
   merchantId: 224e8290-1485-4a9b-a1b0-8f05745b724d

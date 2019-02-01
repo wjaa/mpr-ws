@@ -9,6 +9,8 @@ import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -67,6 +69,7 @@ public class ProdutoServiceImpl implements ProdutoService {
      * @return
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public ProdutoVo getProdutoById(Long id) {
         List<ProdutoVo> result = commonDao.findByNativeQuery(QUERY_PRODUTO_BY_ID,
                 ProdutoVo.class,
@@ -116,6 +119,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<ProdutoVo> getProdutosRelacionados(Long idProduto) {
         List<ProdutoVo> result = commonDao.findByNativeQuery(QUERY_PRODUTOS_RELACIONADOS,
                 ProdutoVo.class,

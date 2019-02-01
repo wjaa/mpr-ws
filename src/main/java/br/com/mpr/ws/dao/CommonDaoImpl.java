@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
  * Created by wagner on 6/24/18.
  */
 @Repository
+@Transactional(rollbackFor = Throwable.class)
 public class CommonDaoImpl implements CommonDao {
 
     @PersistenceContext
@@ -27,11 +28,13 @@ public class CommonDaoImpl implements CommonDao {
 
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> T get(Class<T> clazz, Serializable id) {
         return entityManager.find(clazz,id);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> listAll(Class<T> clazz) {
         return entityManager
                 .createQuery("select e from " + clazz.getName() + " e")
@@ -54,11 +57,13 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass) {
         return findByNativeQuery(query,resultClass,false);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, boolean ignoreEntity) {
         if (resultClass.isAnnotationPresent(Entity.class) && !ignoreEntity){
             Query q = entityManager.createNativeQuery(query, resultClass);
@@ -77,12 +82,14 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public <T> List<T> findByProperties(Class<T> clazzEntity, String[] params, Object[] values) {
-        Query query = createQuery(clazzEntity, params, values);
-        return query.getResultList();
+        List<T> result = getResultQuery(clazzEntity, params, values);
+        return result;
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByInProperties(Class<T> clazzEntity, String param, List values) {
         if ( !clazzEntity.isAnnotationPresent(Entity.class) ){
             throw new IllegalArgumentException("clazzEntity nao eh uma entidade.");
@@ -99,10 +106,12 @@ public class CommonDaoImpl implements CommonDao {
         Session s = session.getSessionFactory().openSession();
         Query query = s.createQuery(sql.toString());
         ((org.hibernate.query.Query) query).setParameterList(param,values);
-       return  query.getResultList();
+        List<T> result = query.getResultList();
+        s.close();
+       return result;
     }
 
-    private Query createQuery(Class clazzEntity, String[] params, Object[] values) {
+    private List getResultQuery(Class clazzEntity, String[] params, Object[] values) {
         if ( !clazzEntity.isAnnotationPresent(Entity.class) ){
             throw new IllegalArgumentException("clazzEntity nao eh uma entidade.");
         }
@@ -124,16 +133,15 @@ public class CommonDaoImpl implements CommonDao {
         for (int i = 0 ; i < values.length ; i++){
             query.setParameter(params[i].replace(".",""),values[i]);
         }
-
-        return query;
+        List result = query.getResultList();
+        s.close();
+        return result;
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> T findByPropertiesSingleResult(Class<T> clazzEntity, String[] params, Object[] values) {
-        Query query = createQuery(clazzEntity, params, values);
-
-        List<T> listResult = query.getResultList();
-
+        List<T> listResult = getResultQuery(clazzEntity, params, values);
         if (listResult != null && listResult.size() > 0){
             return listResult.get(0);
         }
@@ -149,11 +157,13 @@ public class CommonDaoImpl implements CommonDao {
 
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
         return this.findByNativeQuery(query,resultClass,nameParams,params,false);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params, boolean ignoreEntity) {
         if (resultClass.isAnnotationPresent(Entity.class) &&  !ignoreEntity) {
 
@@ -177,6 +187,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
         List<T> list = findByNativeQuery(query,resultClass,nameParams,params);
         return list.size() > 0 ? list.get(0) : null;
@@ -185,6 +196,7 @@ public class CommonDaoImpl implements CommonDao {
 
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, Object... params) {
         if (resultClass.isAnnotationPresent(Entity.class)) {
 

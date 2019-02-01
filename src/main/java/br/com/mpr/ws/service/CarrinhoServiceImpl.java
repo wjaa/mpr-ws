@@ -9,7 +9,6 @@ import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import br.com.mpr.ws.vo.ItemCarrinhoVo;
-import br.com.mpr.ws.vo.ProdutoVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
