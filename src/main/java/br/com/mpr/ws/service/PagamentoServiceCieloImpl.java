@@ -3,6 +3,7 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceException;
+import br.com.mpr.ws.exception.PedidoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
 import cieloecommerce.sdk.Merchant;
@@ -13,8 +14,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -88,7 +87,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             String paymentId = sale.getPayment().getPaymentId();
             System.out.println(paymentId);
 
-            PedidoEntity pedidoEntity = pedidoService.createPedido(form);
+            PedidoEntity pedidoEntity = pedidoService.createPedido(paymentId, form);
 
             return pedidoEntity;
         } catch (CieloRequestException e) {
@@ -100,6 +99,8 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             throw new PagamentoServiceException(error.getMessage());
         } catch (IOException e) {
             throw new PagamentoServiceException(e.getMessage());
+        } catch (PedidoServiceException e) {
+            throw new PagamentoServiceException(e.getMessage());
         }
 
     }
@@ -108,10 +109,10 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
 
         //no momento da tentativa de pagamento, precisamos criar o pedido para enviar o ID para a cielo.
-        PedidoEntity pedidoEntity = pedidoService.createPedido(form);
+        //PedidoEntity pedidoEntity = pedidoService.createPedido(null, form);
 
         // Crie uma instância de Sale informando o ID do pagamento
-        Sale sale = new Sale(pedidoEntity.getId().toString());
+        Sale sale = new Sale("");
 
         // Crie uma instância de Customer informando o nome do cliente
         Customer customer = sale.customer("Comprador Teste");
@@ -142,7 +143,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
 
 
-            return pedidoEntity;
+            return null;
         } catch (CieloRequestException e) {
             // Em caso de erros de integração, podemos tratar o erro aqui.
             // os códigos de erro estão todos disponíveis no manual de integração.

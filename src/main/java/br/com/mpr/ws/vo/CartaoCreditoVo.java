@@ -69,7 +69,7 @@ public class CartaoCreditoVo {
     }
 
     public Integer getQuantity() {
-        return quantity;
+        return quantity == null ? 1 : quantity;
     }
 
     public void setQuantity(Integer quantity) {

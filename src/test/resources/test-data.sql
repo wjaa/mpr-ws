@@ -285,8 +285,11 @@ values(null,6,6,0);
 insert  into CARRINHO ( ID, ID_CLIENTE, KEY_DEVICE, DATA_CRIACAO)
 values (1,5,null,'2019-01-06');
 
-insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO, FOTO, ID_CATALOGO)
-values (null,1,1,'foto do cliente', null);
+insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO)
+values (null,1,1);
+
+insert into item_carrinho_anexo (ID, ID_ITEM_CARRINHO, FOTO, ID_CATALOGO)
+values (null,1,"FOTO CLIENTE", null);
 
 
 

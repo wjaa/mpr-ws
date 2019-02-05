@@ -42,7 +42,6 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
         form.setFormaPagamento(formaPagamentoVo);
         PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
         Assert.assertNotNull(pedidoEntity);
-        Assert.assertNotNull(pedidoEntity.getIdPagamento());
     }
 
     private String getToken(){

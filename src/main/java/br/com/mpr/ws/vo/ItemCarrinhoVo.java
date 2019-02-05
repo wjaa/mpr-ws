@@ -1,5 +1,7 @@
 package br.com.mpr.ws.vo;
 
+import java.util.List;
+
 /**
  *
  */
@@ -8,9 +10,7 @@ public class ItemCarrinhoVo {
     private Long id;
     private Long idCarrinho;
     private ProdutoVo produto;
-    //TODO: teremos a foto com PR ? ou só a foto do cliente ?
-    private String urlFoto;
-    private Long idCatalogo;
+    private List<AnexoVo> anexos;
 
     public Long getId() {
         return id;
@@ -36,19 +36,11 @@ public class ItemCarrinhoVo {
         this.produto = produto;
     }
 
-    public String getUrlFoto() {
-        return urlFoto;
+    public List<AnexoVo> getAnexos() {
+        return anexos;
     }
 
-    public void setUrlFoto(String urlFoto) {
-        this.urlFoto = urlFoto;
-    }
-
-    public Long getIdCatalogo() {
-        return idCatalogo;
-    }
-
-    public void setIdCatalogo(Long idCatalogo) {
-        this.idCatalogo = idCatalogo;
+    public void setAnexos(List<AnexoVo> anexos) {
+        this.anexos = anexos;
     }
 }

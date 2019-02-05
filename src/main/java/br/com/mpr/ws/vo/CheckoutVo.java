@@ -12,15 +12,14 @@ import java.util.List;
 public class CheckoutVo {
 
     private Long id;
-    private List<ProdutoVo> produtos;
     private EnderecoVo endereco;
     private List<ResultFreteVo> listResultFrete;
     private Double valorProdutos;
     private Double valorDesconto;
-    private Long idCupom;
-    private Long idCarrinho;
+    private CarrinhoVo carrinho;
     private Long idCliente;
     private String checkoutToken;
+    private CupomVo cupom;
 
     public Long getId() {
         return id;
@@ -28,14 +27,6 @@ public class CheckoutVo {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<ProdutoVo> getProdutos() {
-        return produtos;
-    }
-
-    public void setProdutos(List<ProdutoVo> produtos) {
-        this.produtos = produtos;
     }
 
     public EnderecoVo getEndereco() {
@@ -64,22 +55,6 @@ public class CheckoutVo {
 
     public void setValorDesconto(Double valorDesconto) {
         this.valorDesconto = valorDesconto;
-    }
-
-    public Long getIdCupom() {
-        return idCupom;
-    }
-
-    public void setIdCupom(Long idCupom) {
-        this.idCupom = idCupom;
-    }
-
-    public Long getIdCarrinho() {
-        return idCarrinho;
-    }
-
-    public void setIdCarrinho(Long idCarrinho) {
-        this.idCarrinho = idCarrinho;
     }
 
     public List<ResultFreteVo> getListResultFrete() {
@@ -134,5 +109,21 @@ public class CheckoutVo {
 
     public void setCheckoutToken(String checkoutToken) {
         this.checkoutToken = checkoutToken;
+    }
+
+    public CarrinhoVo getCarrinho() {
+        return carrinho;
+    }
+
+    public void setCarrinho(CarrinhoVo carrinho) {
+        this.carrinho = carrinho;
+    }
+
+    public CupomVo getCupom() {
+        return cupom;
+    }
+
+    public void setCupom(CupomVo cupom) {
+        this.cupom = cupom;
     }
 }

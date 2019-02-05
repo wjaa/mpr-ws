@@ -6,6 +6,7 @@ import br.com.mpr.ws.entity.EnderecoEntity;
 import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceException;
+import br.com.mpr.ws.exception.PedidoServiceException;
 import br.com.mpr.ws.vo.*;
 import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
@@ -20,10 +21,10 @@ import br.com.uol.pagseguro.api.http.JSEHttpClient;
 import br.com.uol.pagseguro.api.transaction.register.DirectPaymentRegistrationBuilder;
 import br.com.uol.pagseguro.api.transaction.search.TransactionDetail;
 import br.com.uol.pagseguro.api.utils.logging.SimpleLoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -36,6 +37,9 @@ import java.util.List;
 @Service("PagamentoServicePagseguroImpl")
 public class PagamentoServicePagseguroImpl implements PagamentoService {
 
+    private static final Log LOG = LogFactory.getLog(PagamentoServicePagseguroImpl.class);
+
+
     private PagSeguro pagSeguro;
 
     @Autowired
@@ -45,15 +49,20 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     private ClienteService clienteService;
 
     @Autowired
+    private PedidoService pedidoService;
+
+    @Autowired
     private CommonDao commonDao;
 
     @PostConstruct
     private void init(){
-        Credential credential = Credential.applicationCredential("app3620108836", "93E0960A9797EC6004FD6FA2200EA86B");
+        //Credential credential = Credential.applicationCredential("app3620108836", "2E3924589797D5A8848FCF8A50692011");
+        Credential credential = Credential.sellerCredential("admin@meuportaretrato.com", "9F613A6E90C447599BA6BA793221620B");
         PagSeguroEnv environment = PagSeguroEnv.SANDBOX;
         pagSeguro = PagSeguro.instance(new SimpleLoggerFactory(),
                 new JSEHttpClient(),
                 credential, environment);
+
     }
 
 
@@ -61,13 +70,19 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceException {
 
         if ( form.getFormaPagamento().isBoleto() ){
-            return checkoutBoleto(form);
+            return this.checkoutBoleto(form);
         }else{
-            return checkoutCartaoCredito(form);
+
+            try {
+                return this.checkoutCartaoCredito(form);
+            } catch (PedidoServiceException e) {
+                LOG.error("Erro no checkout de cartao de credito", e);
+                throw new PagamentoServiceException(e.getMessage(),e);
+            }
         }
     }
 
-    private PedidoEntity checkoutCartaoCredito(CheckoutForm form) {
+    private PedidoEntity checkoutCartaoCredito(CheckoutForm form) throws PedidoServiceException {
 
         CheckoutVo checkout = checkoutService.getCheckout(form.getIdCheckout());
         ClienteEntity cliente = clienteService.getClienteById(checkout.getIdCliente());
@@ -80,10 +95,10 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                 pagSeguro.transactions().register(new DirectPaymentRegistrationBuilder()
                         .withPaymentMode("default")
                         .withCurrency(Currency.BRL)
-                        .addItems(this.getPaymentItems(checkout.getProdutos()))
-                        .withNotificationURL("api.meuportaretrato.com/psNotification")
+                        .addItems(this.getPaymentItems(checkout.getCarrinho().getItems()))
+                        //.withNotificationURL("api.meuportaretrato.com/psNotification")
                         .withReference("API_MPR_PAYMENT_PAGSEGURO")
-                        .withSender(this.getSender(cliente))
+                        .withSender(this.getSender(cliente, form.getSenderHash()))
                         .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado())
                         )
                 ).withCreditCard(new CreditCardBuilder()
@@ -97,9 +112,9 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                         )
                         .withToken(cartaoCredito.getToken())
                 );
-        System.out.println(creditCardTransaction);
 
-        return null;
+
+        return pedidoService.createPedido(creditCardTransaction.getCode(),form);
     }
 
     private HolderBuilder getHolder(ClienteEntity cliente) {
@@ -111,7 +126,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                 .withName(cliente.getNome())
                 .withBithDate(cliente.getAniversario())
                 .withPhone(new PhoneBuilder()
-                        //.withAreaCode("99")
+                        .withAreaCode("11")
                         .withNumber(cliente.getCelular())
                 );
     }
@@ -137,10 +152,10 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                 pagSeguro.transactions().register(new DirectPaymentRegistrationBuilder()
                         .withPaymentMode("default")
                         .withCurrency(Currency.BRL)
-                        .addItems(this.getPaymentItems(checkout.getProdutos()))
+                        .addItems(this.getPaymentItems(checkout.getCarrinho().getItems()))
                         .withNotificationURL("www.sualoja.com.br/notification")
                         .withReference("LIBJAVA_DIRECT_PAYMENT")
-                        .withSender(this.getSender(cliente))
+                        .withSender(this.getSender(cliente, form.getSenderHash()))
                         .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))
 
                 ).withBankSlip();
@@ -164,27 +179,27 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
         return ShippingType.Type.UNRECOGNIZED;
     }
 
-    private SenderBuilder getSender(ClienteEntity clienteEntity) {
+    private SenderBuilder getSender(ClienteEntity clienteEntity, String senderHash) {
         return new SenderBuilder()
-                .withEmail(clienteEntity.getEmail())
+                .withEmail("v00849507912235340423@sandbox.pagseguro.com.br")
                 .withName(clienteEntity.getNome())
                 .withCPF(clienteEntity.getCpf())
-                //.withHash("abc123")
+                .withHash(senderHash)
                 .withPhone(new PhoneBuilder()
-                        //.withAreaCode(clienteEntity.getCelular().substring(0,2))
+                        .withAreaCode("11")
                         .withNumber(clienteEntity.getCelular()));
     }
 
-    private Iterable<? extends PaymentItem> getPaymentItems(List<ProdutoVo> produtos) {
+    private Iterable<? extends PaymentItem> getPaymentItems(List<ItemCarrinhoVo> itens) {
         List list = new ArrayList<>();
         int countItem = 1;
-        for (ProdutoVo pvo : produtos){
+        for (ItemCarrinhoVo it : itens){
             list.add(new PaymentItemBuilder()
                     .withId("000" + countItem++)
-                    .withDescription(pvo.getDescricao())
-                    .withAmount(new BigDecimal(pvo.getPreco()))
+                    .withDescription(it.getProduto().getDescricao())
+                    .withAmount(new BigDecimal(it.getProduto().getPreco()))
                     .withQuantity(1)
-                    .withWeight(pvo.getPeso().intValue()).build()
+                    .withWeight(it.getProduto().getPeso().intValue()).build()
             );
 
         }

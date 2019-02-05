@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by wagner on 20/06/18.
@@ -22,6 +23,9 @@ public class ItemPedidoEntity {
 
     @Column(name = "VALOR", nullable = false)
     private Double valor;
+
+    @Transient
+    private List<ItemPedidoAnexoEntity> anexos;
 
     public Long getId() {
         return id;
@@ -53,5 +57,13 @@ public class ItemPedidoEntity {
 
     public void setValor(Double valor) {
         this.valor = valor;
+    }
+
+    public List<ItemPedidoAnexoEntity> getAnexos() {
+        return anexos;
+    }
+
+    public void setAnexos(List<ItemPedidoAnexoEntity> anexos) {
+        this.anexos = anexos;
     }
 }

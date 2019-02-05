@@ -34,9 +34,6 @@ public class PedidoEntity {
     @Column(name = "ID_CUPOM")
     private Long idCupom;
 
-
-    private Long idPagamento;
-
     @Transient
     private List<ItemPedidoEntity> itens;
 
@@ -51,6 +48,19 @@ public class PedidoEntity {
 
     @Column(name = "VALOR_TOTAL", nullable = false, scale = 7, precision = 2)
     private Double valorTotal;
+
+    @Column(name = "CODIGO_TRANSACAO", length = 64)
+    private String codigoTransacao;
+
+    @Column(name = "CODIGO_RASTREIO", length = 64)
+    private String codigoRastreio;
+
+    @Column(name = "FRETE")
+    @Enumerated(EnumType.ORDINAL)
+    private FreteType TipoFrete;
+
+    @Column(name = "DATA_ENTREGA", nullable = false)
+    private Date dataEntrega;
 
 
     public Long getId() {
@@ -149,11 +159,35 @@ public class PedidoEntity {
         this.codigoPedido = codigoPedido;
     }
 
-    public Long getIdPagamento() {
-        return idPagamento;
+    public String getCodigoTransacao() {
+        return codigoTransacao;
     }
 
-    public void setIdPagamento(Long idPagamento) {
-        this.idPagamento = idPagamento;
+    public void setCodigoTransacao(String codigoTransacao) {
+        this.codigoTransacao = codigoTransacao;
+    }
+
+    public String getCodigoRastreio() {
+        return codigoRastreio;
+    }
+
+    public void setCodigoRastreio(String codigoRastreio) {
+        this.codigoRastreio = codigoRastreio;
+    }
+
+    public FreteType getTipoFrete() {
+        return TipoFrete;
+    }
+
+    public void setTipoFrete(FreteType tipoFrete) {
+        TipoFrete = tipoFrete;
+    }
+
+    public Date getDataEntrega() {
+        return dataEntrega;
+    }
+
+    public void setDataEntrega(Date dataEntrega) {
+        this.dataEntrega = dataEntrega;
     }
 }

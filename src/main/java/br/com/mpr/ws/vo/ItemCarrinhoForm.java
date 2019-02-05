@@ -2,6 +2,7 @@ package br.com.mpr.ws.vo;
 
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  *
@@ -13,9 +14,7 @@ public class ItemCarrinhoForm {
 
     @NotNull(message = "Produto é obrigatório!")
     private Long idProduto;
-    private byte[] foto;
-    private String nomeArquivo;
-    private Long idCatalogo;
+    private List<AnexoVo> anexos;
     private Long idCarrinho;
 
 
@@ -43,22 +42,6 @@ public class ItemCarrinhoForm {
         this.idProduto = idProduto;
     }
 
-    public byte[] getFoto() {
-        return foto;
-    }
-
-    public void setFoto(byte[] foto) {
-        this.foto = foto;
-    }
-
-    public Long getIdCatalogo() {
-        return idCatalogo;
-    }
-
-    public void setIdCatalogo(Long idCatalogo) {
-        this.idCatalogo = idCatalogo;
-    }
-
     public Long getIdCarrinho() {
         return idCarrinho;
     }
@@ -67,11 +50,11 @@ public class ItemCarrinhoForm {
         this.idCarrinho = idCarrinho;
     }
 
-    public String getNomeArquivo() {
-        return nomeArquivo;
+    public List<AnexoVo> getAnexos() {
+        return anexos;
     }
 
-    public void setNomeArquivo(String nomeArquivo) {
-        this.nomeArquivo = nomeArquivo;
+    public void setAnexos(List<AnexoVo> anexos) {
+        this.anexos = anexos;
     }
 }

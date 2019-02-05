@@ -3,9 +3,11 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.CarrinhoEntity;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.entity.ItemCarrinhoAnexoEntity;
 import br.com.mpr.ws.entity.ItemCarrinhoEntity;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.ImagemServiceException;
+import br.com.mpr.ws.vo.AnexoVo;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import br.com.mpr.ws.vo.ItemCarrinhoVo;
@@ -16,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -174,21 +177,26 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             }
 
             itemCarrinhoEntity.setIdEstoqueItem(estoqueItemEntity.getId());
-
+            itemCarrinhoEntity = commonDao.save(itemCarrinhoEntity);
 
             //CLIENTES PODEM ADICIONAR ACESSORIOS, SE NAO FOR UM ACESSORIO ENTÃO TEM FOTO.
             if ( !produtoService.isAcessorio(item.getIdProduto()) ){
 
-                if ( (item.getFoto() == null || item.getFoto().length == 0) && item.getIdCatalogo() == null){
+                if (CollectionUtils.isEmpty(item.getAnexos()) ){
                     throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
                 }
 
-                itemCarrinhoEntity.setFoto(imagemService.uploadFotoCliente(item.getFoto(),item.getNomeArquivo()));
-                itemCarrinhoEntity.setIdCatalogo(item.getIdCatalogo());
+                for (AnexoVo anexoVo : item.getAnexos()){
+                    if ( (anexoVo.getFoto() == null || anexoVo.getFoto().length == 0) && anexoVo.getIdCatalogo() == null){
+                        throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
+                    }
+                    ItemCarrinhoAnexoEntity anexo = new ItemCarrinhoAnexoEntity();
+                    anexo.setFoto(imagemService.uploadFotoCliente(anexoVo.getFoto(),anexoVo.getNomeArquivo()));
+                    anexo.setIdCatalogo(anexoVo.getIdCatalogo());
+                    anexo.setIdItemCarrinho(itemCarrinhoEntity.getId());
+                    commonDao.save(anexo);
+                }
             }
-
-
-            commonDao.save(itemCarrinhoEntity);
 
             return this.getCarrinho(item.getIdCliente(),item.getKeyDevice());
 
@@ -272,16 +280,28 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         List<ItemCarrinhoVo> listVos = new ArrayList<>();
 
         for (ItemCarrinhoEntity i : items){
+            i.setAnexos(this.commonDao.findByProperties(ItemCarrinhoAnexoEntity.class,
+                    new String[]{"idItemCarrinho"},
+                    new Object[]{i.getId()}));
             ItemCarrinhoVo ivo = new ItemCarrinhoVo();
             BeanUtils.copyProperties(i, ivo);
             EstoqueItemEntity itemEstoque = this.commonDao.get(EstoqueItemEntity.class, i.getIdEstoqueItem());
             ivo.setProduto(this.produtoService.getProdutoById(itemEstoque.getIdProduto()));
 
-            if (i.getIdCatalogo() != null){
-                ivo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(i.getFoto()));
-            }else{
-                ivo.setUrlFoto(this.imagemService.getUrlFotoCliente(i.getFoto()));
+            if (!CollectionUtils.isEmpty(i.getAnexos())){
+                ivo.setAnexos(new ArrayList<>());
+                for (ItemCarrinhoAnexoEntity anexo : i.getAnexos()){
+                    AnexoVo anexoVo = new AnexoVo();
+                    anexoVo.setId(anexo.getId());
+                    if (anexo.getIdCatalogo() != null){
+                        anexoVo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(anexo.getFoto()));
+                    }else{
+                        anexoVo.setUrlFoto(this.imagemService.getUrlFotoCliente(anexo.getFoto()));
+                    }
+                    ivo.getAnexos().add(anexoVo);
+                }
             }
+
             listVos.add(ivo);
         }
 

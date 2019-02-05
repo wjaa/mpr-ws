@@ -51,7 +51,6 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
             form.setFormaPagamento(formaPagamentoVo);
             PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
             Assert.assertNotNull(pedidoEntity);
-            Assert.assertNotNull(pedidoEntity.getIdPagamento());
         }catch (PagamentoServiceException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }

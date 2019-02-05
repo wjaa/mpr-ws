@@ -5,8 +5,6 @@ import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.vo.CheckoutForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by wagner on 12/21/18.
@@ -27,8 +25,11 @@ public class PedidoServiceImpl implements PedidoService{
     private ProdutoService produtoService;
 
     @Override
-    public PedidoEntity createPedido(CheckoutForm checkoutForm) {
-                return new PedidoEntity();
+    public PedidoEntity createPedido(String code, CheckoutForm checkoutForm) {
+        PedidoEntity pedidoEntity = new PedidoEntity();
+
+
+        return pedidoEntity;
     }
 
 

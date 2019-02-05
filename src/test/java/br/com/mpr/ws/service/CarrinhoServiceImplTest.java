@@ -8,6 +8,7 @@ import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.service.thread.ClienteCarrinhoThread;
 import br.com.mpr.ws.service.thread.ClienteCarrinhoThreadMonitor;
 import br.com.mpr.ws.utils.StringUtils;
+import br.com.mpr.ws.vo.AnexoVo;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import br.com.mpr.ws.vo.ItemCarrinhoVo;
@@ -15,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -90,8 +92,11 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
         itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
-        itemCarrinhoForm.setFoto(new byte[]{0,0,0,0,0});
-        itemCarrinhoForm.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
         return itemCarrinhoForm;
     }
 
@@ -124,7 +129,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
                 Assert.assertNotNull(i.getProduto().getId());
                 Assert.assertNotNull(i.getProduto().getDescricao());
                 Assert.assertNotNull(i.getProduto().getImgPreview());
-                Assert.assertNotNull(i.getUrlFoto());
+                Assert.assertNotNull(i.getAnexos().get(0).getUrlFoto());
             }
 
 

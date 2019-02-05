@@ -5,6 +5,7 @@ public class CheckoutForm {
 
     private Long idCheckout;
     private FormaPagamentoVo formaPagamento;
+    private String senderHash;
 
     public Long getIdCheckout() {
         return idCheckout;
@@ -20,5 +21,13 @@ public class CheckoutForm {
 
     public void setFormaPagamento(FormaPagamentoVo formaPagamento) {
         this.formaPagamento = formaPagamento;
+    }
+
+    public String getSenderHash() {
+        return senderHash;
+    }
+
+    public void setSenderHash(String senderHash) {
+        this.senderHash = senderHash;
     }
 }

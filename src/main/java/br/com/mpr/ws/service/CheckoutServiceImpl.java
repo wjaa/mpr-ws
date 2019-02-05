@@ -13,8 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -58,10 +56,10 @@ public class CheckoutServiceImpl implements CheckoutService {
     @Override
     public CheckoutVo checkout(Long idCarrinho) throws CheckoutServiceException {
         CheckoutVo vo = new CheckoutVo();
-        vo.setIdCarrinho(idCarrinho);
 
         //BUSCANDO O CARRINHO PARA PEGAR OS PRODUTOS DO CLIENTE.
         CarrinhoVo carrinhoVo = this.getCarrinhoVo(idCarrinho);
+        vo.setCarrinho(carrinhoVo);
 
         //BUSCANDO UM CHECKOUT JÁ CRIADO ANTERIORMENTE PARA ESSE CARRINHO
         CheckoutEntity checkout = commonDao.findByPropertiesSingleResult(CheckoutEntity.class,
@@ -72,10 +70,8 @@ public class CheckoutServiceImpl implements CheckoutService {
         vo.setEndereco(this.getEnderecoVo(checkout, carrinhoVo.getIdCliente()));
 
         //CONVERTENDO ITENS DO CARRINHO EM PRODUTO E SOMANDO OS VALORES.
-        vo.setProdutos(new ArrayList<>());
         Double valorProdutos = 0.0;
         for (ItemCarrinhoVo item : carrinhoVo.getItems()){
-            vo.getProdutos().add(item.getProduto());
             //SOMA DO VALOR DE CADA PRODUTO
             valorProdutos += item.getProduto().getPreco();
         }
@@ -98,7 +94,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         if (checkout != null && checkout.getIdCupom() != null){
             CupomEntity cupom = cupomService.getCupomById(checkout.getIdCupom());
             if (cupom != null){
-                vo.setIdCupom(cupom.getId());
+                vo.setCupom(new CupomVo(cupom));
                 vo.setValorDesconto((vo.getValorProdutos() * cupom.getPorcentagem())/100.0);
             }
         }
@@ -271,9 +267,9 @@ public class CheckoutServiceImpl implements CheckoutService {
         //TODO AQUI ESTÁ AMARRADO AO PAGSEGURO, PRECISA SER CORRIGIDO.
 
         String tokenPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_TOKEN,
-                "66B5E9A69A3145F9B60DCF964E84733E");
+                "9F613A6E90C447599BA6BA793221620B");
         String emailPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_EMAIL,
-                "wag182@gmail.com");
+                "admin@meuportaretrato.com");
         String urlPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_SESSION_URL,
                 "https://ws.sandbox.pagseguro.uol.com.br/v2/sessions/");
 
@@ -340,13 +336,16 @@ public class CheckoutServiceImpl implements CheckoutService {
             CheckoutEntity checkout = commonDao.get(CheckoutEntity.class, idCheckout);
             BeanUtils.copyProperties(checkout,vo);
             CarrinhoVo carrinhoVo = this.getCarrinhoVo(checkout.getIdCarrinho());
+            vo.setCarrinho(carrinhoVo);
             vo.setIdCliente(carrinhoVo.getIdCliente());
-            vo.setProdutos(new ArrayList<>());
-            for (ItemCarrinhoVo item : carrinhoVo.getItems()){
-                vo.getProdutos().add(item.getProduto());
-            }
             vo.setEndereco(this.getEnderecoVo(checkout,carrinhoVo.getIdCliente()));
             vo.setListResultFrete(this.getListResultFrete(checkout));
+            if (checkout != null && checkout.getIdCupom() != null){
+                CupomEntity cupom = cupomService.getCupomById(checkout.getIdCupom());
+                if (cupom != null){
+                    vo.setCupom(new CupomVo(cupom));
+                }
+            }
 
         } catch (CheckoutServiceException e) {
            LOG.error("Erro ao buscar o checkout", e);
@@ -368,6 +367,8 @@ public class CheckoutServiceImpl implements CheckoutService {
         checkout.setIdEndereco(vo.getEndereco().getId());
         checkout.setValorTotal(vo.getValorTotal());
         checkout.setDiasEntrega(vo.getDiasEntrega());
+        checkout.setIdCupom(vo.getCupom() != null ? vo.getCupom().getId() : null);
+        checkout.setIdCarrinho(vo.getCarrinho().getIdCarrinho());
 
         if (checkout.getId() == null){
             checkout = commonDao.save(checkout);

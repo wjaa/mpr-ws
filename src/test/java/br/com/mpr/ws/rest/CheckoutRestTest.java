@@ -3,14 +3,11 @@ package br.com.mpr.ws.rest;
 import br.com.mpr.ws.BaseMvcTest;
 import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.utils.ObjectUtils;
-import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.CheckoutVo;
 import br.com.mpr.ws.vo.ErrorMessageVo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 public class CheckoutRestTest extends BaseMvcTest {
 
@@ -27,8 +24,8 @@ public class CheckoutRestTest extends BaseMvcTest {
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
             Assert.assertEquals(new Double(0.0),checkout.getValorDesconto());
-            Assert.assertNotNull(checkout.getProdutos());
-            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getCarrinho().getItems());
+            Assert.assertEquals(1, checkout.getCarrinho().getItems().size());
             Assert.assertNotNull(checkout.getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getDescricao());
@@ -69,12 +66,12 @@ public class CheckoutRestTest extends BaseMvcTest {
                             checkout.getValorFrete()));
             //validando se teve desconto de 50%
             Assert.assertEquals(new Double (checkout.getValorProdutos() * 50.0 /100.0), checkout.getValorDesconto());
-            Assert.assertNotNull(checkout.getProdutos());
-            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getCarrinho().getItems());
+            Assert.assertEquals(1, checkout.getCarrinho().getItems().size());
             Assert.assertNotNull(checkout.getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getDescricao());
-            Assert.assertEquals(new Long(1l),checkout.getIdCupom());
+            Assert.assertEquals(new Long(1l),checkout.getCupom().getId());
             Assert.assertNotNull(checkout.getValorFrete());
             Assert.assertNotNull(checkout.getListResultFrete());
             Assert.assertEquals(2, checkout.getListResultFrete().size());
@@ -114,8 +111,8 @@ public class CheckoutRestTest extends BaseMvcTest {
             Assert.assertTrue("Valor do frete = " + checkout.getValorFrete(), checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
             Assert.assertEquals(new Double(0.0),checkout.getValorDesconto());
-            Assert.assertNotNull(checkout.getProdutos());
-            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getCarrinho().getItems());
+            Assert.assertEquals(1, checkout.getCarrinho().getItems().size());
             Assert.assertNotNull(checkout.getValorFrete());
             Assert.assertNotNull(checkout.getListResultFrete());
             Assert.assertEquals(2, checkout.getListResultFrete().size());
@@ -151,8 +148,8 @@ public class CheckoutRestTest extends BaseMvcTest {
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
-            Assert.assertNotNull(checkout.getProdutos());
-            Assert.assertEquals(1, checkout.getProdutos().size());
+            Assert.assertNotNull(checkout.getCarrinho().getItems());
+            Assert.assertEquals(1, checkout.getCarrinho().getItems().size());
             Assert.assertNotNull(checkout.getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getDescricao());

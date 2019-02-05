@@ -1,10 +1,6 @@
 package br.com.mpr.ws.entity;
 
-import br.com.mpr.ws.vo.CarrinhoVo;
-import br.com.mpr.ws.vo.ItemCarrinhoVo;
-
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,11 +26,8 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID_CARRINHO", nullable = false)
     private Long idCarrinho;
 
-    @Column(name = "FOTO")
-    private String foto;
-
-    @Column(name = "ID_CATALOGO")
-    private Long idCatalogo;
+    @Transient
+    private List<ItemCarrinhoAnexoEntity> anexos;
 
     public Long getId() {
         return id;
@@ -60,27 +53,19 @@ public class ItemCarrinhoEntity {
         this.idEstoqueItem = idEstoqueItem;
     }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
-
-    public Long getIdCatalogo() {
-        return idCatalogo;
-    }
-
-    public void setIdCatalogo(Long idCatalogo) {
-        this.idCatalogo = idCatalogo;
-    }
-
     public EstoqueItemEntity getEstoqueItem() {
         return estoqueItem;
     }
 
     public void setEstoqueItem(EstoqueItemEntity estoqueItem) {
         this.estoqueItem = estoqueItem;
+    }
+
+    public List<ItemCarrinhoAnexoEntity> getAnexos() {
+        return anexos;
+    }
+
+    public void setAnexos(List<ItemCarrinhoAnexoEntity> anexos) {
+        this.anexos = anexos;
     }
 }

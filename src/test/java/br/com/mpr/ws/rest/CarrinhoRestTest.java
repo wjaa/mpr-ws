@@ -4,6 +4,7 @@ import br.com.mpr.ws.BaseMvcTest;
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
+import br.com.mpr.ws.vo.AnexoVo;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ErrorMessageVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
@@ -14,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.ContentResultMatchers;
+
+import java.util.ArrayList;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,9 +42,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setKeyDevice("AAABBBCCCDDD");
         item.setIdProduto(5l);
-        item.setFoto(new byte[]{10,10,10});
-        item.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-
+        item.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.getAnexos().add(anexoVo);
         try{
             String content = ObjectUtils.toJson(item);
             ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
@@ -76,8 +81,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setIdCliente(1l);
         item.setIdProduto(5l);
-        item.setFoto(new byte[]{10,10,10});
-        item.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.getAnexos().add(anexoVo);
 
         try{
             String content = ObjectUtils.toJson(item);
@@ -116,8 +124,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setIdCliente(1l);
-        item.setFoto(new byte[]{10,10,10});
-        item.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.getAnexos().add(anexoVo);
 
         try{
             //#1
@@ -127,14 +138,14 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
             //#2
             item.setIdProduto(5l);
-            item.setFoto(null);
+            item.getAnexos().get(0).setFoto(null);
             content = ObjectUtils.toJson(item);
             ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Para adicionar esse produto no carrinho, uma imagem é obrigatória"));
 
             //#3
-            item.setFoto(new byte[]{10,10,10});
-            item.setNomeArquivo("");
+            item.getAnexos().get(0).setFoto(new byte[]{10,10,10});
+            item.getAnexos().get(0).setNomeArquivo("");
             content = ObjectUtils.toJson(item);
             ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Nome da imagem está vazio"));
@@ -206,8 +217,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
         itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
-        itemCarrinhoForm.setFoto(new byte[]{0,0,0,0,0});
-        itemCarrinhoForm.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
         return itemCarrinhoForm;
     }
 
