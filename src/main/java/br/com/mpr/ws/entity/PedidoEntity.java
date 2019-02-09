@@ -16,8 +16,8 @@ public class PedidoEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "CODIGO_PEDIDO")
-    private Long codigoPedido;
+    @Column(name = "CODIGO_PEDIDO", length = 16)
+    private String codigoPedido;
 
     @Column(name = "DATA", nullable = false)
     private Date data;
@@ -151,11 +151,11 @@ public class PedidoEntity {
         this.valorTotal = valorTotal;
     }
 
-    public Long getCodigoPedido() {
+    public String getCodigoPedido() {
         return codigoPedido;
     }
 
-    public void setCodigoPedido(Long codigoPedido) {
+    public void setCodigoPedido(String codigoPedido) {
         this.codigoPedido = codigoPedido;
     }
 

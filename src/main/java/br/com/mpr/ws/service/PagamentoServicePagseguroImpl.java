@@ -10,6 +10,7 @@ import br.com.mpr.ws.exception.PedidoServiceException;
 import br.com.mpr.ws.vo.*;
 import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
+import br.com.uol.pagseguro.api.common.domain.Installment;
 import br.com.uol.pagseguro.api.common.domain.PaymentItem;
 import br.com.uol.pagseguro.api.common.domain.ShippingType;
 import br.com.uol.pagseguro.api.common.domain.builder.*;
@@ -85,7 +86,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     private PedidoEntity checkoutCartaoCredito(CheckoutForm form) throws PedidoServiceException {
 
         CheckoutVo checkout = checkoutService.getCheckout(form.getIdCheckout());
-        ClienteEntity cliente = clienteService.getClienteById(checkout.getIdCliente());
+        ClienteEntity cliente = clienteService.getClienteById(checkout.getCliente().getId());
         EnderecoEntity enderecoEntrega = commonDao.get(EnderecoEntity.class, checkout.getEndereco().getId());
         EnderecoEntity enderecoCliente = cliente.getEnderecoPrincipal();
         CartaoCreditoVo cartaoCredito = form.getFormaPagamento().getCartaoCredito();
@@ -99,15 +100,19 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                         //.withNotificationURL("api.meuportaretrato.com/psNotification")
                         .withReference("API_MPR_PAYMENT_PAGSEGURO")
                         .withSender(this.getSender(cliente, form.getSenderHash()))
-                        .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado())
-                        )
+                        .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))
+                        .withExtraAmount(checkout.getValorDesconto() != null ?
+                                new BigDecimal(checkout.getValorDesconto() *-1 ):
+                                new BigDecimal(0.0))
                 ).withCreditCard(new CreditCardBuilder()
                         .withBillingAddress(this.getAddress(enderecoCliente)
                         )
                         .withInstallment(new InstallmentBuilder()
                                 .withQuantity(cartaoCredito.getQuantity())
                                 .withValue(new BigDecimal(checkout.getValorTotal()))
+
                         )
+
                         .withHolder(this.getHolder(cliente)
                         )
                         .withToken(cartaoCredito.getToken())
@@ -145,7 +150,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
 
     private PedidoEntity checkoutBoleto(CheckoutForm form) {
         CheckoutVo checkout = checkoutService.getCheckout(form.getIdCheckout());
-        ClienteEntity cliente = clienteService.getClienteById(checkout.getIdCliente());
+        ClienteEntity cliente = clienteService.getClienteById(checkout.getCliente().getId());
         EnderecoEntity enderecoEntrega = commonDao.get(EnderecoEntity.class, checkout.getEndereco().getId());
         // Checkout transparente (pagamento direto) com boleto
         TransactionDetail bankSlipTransaction =
@@ -199,7 +204,8 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                     .withDescription(it.getProduto().getDescricao())
                     .withAmount(new BigDecimal(it.getProduto().getPreco()))
                     .withQuantity(1)
-                    .withWeight(it.getProduto().getPeso().intValue()).build()
+                    .withWeight(it.getProduto().getPeso().intValue())
+                    .build()
             );
 
         }
@@ -210,4 +216,5 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     public String getCardToken(CartaoCreditoVo cartaoCreditoVo) throws PagamentoServiceException {
         return null;
     }
+
 }

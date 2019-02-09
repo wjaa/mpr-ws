@@ -1,5 +1,6 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.entity.ClienteEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,7 +18,7 @@ public class CheckoutVo {
     private Double valorProdutos;
     private Double valorDesconto;
     private CarrinhoVo carrinho;
-    private Long idCliente;
+    private ClienteVo cliente;
     private String checkoutToken;
     private CupomVo cupom;
 
@@ -65,12 +66,12 @@ public class CheckoutVo {
         this.listResultFrete = listResultFrete;
     }
 
-    public Long getIdCliente() {
-        return idCliente;
+    public ClienteVo getCliente() {
+        return cliente;
     }
 
-    public void setIdCliente(Long idCliente) {
-        this.idCliente = idCliente;
+    public void setCliente(ClienteVo cliente) {
+        this.cliente = cliente;
     }
 
     @JsonProperty

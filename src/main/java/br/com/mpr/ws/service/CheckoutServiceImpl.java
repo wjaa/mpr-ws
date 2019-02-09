@@ -69,6 +69,10 @@ public class CheckoutServiceImpl implements CheckoutService {
         //PEGANDO O ENDERECO PRINCIPAL DO CLIENTE, OU O ENDERECO JÁ GRAVADO NO CHECKOUT (CASO ELE TENHA TROCADO).
         vo.setEndereco(this.getEnderecoVo(checkout, carrinhoVo.getIdCliente()));
 
+        //PEGANDO O CLIENTE DO CARRINHO
+        ClienteEntity cliente = clienteService.getClienteById(carrinhoVo.getIdCliente());
+        vo.setCliente(new ClienteVo(cliente));
+
         //CONVERTENDO ITENS DO CARRINHO EM PRODUTO E SOMANDO OS VALORES.
         Double valorProdutos = 0.0;
         for (ItemCarrinhoVo item : carrinhoVo.getItems()){
@@ -337,7 +341,8 @@ public class CheckoutServiceImpl implements CheckoutService {
             BeanUtils.copyProperties(checkout,vo);
             CarrinhoVo carrinhoVo = this.getCarrinhoVo(checkout.getIdCarrinho());
             vo.setCarrinho(carrinhoVo);
-            vo.setIdCliente(carrinhoVo.getIdCliente());
+            ClienteEntity cliente = clienteService.getClienteById(carrinhoVo.getIdCliente());
+            vo.setCliente(new ClienteVo(cliente));
             vo.setEndereco(this.getEnderecoVo(checkout,carrinhoVo.getIdCliente()));
             vo.setListResultFrete(this.getListResultFrete(checkout));
             if (checkout != null && checkout.getIdCupom() != null){
