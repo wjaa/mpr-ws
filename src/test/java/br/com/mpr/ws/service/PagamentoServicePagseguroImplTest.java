@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.entity.PagamentoType;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.RestException;
 import br.com.mpr.ws.utils.RestUtils;
@@ -38,10 +39,10 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
         CheckoutForm form = new CheckoutForm();
         form.setIdCheckout(checkoutVo.getId());
         FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-        formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
+        formaPagamentoVo.setPagamentoType(PagamentoType.BOLETO);
         form.setFormaPagamento(formaPagamentoVo);
-        PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
-        Assert.assertNotNull(pedidoEntity);
+        ResultadoPagamentoVo result = pagamentoService.pagamento(form);
+        Assert.assertNotNull(result);
     }
 
     private String getToken(){

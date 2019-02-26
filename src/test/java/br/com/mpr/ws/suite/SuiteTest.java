@@ -1,6 +1,5 @@
 package br.com.mpr.ws.suite;
 
-import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.rest.AdminRestTest;
 import br.com.mpr.ws.rest.CarrinhoRestTest;
 import br.com.mpr.ws.rest.LoginRestTest;
@@ -29,6 +28,8 @@ import org.junit.runners.Suite;
         FreteServiceCorreioImplTest.class,
 
         CheckoutServiceImplTest.class,
+
+        MprParameterServiceImplTest.class,
 
 
 })

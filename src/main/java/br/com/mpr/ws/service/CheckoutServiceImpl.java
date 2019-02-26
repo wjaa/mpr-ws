@@ -13,6 +13,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -54,6 +56,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
     public CheckoutVo checkout(Long idCarrinho) throws CheckoutServiceException {
         CheckoutVo vo = new CheckoutVo();
 
@@ -270,11 +273,11 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         //TODO AQUI ESTÁ AMARRADO AO PAGSEGURO, PRECISA SER CORRIGIDO.
 
-        String tokenPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_TOKEN,
+        String tokenPS = parameterService.getParameter(MprParameterType.PS_API_TOKEN,
                 "9F613A6E90C447599BA6BA793221620B");
-        String emailPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_EMAIL,
+        String emailPS = parameterService.getParameter(MprParameterType.PS_API_EMAIL,
                 "admin@meuportaretrato.com");
-        String urlPS = parameterService.getParameter(MprParameterService.MprParameter.PS_API_SESSION_URL,
+        String urlPS = parameterService.getParameter(MprParameterType.PS_API_SESSION_URL,
                 "https://ws.sandbox.pagseguro.uol.com.br/v2/sessions/");
 
         Map<String,String> param = new HashMap();

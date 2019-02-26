@@ -37,7 +37,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(checkout.getValorFrete(), checkout.getFreteSelecionado().getValor());
             Assert.assertEquals(checkout.getDiasEntrega(), checkout.getFreteSelecionado().getDiasUteis());
             Assert.assertNotNull(checkout.getCheckoutToken());
-            Assert.assertEquals(32,checkout.getCheckoutToken().length());
+            Assert.assertTrue(checkout.getCheckoutToken().length() > 5);
 
 
         } catch (CheckoutServiceException e) {

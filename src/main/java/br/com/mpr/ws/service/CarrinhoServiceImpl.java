@@ -287,7 +287,8 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             BeanUtils.copyProperties(i, ivo);
             EstoqueItemEntity itemEstoque = this.commonDao.get(EstoqueItemEntity.class, i.getIdEstoqueItem());
             ivo.setProduto(this.produtoService.getProdutoById(itemEstoque.getIdProduto()));
-
+            ivo.setIdEstoque(itemEstoque.getIdEstoque());
+            ivo.setIdEstoqueItem(itemEstoque.getId());
             if (!CollectionUtils.isEmpty(i.getAnexos())){
                 ivo.setAnexos(new ArrayList<>());
                 for (ItemCarrinhoAnexoEntity anexo : i.getAnexos()){

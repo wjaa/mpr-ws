@@ -1,5 +1,7 @@
 package br.com.mpr.ws.entity;
 
+import br.com.mpr.ws.vo.FormaPagamentoVo;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -55,13 +57,19 @@ public class PedidoEntity {
     @Column(name = "CODIGO_RASTREIO", length = 64)
     private String codigoRastreio;
 
-    @Column(name = "FRETE")
+    @Column(name = "TIPO_FRETE")
     @Enumerated(EnumType.ORDINAL)
     private FreteType TipoFrete;
+
+    @Column(name = "TIPO_PAGAMENTO")
+    @Enumerated(EnumType.ORDINAL)
+    private PagamentoType pagamentoType;
 
     @Column(name = "DATA_ENTREGA", nullable = false)
     private Date dataEntrega;
 
+    @Transient
+    private StatusPedidoEntity statusAtual;
 
     public Long getId() {
         return id;
@@ -189,5 +197,21 @@ public class PedidoEntity {
 
     public void setDataEntrega(Date dataEntrega) {
         this.dataEntrega = dataEntrega;
+    }
+
+    public StatusPedidoEntity getStatusAtual() {
+        return statusAtual;
+    }
+
+    public void setStatusAtual(StatusPedidoEntity statusAtual) {
+        this.statusAtual = statusAtual;
+    }
+
+    public PagamentoType getPagamentoType() {
+        return pagamentoType;
+    }
+
+    public void setPagamentoType(PagamentoType pagamentoType) {
+        this.pagamentoType = pagamentoType;
     }
 }

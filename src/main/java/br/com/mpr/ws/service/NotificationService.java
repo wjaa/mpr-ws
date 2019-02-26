@@ -10,4 +10,8 @@ public interface NotificationService {
 
     void sendPedidoCriado(ClienteVo cliente, PedidoEntity pedido);
 
+    void sendTransactionCriadaBoleto(ClienteVo cliente, PedidoEntity pedido, Byte[] boleto);
+
+    void sendTransactionCriadaCartao(ClienteVo cliente, PedidoEntity pedido);
+
 }

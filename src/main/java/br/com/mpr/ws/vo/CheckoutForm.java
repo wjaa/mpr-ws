@@ -30,4 +30,13 @@ public class CheckoutForm {
     public void setSenderHash(String senderHash) {
         this.senderHash = senderHash;
     }
+
+    @Override
+    public String toString() {
+        return "CheckoutForm{" +
+                "idCheckout=" + idCheckout +
+                ", formaPagamento=" + formaPagamento +
+                ", senderHash='" + senderHash + '\'' +
+                '}';
+    }
 }

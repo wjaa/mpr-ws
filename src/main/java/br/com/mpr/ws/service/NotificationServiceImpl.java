@@ -43,4 +43,54 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     }
+
+    @Override
+    public void sendTransactionCriadaBoleto(ClienteVo cliente, PedidoEntity pedido, Byte[] boleto) {
+        String emailTo = cliente.getEmail();
+        StringBuilder body = new StringBuilder();
+        body.append("Olá " + cliente.getNome() + "<br/>");
+        body.append("  Seu pedido de numero = " + pedido.getCodigoPedido());
+        body.append(" foi criado com sucesso! <br/>");
+        body.append("  Estamos aguardando a confirmação de pagamento. <br/>");
+        body.append("  Em breve enviaremos um novo status.<br/><br/>");
+        body.append("  Att., <br/>");
+        body.append("  Equipe meuportaretrato.com :) <br/>");
+
+        try {
+            EmailUtils.send(new EmailParamVo()
+                            .setBody(body.toString())
+                            .setEmail(emailTo)
+                            .setTitle("Recebemos seu pedido!"),
+                    EmailUtils.scNoreply
+            );
+        } catch (Exception e) {
+            //TODO VERIFICAR O ERRO E SE FOR UM ERRO DE CONEXAO, JOGAR O EMAIL NA FILA DE ENVIO NOVAMENTE.
+            LOG.error("Erro ao enviar a notificacao de pedido criado", e);
+        }
+    }
+
+    @Override
+    public void sendTransactionCriadaCartao(ClienteVo cliente, PedidoEntity pedido) {
+        String emailTo = cliente.getEmail();
+        StringBuilder body = new StringBuilder();
+        body.append("Olá " + cliente.getNome() + "<br/>");
+        body.append("  Seu pedido de numero = " + pedido.getCodigoPedido());
+        body.append(" foi criado com sucesso! <br/>");
+        body.append("  Estamos aguardando a confirmação de pagamento. <br/>");
+        body.append("  Em breve enviaremos um novo status.<br/><br/>");
+        body.append("  Att., <br/>");
+        body.append("  Equipe meuportaretrato.com :) <br/>");
+
+        try {
+            EmailUtils.send(new EmailParamVo()
+                            .setBody(body.toString())
+                            .setEmail(emailTo)
+                            .setTitle("Recebemos seu pedido!"),
+                    EmailUtils.scNoreply
+            );
+        } catch (Exception e) {
+            //TODO VERIFICAR O ERRO E SE FOR UM ERRO DE CONEXAO, JOGAR O EMAIL NA FILA DE ENVIO NOVAMENTE.
+            LOG.error("Erro ao enviar a notificacao de pedido criado", e);
+        }
+    }
 }

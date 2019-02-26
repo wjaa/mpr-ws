@@ -489,7 +489,7 @@ public class AdminServiceImpl implements AdminService {
         if (!estoque.getQuantidade().equals(produtos.size())){
 
 
-            List<BaixaEstoqueEntity> listBaixa = commonDao.findByProperties(BaixaEstoqueEntity.class,
+            List<ItemPedidoEntity> listBaixa = commonDao.findByProperties(ItemPedidoEntity.class,
                     new String[]{"idEstoque"},
                     new Object[]{estoque.getId()});
 
@@ -524,7 +524,7 @@ public class AdminServiceImpl implements AdminService {
         if (!estoque.getIdProduto().equals(produtos.get(0).getIdProduto()) ){
 
             //se trocou o produto, precisamos verificar se algum  item já nao foi baixado do estoque.
-            List<BaixaEstoqueEntity> listBaixa = commonDao.findByProperties(BaixaEstoqueEntity.class,
+            List<ItemPedidoEntity> listBaixa = commonDao.findByProperties(ItemPedidoEntity.class,
                     new String[]{"idEstoque"},
                     new Object[]{estoque.getId()});
 

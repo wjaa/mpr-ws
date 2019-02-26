@@ -1,22 +1,18 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.MprParameterType;
+
+import java.util.Date;
+
 /**
  * Created by wagner on 09/01/19.
  */
 public interface MprParameterService {
 
-
-
-    enum MprParameter{
-        CEP_ORIGEM,
-        MARGEM_PROTECAO,
-        PS_API_TOKEN,
-        PS_API_EMAIL,
-        PS_API_SESSION_URL,
-        ;
-    }
-
-
-    String getParameter(MprParameter parameter, String defaultValue);
-    Integer getParameterInteger(MprParameter margemProtecao, int i);
+    String getParameter(MprParameterType parameter, String defaultValue);
+    Boolean getParameterBoolean(MprParameterType parameter, Boolean defaultValue);
+    Date getParameterDate(MprParameterType parameter, Date defaultValue);
+    Double getParameterDouble(MprParameterType parameter, Double defaultValue);
+    Long getParameterLong(MprParameterType parameter, Long defaultValue);
+    Integer getParameterInteger(MprParameterType parameter, int i);
 }

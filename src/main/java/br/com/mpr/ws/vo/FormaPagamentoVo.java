@@ -1,29 +1,25 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.entity.PagamentoType;
+
 public class FormaPagamentoVo {
 
     public boolean isBoleto() {
-        return TipoPagamento.BOLETO.equals(tipoPagamento);
+        return PagamentoType.BOLETO.equals(pagamentoType);
     }
     public boolean isCartaoCredito() {
-        return TipoPagamento.CARTAO_CREDITO.equals(tipoPagamento);
+        return PagamentoType.CARTAO_CREDITO.equals(pagamentoType);
     }
 
-    public enum TipoPagamento{
-        BOLETO,
-        CARTAO_CREDITO
-    }
-
-
-    private TipoPagamento tipoPagamento;
+    private PagamentoType pagamentoType;
     private CartaoCreditoVo cartaoCredito;
 
-    public TipoPagamento getTipoPagamento() {
-        return tipoPagamento;
+    public PagamentoType getPagamentoType() {
+        return pagamentoType;
     }
 
-    public void setTipoPagamento(TipoPagamento tipoPagamento) {
-        this.tipoPagamento = tipoPagamento;
+    public void setPagamentoType(PagamentoType pagamentoType) {
+        this.pagamentoType = pagamentoType;
     }
 
     public CartaoCreditoVo getCartaoCredito() {
@@ -32,5 +28,13 @@ public class FormaPagamentoVo {
 
     public void setCartaoCredito(CartaoCreditoVo cartaoCredito) {
         this.cartaoCredito = cartaoCredito;
+    }
+
+    @Override
+    public String toString() {
+        return "FormaPagamentoVo{" +
+                "pagamentoType=" + pagamentoType +
+                ", cartaoCredito=" + cartaoCredito +
+                '}';
     }
 }

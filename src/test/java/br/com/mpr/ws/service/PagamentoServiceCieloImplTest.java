@@ -1,11 +1,13 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.entity.PagamentoType;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
 import br.com.mpr.ws.vo.FormaPagamentoVo;
+import br.com.mpr.ws.vo.ResultadoPagamentoVo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
             CheckoutForm form = new CheckoutForm();
             //form.setIdCarrinho(1l);
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-            formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.BOLETO);
+            formaPagamentoVo.setPagamentoType(PagamentoType.BOLETO);
             form.setFormaPagamento(formaPagamentoVo);
             pagamentoService.pagamento(form);
         }catch (PagamentoServiceException ex){
@@ -44,13 +46,13 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
             CheckoutForm form = new CheckoutForm();
             //form.setIdCarrinho(2l);
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-            formaPagamentoVo.setTipoPagamento(FormaPagamentoVo.TipoPagamento.CARTAO_CREDITO);
+            formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
             CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
             cartaoCreditoVo.setToken(this.getTokenCielo());
             formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
             form.setFormaPagamento(formaPagamentoVo);
-            PedidoEntity pedidoEntity = pagamentoService.pagamento(form);
-            Assert.assertNotNull(pedidoEntity);
+            ResultadoPagamentoVo result = pagamentoService.pagamento(form);
+            Assert.assertNotNull(result);
         }catch (PagamentoServiceException ex){
             Assert.assertTrue(ex.getMessage(), false);
         }

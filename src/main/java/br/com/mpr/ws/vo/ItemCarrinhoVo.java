@@ -10,6 +10,9 @@ public class ItemCarrinhoVo {
     private Long id;
     private Long idCarrinho;
     private ProdutoVo produto;
+    private Long idEstoque;
+    private Long idEstoqueItem;
+
     private List<AnexoVo> anexos;
 
     public Long getId() {
@@ -42,5 +45,21 @@ public class ItemCarrinhoVo {
 
     public void setAnexos(List<AnexoVo> anexos) {
         this.anexos = anexos;
+    }
+
+    public Long getIdEstoque() {
+        return idEstoque;
+    }
+
+    public void setIdEstoque(Long idEstoque) {
+        this.idEstoque = idEstoque;
+    }
+
+    public Long getIdEstoqueItem() {
+        return idEstoqueItem;
+    }
+
+    public void setIdEstoqueItem(Long idEstoqueItem) {
+        this.idEstoqueItem = idEstoqueItem;
     }
 }

@@ -200,7 +200,7 @@ CREATE TABLE carrinho(
     ID INT(28) NOT NULL AUTO_INCREMENT,
     ID_CLIENTE INT(28),
     KEY_DEVICE VARCHAR(255),
-    DATA_CRIACAO DATE NOT NULL,
+    DATA_CRIACAO DATETIME NOT NULL,
     FOREIGN KEY (ID_CLIENTE)
           REFERENCES CLIENTE(ID),
     PRIMARY KEY (ID)
@@ -290,7 +290,7 @@ CREATE TABLE catalogo(
 CREATE TABLE pedido(
     ID INT(28) NOT NULL AUTO_INCREMENT,
     CODIGO_PEDIDO VARCHAR(16),
-    DATA DATE NOT NULL,
+    DATA DATETIME NOT NULL,
     ID_CLIENTE INT(28) NOT NULL,
     ID_ENDERECO INT(28) NOT NULL,
     ID_CUPOM INT(28),
@@ -298,16 +298,17 @@ CREATE TABLE pedido(
     VALOR_FRETE DECIMAL(6,2) NOT NULL,
     VALOR_DESCONTO DECIMAL(6,2) NOT NULL,
     VALOR_TOTAL DECIMAL(7,2) NOT NULL,
-    FRETE INT(1),
+    TIPO_FRETE INT(1),
+    TIPO_PAGAMENTO INT(1) NOT NULL,
     DATA_ENTREGA DATE NOT NULL,
     CODIGO_RASTREIO VARCHAR(64),
     CODIGO_TRANSACAO VARCHAR(64),
     FOREIGN KEY (ID_CLIENTE)
-          REFERENCES CLIENTE(ID),
+          REFERENCES cliente(ID),
     FOREIGN KEY (ID_ENDERECO)
-          REFERENCES ENDERECO(ID),
+          REFERENCES endereco(ID),
     FOREIGN KEY (ID_CUPOM)
-          REFERENCES CUPOM_DESCONTO(ID),
+          REFERENCES cupom_desconto(ID),
     PRIMARY KEY (ID)
 );
 
@@ -315,11 +316,14 @@ CREATE TABLE item_pedido(
     ID INT(28) NOT NULL AUTO_INCREMENT,
     ID_PEDIDO INT(28) NOT NULL,
     ID_PRODUTO INT(28) NOT NULL,
+    ID_ESTOQUE INT(28) NOT NULL,
     VALOR DECIMAL(6,2) NOT NULL,
     FOREIGN KEY (ID_PEDIDO)
           REFERENCES pedido(ID),
     FOREIGN KEY (ID_PRODUTO)
           REFERENCES produto(ID),
+    FOREIGN KEY (ID_ESTOQUE)
+              REFERENCES estoque(ID),
     PRIMARY KEY (ID)
 );
 
@@ -332,6 +336,26 @@ CREATE TABLE item_pedido_anexo(
           REFERENCES item_pedido(ID),
     FOREIGN KEY (ID_CATALOGO)
           REFERENCES catalogo(ID),
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE historico_pedido(
+    ID INT(28) NOT NULL AUTO_INCREMENT,
+    ID_PEDIDO INT(28) NOT NULL,
+    ID_STATUS_PEDIDO INT(10) NOT NULL,
+    DATA TIMESTAMP NOT NULL,
+    FOREIGN KEY (ID_PEDIDO)
+          REFERENCES pedido(ID),
+    FOREIGN KEY (ID_STATUS_PEDIDO)
+          REFERENCES status_pedido(ID),
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE status_pedido(
+    ID INT(10) NOT NULL AUTO_INCREMENT,
+    NOME VARCHAR(40) NOT NULL,
+    NOME_CLIENTE VARCHAR(40) NOT NULL,
+    SYS_CODE VARCHAR(4),
     PRIMARY KEY (ID)
 );
 
@@ -363,11 +387,36 @@ CREATE TABLE USER_ROLES(
   CONSTRAINT FK_USERNAME FOREIGN KEY (USERNAME) REFERENCES USERS (USERNAME)
 );
 
+
+CREATE TABLE mpr_parameter(
+    ID INT(10) NOT NULL AUTO_INCREMENT,
+    CHAVE VARCHAR(64) NOT NULL,
+    VALOR VARCHAR(128) NOT NULL,
+    DATA_ATUALIZACAO TIMESTAMP NOT NULL,
+    PRIMARY KEY (ID)
+);
+
 INSERT INTO USERS (`USERNAME`,`PASSWORD`,`ENABLED`) VALUES ('cliente.admin@meuportaretrato.com','$2a$10$YWkzQyIPEa/0CYn4.3usyuQ956exzjNscX6NlMnjiZL3/dPVPv9v6',1);
 INSERT INTO USERS (`USERNAME`,`PASSWORD`,`ENABLED`) VALUES ('cliente.mobile@meuportaretrato.com','$2a$10$ILfyRMdP.nqMvvP3beXjbeFXT42Rsx.AzckTtKi2RIhcWT1jBJe6a',1);
 
 INSERT INTO USER_ROLES (`USER_ROLE_ID`,`USERNAME`,`ROLE`) VALUES (1,'cliente.admin@meuportaretrato.com','ROLE_ADMIN');
 INSERT INTO USER_ROLES (`USER_ROLE_ID`,`USERNAME`,`ROLE`) VALUES (2,'cliente.mobile@meuportaretrato.com','ROLE_USER');
+
+
+insert into status_pedido values (null,'Pedido criado.','Pedido recebido (aguardando pagto).','PECR');
+insert into status_pedido values (null,'Aguardando Pagto.','Pedido recebido (aguardando pgto).','AGPG');
+insert into status_pedido values (null,'Pagto. confirmado.','Pedido recebido (aguardando pgto).','PGCF');
+insert into status_pedido values (null,'Em confeccção.','Confeccionando pedido.','CFPE');
+insert into status_pedido values (null,'Confeccionado.','Confeccionando pedido.','CNFC');
+insert into status_pedido values (null,'Embalado.','Confeccionando pedido.','PEEB');
+insert into status_pedido values (null,'Despachado.','Despachado.','PEDP');
+insert into status_pedido values (null,'Em transito.','Despachado.','ETRS');
+insert into status_pedido values (null,'Entregue.','Entregue.','ETRG');
+insert into status_pedido values (null,'Cancelado.','Pedido cancelado.','CACL');
+insert into status_pedido values (null,'Recusado.','Recusado.','RCSD');
+insert into status_pedido values (null,'Pagto não confirmado.','Recusado','PGNC');
+insert into status_pedido values (null,'Devolução','Pedido cancelado.','DVLC');
+insert into status_pedido values (null,'Erro no pedido','Pedido recebido (aguardando pagto).','ERRO');
 
 --EXEMPLO DE ALTER TABLE COM COM CAMPO NOT NULL.
 --ALTER TABLE PRODUTO ADD PREVIEW VARCHAR(100) NOT NULL DEFAULT 'AAA.JPG';

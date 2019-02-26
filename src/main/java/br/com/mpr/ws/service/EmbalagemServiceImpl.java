@@ -2,6 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.EmbalagemEntity;
+import br.com.mpr.ws.entity.MprParameterType;
 import br.com.mpr.ws.entity.ProdutoEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,7 @@ public class EmbalagemServiceImpl implements EmbalagemService {
         Double sumAlt = 0.0;
 
         Integer margemProtecao = mprParameterService.getParameterInteger(
-                MprParameterService.MprParameter.MARGEM_PROTECAO,4);
+                MprParameterType.MARGEM_PROTECAO,4);
 
         for (ProdutoEntity p : produtos){
             Double cp = p.getComp() + margemProtecao;

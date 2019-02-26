@@ -53,6 +53,8 @@ logging:
     org:
       springframework: INFO
       hibernate: INFO
+#      hibernate:
+#        SQL: DEBUG
     br:
       com:
         mpr: DEBUG

@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.entity.FreteType;
+import br.com.mpr.ws.entity.MprParameterType;
 import br.com.mpr.ws.frete.correios.CResultado;
 import br.com.mpr.ws.frete.correios.CServico;
 import br.com.mpr.ws.frete.correios.CalcPrecoPrazoWS;
@@ -44,7 +45,7 @@ public class FreteServiceCorreioImpl implements FreteService {
                     "", //senha da empresa
                     FreteType.ECONOMICO.equals(param.getFreteType()) ? PAC :
                             SEDEX , //40010 sedex | 41106 pac
-                    parameterService.getParameter(MprParameterService.MprParameter.CEP_ORIGEM, "07093090"), //cep de origem (nosso cep)
+                    parameterService.getParameter(MprParameterType.CEP_ORIGEM, "07093090"), //cep de origem (nosso cep)
                     param.getCepDestino(), //cep do cliente
                     param.getPeso() == null ? "1" : NumberUtils.formatPTbr(param.getPeso()), //peso do produto
                     1, // 1 é pacote.

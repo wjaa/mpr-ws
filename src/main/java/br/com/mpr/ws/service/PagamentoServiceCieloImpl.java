@@ -6,6 +6,7 @@ import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.exception.PedidoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
+import br.com.mpr.ws.vo.ResultadoPagamentoVo;
 import cieloecommerce.sdk.Merchant;
 import cieloecommerce.sdk.ecommerce.*;
 import cieloecommerce.sdk.ecommerce.request.CieloError;
@@ -51,7 +52,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
     private ClienteService clienteService;
 
 
-    public PedidoEntity pagamento(CheckoutForm form) throws PagamentoServiceException {
+    public ResultadoPagamentoVo pagamento(CheckoutForm form) throws PagamentoServiceException {
 
         if (form.getFormaPagamento().isBoleto()){
             return this.pagamentoBoleto(form);
@@ -61,7 +62,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
     }
 
-    private PedidoEntity pagamentoBoleto(CheckoutForm form) throws PagamentoServiceException {
+    private ResultadoPagamentoVo pagamentoBoleto(CheckoutForm form) throws PagamentoServiceException {
         // Crie uma instância de Sale informando o ID do pagamento
         Sale sale = new Sale("ID do pagamento");
 
@@ -87,9 +88,9 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
             String paymentId = sale.getPayment().getPaymentId();
             System.out.println(paymentId);
 
-            PedidoEntity pedidoEntity = pedidoService.createPedido(paymentId, form);
+            PedidoEntity pedidoEntity = pedidoService.createPedido(form);
 
-            return pedidoEntity;
+            return new ResultadoPagamentoVo();
         } catch (CieloRequestException e) {
             // Em caso de erros de integração, podemos tratar o erro aqui.
             // os códigos de erro estão todos disponíveis no manual de integração.
@@ -105,7 +106,7 @@ public class PagamentoServiceCieloImpl implements PagamentoService {
 
     }
 
-    private PedidoEntity pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceException {
+    private ResultadoPagamentoVo pagamentoCartaoCredito(CheckoutForm form) throws PagamentoServiceException {
 
 
         //no momento da tentativa de pagamento, precisamos criar o pedido para enviar o ID para a cielo.

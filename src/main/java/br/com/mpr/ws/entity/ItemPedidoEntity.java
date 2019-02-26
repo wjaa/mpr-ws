@@ -24,6 +24,10 @@ public class ItemPedidoEntity {
     @Column(name = "VALOR", nullable = false)
     private Double valor;
 
+    /*marca o registro de qual lote ele foi retirado*/
+    @Column(name = "ID_ESTOQUE", nullable = false)
+    private Long idEstoque;
+
     @Transient
     private List<ItemPedidoAnexoEntity> anexos;
 
@@ -65,5 +69,13 @@ public class ItemPedidoEntity {
 
     public void setAnexos(List<ItemPedidoAnexoEntity> anexos) {
         this.anexos = anexos;
+    }
+
+    public Long getIdEstoque() {
+        return idEstoque;
+    }
+
+    public void setIdEstoque(Long idEstoque) {
+        this.idEstoque = idEstoque;
     }
 }

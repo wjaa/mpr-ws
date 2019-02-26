@@ -20,7 +20,6 @@ import java.util.stream.IntStream;
  * Created by wagner on 6/24/18.
  */
 @Repository
-@Transactional(rollbackFor = Throwable.class)
 public class CommonDaoImpl implements CommonDao {
 
     @PersistenceContext
@@ -30,7 +29,8 @@ public class CommonDaoImpl implements CommonDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public <T> T get(Class<T> clazz, Serializable id) {
-        return entityManager.find(clazz,id);
+        T o = entityManager.find(clazz,id);
+        return o;
     }
 
     @Override
@@ -42,17 +42,16 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public <T> T save(T o) {
         entityManager.persist(o);
         return o;
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public <T> T update(T o) {
         o = entityManager.merge(o);
-        entityManager.flush();
         return o;
     }
 
@@ -82,7 +81,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T> List<T> findByProperties(Class<T> clazzEntity, String[] params, Object[] values) {
         List<T> result = getResultQuery(clazzEntity, params, values);
         return result;
@@ -150,7 +149,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public <T>void remove(Class<T> clazz, Serializable id) {
         entityManager.remove(get(clazz,id));
     }
@@ -222,7 +221,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public int executeUpdate(String query, Object... params) {
         Query q = entityManager.createNativeQuery(query);
         IntStream.range(0,params.length).forEach(i -> q.setParameter(i+1, params[i]));

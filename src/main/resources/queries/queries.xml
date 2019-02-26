@@ -218,6 +218,7 @@
             </value>
         </constructor-arg>
     </bean>
+    <!-- FIM PRODUTO SERVICE -->
 
 
     <bean name="EmbalagemService.findEmbalagem" class="java.lang.String">
@@ -263,7 +264,5 @@
             </value>
         </constructor-arg>
     </bean>
-
-    <!-- FIM PRODUTO SERVICE -->
 
 </beans>
