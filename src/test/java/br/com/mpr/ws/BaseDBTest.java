@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("tests")
+@ActiveProfiles("test")
 @Import(TestsConfiguration.class)
 public abstract class BaseDBTest implements ApplicationContextAware {
 

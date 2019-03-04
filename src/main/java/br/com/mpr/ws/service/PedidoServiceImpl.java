@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,12 @@ import java.util.List;
 public class PedidoServiceImpl implements PedidoService{
 
     private static final Log LOG = LogFactory.getLog(PedidoServiceImpl.class);
+
+
+
+    @Resource(name = "PedidoService.findPedidoByStatus")
+    private String QUERY_FIND_BY_STATUS;
+
 
     @Autowired
     private CommonDao commonDao;
@@ -46,7 +53,7 @@ public class PedidoServiceImpl implements PedidoService{
         CheckoutVo checkout = checkoutService.getCheckout(checkoutForm.getIdCheckout());
         PedidoEntity pedido = this.createPedido("START", checkout);
         pedido = commonDao.save(pedido);
-        pedido.setItens(this.getItens(checkout.getCarrinho(), pedido.getId()));
+        pedido.setItens(this.createItens(checkout.getCarrinho(), pedido.getId()));
 
         if (pedido.getId() != null){
             LOG.info("m=createPedido, pedido criado id=" + pedido.getId());
@@ -105,13 +112,14 @@ public class PedidoServiceImpl implements PedidoService{
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
     public PedidoEntity cancelarPedido(Long idPedido) throws PedidoServiceException {
         LOG.info("m=cancelarPedido");
-        PedidoEntity pedido = commonDao.get(PedidoEntity.class, idPedido);
+        PedidoEntity pedido = this.getPedido(idPedido);
         if (pedido == null){
             throw new PedidoServiceException("Pedido não existe!");
         }
-        LOG.debug("m=cancelarPedido, criando historico de cancelamento");
-        this.createNovoHistorico(pedido.getId(), SysCodeType.CACL);
 
+        LOG.debug("m=cancelarPedido, criando historico de cancelamento");
+        HistoricoPedidoEntity historico = this.createNovoHistorico(pedido.getId(), SysCodeType.CACL);
+        pedido.setStatusAtual(historico.getStatusPedido());
 
         //TODO VERIFICAR SE EXISTE EXCESSOES PARA ESTORNAR PRODUTOS PARA O ESTOQUE.
         LOG.debug("m=cancelarPedido, retornando produtos para o estoque.");
@@ -132,7 +140,8 @@ public class PedidoServiceImpl implements PedidoService{
         }
         pedido.setCodigoTransacao(org.springframework.util.StringUtils.isEmpty(code) ? "NO_TRANSACTION" : code);
         commonDao.update(pedido);
-        this.createNovoHistorico(pedido.getId(),SysCodeType.AGPG);
+        HistoricoPedidoEntity historicoPedidoEntity = this.createNovoHistorico(pedido.getId(),SysCodeType.AGPG);
+        pedido.setStatusAtual(historicoPedidoEntity.getStatusPedido());
         return pedido;
     }
 
@@ -140,6 +149,10 @@ public class PedidoServiceImpl implements PedidoService{
     public PedidoEntity getPedido(Long idPedido) {
         PedidoEntity pedido = commonDao.get(PedidoEntity.class, idPedido);
         pedido.setStatusAtual(this.getStatusAtual(idPedido));
+        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
+                new String[]{"idPedido"},
+                new Object[]{pedido.getId()}));
+
         return pedido;
     }
 
@@ -159,7 +172,29 @@ public class PedidoServiceImpl implements PedidoService{
 
     @Override
     public List<PedidoEntity> findPedidoByStatus(SysCodeType sysCode) {
-        return null;
+        return commonDao.findByNativeQuery(QUERY_FIND_BY_STATUS, PedidoEntity.class,
+                new String[]{"sysCode"},
+                new Object[]{sysCode.toString()},false);
+    }
+
+    @Override
+    public List<PedidoEntity> findPedidoByIdCliente(Long idCliente) {
+        List<PedidoEntity> list = commonDao.findByProperties(PedidoEntity.class,
+                new String[]{"idCliente"},
+                new Object[]{idCliente});
+
+        for (PedidoEntity p : list){
+            p.setStatusAtual(this.getStatusAtual(p.getId()));
+            p.setItens(this.getItens(p.getId()));
+        }
+
+        return list;
+    }
+
+    private List<ItemPedidoEntity> getItens(Long id) {
+        return commonDao.findByProperties(ItemPedidoEntity.class,
+                new String[]{"idPedido"},
+                new Object[]{id});
     }
 
     private StatusPedidoEntity getStatusAtual(Long idPedido) {
@@ -218,7 +253,7 @@ public class PedidoServiceImpl implements PedidoService{
         return pedido;
     }
 
-    private List<ItemPedidoEntity> getItens(CarrinhoVo carrinho, Long idPedido) {
+    private List<ItemPedidoEntity> createItens(CarrinhoVo carrinho, Long idPedido) {
         List<ItemPedidoEntity> itens = new ArrayList<>();
 
         for (ItemCarrinhoVo item : carrinho.getItems()){
@@ -228,7 +263,7 @@ public class PedidoServiceImpl implements PedidoService{
             itemPedido.setIdPedido(idPedido);
             itemPedido.setIdEstoque(item.getIdEstoque());
             itemPedido = commonDao.save(itemPedido);
-            itemPedido.setAnexos(this.getAnexos(item.getAnexos(), itemPedido.getId()));
+            itemPedido.setAnexos(this.createAnexos(item.getAnexos(), itemPedido.getId()));
             itens.add(itemPedido);
         }
         return itens;
@@ -236,7 +271,7 @@ public class PedidoServiceImpl implements PedidoService{
 
     }
 
-    private List<ItemPedidoAnexoEntity> getAnexos(List<AnexoVo> anexos, Long idItemPedido) {
+    private List<ItemPedidoAnexoEntity> createAnexos(List<AnexoVo> anexos, Long idItemPedido) {
         List<ItemPedidoAnexoEntity> itemAnexos = new ArrayList<>();
         for (AnexoVo a : anexos){
             ItemPedidoAnexoEntity itemAnexo = new ItemPedidoAnexoEntity();

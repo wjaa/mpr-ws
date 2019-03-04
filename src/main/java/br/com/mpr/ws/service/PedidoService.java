@@ -31,4 +31,6 @@ public interface PedidoService {
 
     List<PedidoEntity> findPedidoByStatus(SysCodeType sysCode);
 
+    List<PedidoEntity> findPedidoByIdCliente(Long idCliente);
+
 }

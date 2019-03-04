@@ -91,9 +91,10 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() ==
-                            (checkout.getValorProdutos() -
-                            checkout.getValorDesconto() +
-                            checkout.getValorFrete()));
+                            (checkout.getValorProdutos() +
+                                    checkout.getValorFrete() -
+                                    checkout.getValorDesconto()
+                            ));
             //validando se teve desconto de 50%
             Assert.assertEquals(new Double (checkout.getValorProdutos() * 50.0 /100.0), checkout.getValorDesconto());
             Assert.assertNotNull(checkout.getCarrinho());

@@ -1,12 +1,15 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.entity.PedidoEntity;
+import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.EmailUtils;
 import br.com.mpr.ws.vo.ClienteVo;
 import br.com.mpr.ws.vo.EmailParamVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.EmailException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +19,18 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
     private static final Log LOG = LogFactory.getLog(NotificationServiceImpl.class);
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
 
     @Override
     public void sendPedidoCriado(ClienteVo cliente, PedidoEntity pedido) {
+
+        //nao faz isso no ambiente de
+        if ("test".equalsIgnoreCase(activeProfile)){
+            return;
+        }
+
         String emailTo = cliente.getEmail();
         StringBuilder body = new StringBuilder();
         body.append("Olá " + cliente.getNome() + "<br/>");
@@ -46,6 +58,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendTransactionCriadaBoleto(ClienteVo cliente, PedidoEntity pedido, Byte[] boleto) {
+        //nao faz isso no ambiente de
+        if ("test".equalsIgnoreCase(activeProfile)){
+            return;
+        }
+
         String emailTo = cliente.getEmail();
         StringBuilder body = new StringBuilder();
         body.append("Olá " + cliente.getNome() + "<br/>");
@@ -71,6 +88,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendTransactionCriadaCartao(ClienteVo cliente, PedidoEntity pedido) {
+
+        //nao faz isso no ambiente de
+        if ("test".equalsIgnoreCase(activeProfile)){
+            return;
+        }
         String emailTo = cliente.getEmail();
         StringBuilder body = new StringBuilder();
         body.append("Olá " + cliente.getNome() + "<br/>");

@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.entity.EstoqueItemEntity;
 import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
         Assert.assertNotNull(listProduto);
         Assert.assertTrue(listProduto.size() > 0);
-        Assert.assertEquals(5,listProduto.size());
+        Assert.assertEquals(6,listProduto.size());
 
         for (ProdutoVo p : listProduto){
             Assert.assertNotNull(p.getId());
@@ -68,7 +69,9 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
     @Test
     public void getProdutoEmEstoque(){
-
+        EstoqueItemEntity item = produtoService.getProdutoEmEstoque(4l);
+        Assert.assertNotNull(item);
+        Assert.assertEquals(new Long(4l),item.getIdProduto());
     }
 
 }

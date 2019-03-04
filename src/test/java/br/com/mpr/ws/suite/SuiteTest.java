@@ -31,6 +31,7 @@ import org.junit.runners.Suite;
 
         MprParameterServiceImplTest.class,
 
+        PedidoServiceImplTest.class,
 
 })
 public class SuiteTest {

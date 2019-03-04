@@ -93,7 +93,7 @@ cielo:
 ---
 
 spring:
-  profiles: "tests"
+  profiles: "test"
 
 mpr:
   pathImg: /tmp

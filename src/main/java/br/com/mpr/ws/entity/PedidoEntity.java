@@ -1,7 +1,5 @@
 package br.com.mpr.ws.entity;
 
-import br.com.mpr.ws.vo.FormaPagamentoVo;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;

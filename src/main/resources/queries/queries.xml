@@ -16,6 +16,7 @@
                          FROM estoque_item EI
                          WHERE EI.ID_ESTOQUE = E.ID
                          AND EI.INVALIDO = 0
+                         AND EI.ID NOT IN (SELECT IC.ID_ESTOQUE_ITEM FROM item_carrinho IC WHERE IC.ID_ESTOQUE_ITEM = E.ID)
                 ) AS QUANTIDADE_ATUAL,
                 E.QUANTIDADE
                 FROM estoque E
@@ -261,6 +262,36 @@
                 (SELECT COUNT(1) FROM pedido P WHERE P.ID_CUPOM = C.ID) +
                 (SELECT COUNT(1) FROM checkout CO WHERE CO.ID_CUPOM = C.ID) )
                 and C.HASH = :hash
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="PedidoService.findPedidoByStatus" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                SELECT P.* FROM (SELECT P.ID,
+                P.CODIGO_PEDIDO,
+                P.DATA,
+                P.ID_CLIENTE,
+                P.ID_ENDERECO,
+                P.ID_CUPOM,
+                P.VALOR_PRODUTOS,
+                P.VALOR_FRETE,
+                P.VALOR_DESCONTO,
+                P.VALOR_TOTAL,
+                P.CODIGO_TRANSACAO,
+                P.CODIGO_RASTREIO,
+                P.TIPO_FRETE,
+                P.TIPO_PAGAMENTO,
+                P.DATA_ENTREGA,
+                ( SELECT HP.ID_STATUS_PEDIDO
+                FROM historico_pedido HP
+                WHERE HP.ID_PEDIDO = P.ID
+                ORDER BY DATA DESC LIMIT 1) ID_STATUS_PEDIDO
+                FROM pedido P ) P
+                JOIN status_pedido ST ON ST.ID = P.ID_STATUS_PEDIDO
+                WHERE ST.SYS_CODE = :sysCode
+
             </value>
         </constructor-arg>
     </bean>
