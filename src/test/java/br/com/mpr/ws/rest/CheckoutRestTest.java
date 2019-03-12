@@ -18,7 +18,6 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            System.out.println(resultJson);
             CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);

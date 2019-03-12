@@ -1,3 +1,72 @@
+/***********************************************
+    TABELA DE EMBALAGENS
+***********************************************/
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem1',30,25,5,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem2',30,25,10,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem3',30,25,15,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem4',15,10,5,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem5',15,10,10,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem6',15,10,15,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem7',25,20,5,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem8',25,20,10,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem9',25,20,15,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem10',20,15,5,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem11',20,15,10,1);
+
+insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
+values (null,'embalagem12',20,15,15,1);
+/************************************************************/
+
+
+/******************************************
+      TABELA DE STATUS DO PEDIDO
+******************************************/
+insert into status_pedido values (null,'Pedido criado.','Pedido recebido (aguardando pagto).','PECR');
+insert into status_pedido values (null,'Aguardando Pagto.','Pedido recebido (aguardando pgto).','AGPG');
+insert into status_pedido values (null,'Pagto. confirmado.','Pedido recebido (aguardando pgto).','PGCF');
+insert into status_pedido values (null,'Em confeccção.','Confeccionando pedido.','CFPE');
+insert into status_pedido values (null,'Confeccionado.','Confeccionando pedido.','CNFC');
+insert into status_pedido values (null,'Embalado.','Confeccionando pedido.','PEEB');
+insert into status_pedido values (null,'Despachado.','Despachado.','PEDP');
+insert into status_pedido values (null,'Em transito.','Despachado.','ETRS');
+insert into status_pedido values (null,'Entregue.','Entregue.','ETRG');
+insert into status_pedido values (null,'Cancelado.','Pedido cancelado.','CACL');
+insert into status_pedido values (null,'Recusado.','Recusado.','RCSD');
+insert into status_pedido values (null,'Pagto não confirmado.','Recusado','PGNC');
+insert into status_pedido values (null,'Devolução','Pedido cancelado.','DVLC');
+insert into status_pedido values (null,'Erro no pedido','Pedido recebido (aguardando pagto).','ERRO');
+
+
+/*usando os parameters ja criados para testar os tipos*/
+insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
+values(null,'CEP_ORIGEM','07093090','2019-02-25');
+insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
+values(null,'MARGEM_PROTECAO','4','2019-02-25');
+
+
+
+
 insert into CUPOM_DESCONTO(ID,DESCRICAO, HASH,DATA_INICIO,DATA_FIM,PROMOCAO, PORCENTAGEM, QUANTIDADE)
 values (1,'CUPOM DE TESTE','AABBCCDD','2019-01-01','2050-01-01',0,50, 1);
 
@@ -111,7 +180,7 @@ values(9,2,3,0);
 
 --PEDIDO
 INSERT INTO PEDIDO (ID,CODIGO_PEDIDO,DATA,ID_CLIENTE,ID_ENDERECO,ID_CUPOM,VALOR_PRODUTOS,VALOR_FRETE,VALOR_DESCONTO,VALOR_TOTAL,TIPO_PAGAMENTO,DATA_ENTREGA)
-VALUES (1,123456,'2018-10-23',1,1,null,450,50,10,490,0,'2019-01-01');
+VALUES (1,'123456AA','2018-10-23',1,1,null,450,50,10,490,0,'2019-01-01');
 
 --ITEMS DO PEDIDO
 INSERT INTO ITEM_PEDIDO(ID, ID_PEDIDO,ID_PRODUTO,VALOR, ID_ESTOQUE)
@@ -121,6 +190,8 @@ VALUES (2,1,3,150,2);
 INSERT INTO ITEM_PEDIDO(ID, ID_PEDIDO,ID_PRODUTO,VALOR, ID_ESTOQUE)
 VALUES (3,1,3,150,2);
 
+INSERT INTO HISTORICO_PEDIDO(ID, ID_PEDIDO, ID_STATUS_PEDIDO, DATA)
+VALUES (null,1,1,'2019-01-01');
 
 
 --items para o teste de listagem de produtos do estoque
@@ -137,7 +208,7 @@ values(15,3,3,0);
 
 --PEDIDO
 INSERT INTO PEDIDO (ID,CODIGO_PEDIDO,DATA,ID_CLIENTE,ID_ENDERECO,ID_CUPOM,VALOR_PRODUTOS,VALOR_FRETE,VALOR_DESCONTO,VALOR_TOTAL,TIPO_PAGAMENTO,DATA_ENTREGA)
-VALUES (2,123456,'2018-10-23',1,1,null,450,50,10,490,0,'2019-01-01');
+VALUES (2,'789234BB','2018-10-23',1,1,null,450,50,10,490,0,'2019-01-01');
 
 --ITEMS DO PEDIDO
 INSERT INTO ITEM_PEDIDO(ID, ID_PEDIDO,ID_PRODUTO,VALOR, ID_ESTOQUE)
@@ -145,6 +216,8 @@ VALUES (4,2,3,150,3);
 INSERT INTO ITEM_PEDIDO(ID, ID_PEDIDO,ID_PRODUTO,VALOR, ID_ESTOQUE)
 VALUES (5,2,3,150,3);
 
+INSERT INTO HISTORICO_PEDIDO(ID, ID_PEDIDO, ID_STATUS_PEDIDO, DATA)
+VALUES (null,2,2,'2019-01-01');
 
 /**********************************************************************************************************************/
 
@@ -278,65 +351,4 @@ insert into item_carrinho_anexo (ID, ID_ITEM_CARRINHO, FOTO, ID_CATALOGO)
 values (null,1,'FOTO CLIENTE', null);
 
 
-/***********************************************
-    TABELA DE EMBALAGENS
-***********************************************/
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem1',30,25,5,1);
 
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem2',30,25,10,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem3',30,25,15,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem4',15,10,5,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem5',15,10,10,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem6',15,10,15,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem7',25,20,5,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem8',25,20,10,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem9',25,20,15,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem10',20,15,5,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem11',20,15,10,1);
-
-insert into EMBALAGEM (ID, DESCRICAO, COMP, LARG, ALT, ATIVO)
-values (null,'embalagem12',20,15,15,1);
-/************************************************************/
-
-
-insert into status_pedido values (null,'Pedido criado.','Pedido recebido (aguardando pagto).','PECR');
-insert into status_pedido values (null,'Aguardando Pagto.','Pedido recebido (aguardando pgto).','AGPG');
-insert into status_pedido values (null,'Pagto. confirmado.','Pedido recebido (aguardando pgto).','PGCF');
-insert into status_pedido values (null,'Em confeccção.','Confeccionando pedido.','CFPE');
-insert into status_pedido values (null,'Confeccionado.','Confeccionando pedido.','CNFC');
-insert into status_pedido values (null,'Embalado.','Confeccionando pedido.','PEEB');
-insert into status_pedido values (null,'Despachado.','Despachado.','PEDP');
-insert into status_pedido values (null,'Em transito.','Despachado.','ETRS');
-insert into status_pedido values (null,'Entregue.','Entregue.','ETRG');
-insert into status_pedido values (null,'Cancelado.','Pedido cancelado.','CACL');
-insert into status_pedido values (null,'Recusado.','Recusado.','RCSD');
-insert into status_pedido values (null,'Pagto não confirmado.','Recusado','PGNC');
-insert into status_pedido values (null,'Devolução','Pedido cancelado.','DVLC');
-insert into status_pedido values (null,'Erro no pedido','Pedido recebido (aguardando pagto).','ERRO');
-
-
-/*usando os parameters ja criados para testar os tipos*/
-insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
-values(null,'CEP_ORIGEM','07093090','2019-02-25');
-insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
-values(null,'MARGEM_PROTECAO','4','2019-02-25');

@@ -8,7 +8,9 @@ import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
+import br.com.mpr.ws.vo.PedidoFindForm;
 import br.com.mpr.ws.vo.ProdutoEstoqueVo;
+import br.com.mpr.ws.vo.ProdutoFindForm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,16 +24,14 @@ import org.springframework.util.FileCopyUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by wagner on 6/25/18.
  */
 @Service
+@Transactional(rollbackFor = Throwable.class, readOnly = true)
 public class AdminServiceImpl implements AdminService {
 
     public static final int MAX_DAYS_CUPOM = 60;
@@ -45,6 +45,9 @@ public class AdminServiceImpl implements AdminService {
     private ClienteService clienteService;
 
     @Autowired
+    private PedidoService pedidoService;
+
+    @Autowired
     private ImagemService imagemService;
 
     @Resource(name = "findAllEstoqueByIdProduto")
@@ -55,6 +58,15 @@ public class AdminServiceImpl implements AdminService {
 
     @Resource(name = "findAllProduto")
     private String findAllProduto;
+
+    @Resource(name = "findAllProduto.filterDescricao")
+    private String filterDescricao;
+
+    @Resource(name = "findAllProduto.filterTipoProduto")
+    private String filterTipoProduto;
+
+    @Resource(name = "findAllProduto.orderByTipoProduto")
+    private String orderByTipoProduto;
 
     @Resource(name = "findProdutoEmEstoque")
     private String findProdutoEmEstoque;
@@ -153,6 +165,48 @@ public class AdminServiceImpl implements AdminService {
     public List<ProdutoEntity> listAllProduto() {
         List<ProdutoEntity> listProdutos = commonDao.findByNativeQuery(findAllProduto, ProdutoEntity.class, true);
         return listProdutos;
+    }
+
+    @Override
+    public Collection<ProdutoEntity> findProduto(ProdutoFindForm findForm) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(findAllProduto);
+        sb.append(!org.springframework.util.StringUtils.isEmpty(findForm.getDescricao()) ? filterDescricao : "");
+        sb.append(findForm.getIdTipoProduto() != null ? filterTipoProduto : "");
+        sb.append(orderByTipoProduto);
+
+        List<ProdutoEntity> listProdutos =
+                commonDao
+                .findByNativeQuery(sb.toString(),
+                        ProdutoEntity.class,
+                        getProdutoFilterName(findForm),
+                        getProdutoFilterValue(findForm),
+                        true);
+        return listProdutos;
+    }
+
+    private Object[] getProdutoFilterValue(ProdutoFindForm findForm) {
+        List<Object> values = new ArrayList<>();
+        if (!org.springframework.util.StringUtils.isEmpty(findForm.getDescricao())){
+            values.add("%" + findForm.getDescricao() + "%");
+        }
+        if (findForm.getIdTipoProduto() != null){
+            values.add(findForm.getIdTipoProduto());
+        }
+
+        return values.toArray(new Object[]{});
+    }
+
+    private String[] getProdutoFilterName(ProdutoFindForm findForm) {
+        List<String> values = new ArrayList<>();
+        if (!org.springframework.util.StringUtils.isEmpty(findForm.getDescricao())){
+            values.add("descricao");
+        }
+        if (findForm.getIdTipoProduto() != null){
+            values.add("idTipoProduto");
+        }
+
+        return values.toArray(new String[]{});
     }
 
     @Override
@@ -648,6 +702,12 @@ public class AdminServiceImpl implements AdminService {
     public void removeProdutoById(Long id) throws AdminServiceException {
 
     }
+
+    @Override
+    public Collection<PedidoEntity> findPedido(PedidoFindForm pedidoFindForm) {
+        return pedidoService.findPedidoByForm(pedidoFindForm);
+    }
+
 
     @Override
     public Serializable getEntityById(String entity, Long id) throws AdminServiceException {

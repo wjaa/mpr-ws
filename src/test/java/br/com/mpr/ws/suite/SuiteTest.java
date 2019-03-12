@@ -1,9 +1,6 @@
 package br.com.mpr.ws.suite;
 
-import br.com.mpr.ws.rest.AdminRestTest;
-import br.com.mpr.ws.rest.CarrinhoRestTest;
-import br.com.mpr.ws.rest.LoginRestTest;
-import br.com.mpr.ws.rest.ProdutoRestTest;
+import br.com.mpr.ws.rest.*;
 import br.com.mpr.ws.service.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -32,6 +29,7 @@ import org.junit.runners.Suite;
         MprParameterServiceImplTest.class,
 
         PedidoServiceImplTest.class,
+        PedidoRestTest.class
 
 })
 public class SuiteTest {

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +30,17 @@ public class PedidoServiceImpl implements PedidoService{
 
 
 
-    @Resource(name = "PedidoService.findPedidoByStatus")
-    private String QUERY_FIND_BY_STATUS;
+    @Resource(name = "PedidoService.findPedido")
+    private String QUERY_FIND_PEDIDO;
 
+    @Resource(name = "PedidoService.findPedidoParamStatus")
+    private String QUERY_FIND_PARAM_STATUS;
+
+    @Resource(name = "PedidoService.findPedidoParamCliente")
+    private String QUERY_FIND_PARAM_CLIENTE;
+
+    @Resource(name = "PedidoService.findPedidoParamCodigo")
+    private String QUERY_FIND_PARAM_CODIGO;
 
     @Autowired
     private CommonDao commonDao;
@@ -44,6 +53,9 @@ public class PedidoServiceImpl implements PedidoService{
 
     @Autowired
     private EstoqueService estoqueService;
+
+    @Autowired
+    private ClienteService clienteService;
 
 
     @Override
@@ -158,21 +170,33 @@ public class PedidoServiceImpl implements PedidoService{
 
     @Override
     public PedidoEntity findPedidoByTransactionCode(String transactionCode) {
-        return commonDao.findByPropertiesSingleResult(PedidoEntity.class,
+        PedidoEntity pedido = commonDao.findByPropertiesSingleResult(PedidoEntity.class,
                 new String[]{"codigoTransacao"},
                 new Object[]{transactionCode});
+        pedido.setStatusAtual(this.getStatusAtual(pedido.getId()));
+        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
+                new String[]{"idPedido"},
+                new Object[]{pedido.getId()}));
+        return pedido;
     }
 
     @Override
     public PedidoEntity findPedidoByCodigo(String codigo) {
-        return commonDao.findByPropertiesSingleResult(PedidoEntity.class,
+        PedidoEntity pedido = commonDao.findByPropertiesSingleResult(PedidoEntity.class,
                 new String[]{"codigoPedido"},
                 new Object[]{codigo});
+        pedido.setStatusAtual(this.getStatusAtual(pedido.getId()));
+        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
+                new String[]{"idPedido"},
+                new Object[]{pedido.getId()}));
+        return pedido;
     }
 
     @Override
     public List<PedidoEntity> findPedidoByStatus(SysCodeType sysCode) {
-        return commonDao.findByNativeQuery(QUERY_FIND_BY_STATUS, PedidoEntity.class,
+
+        return commonDao.findByNativeQuery(QUERY_FIND_PEDIDO + " " + QUERY_FIND_PARAM_STATUS,
+                PedidoEntity.class,
                 new String[]{"sysCode"},
                 new Object[]{sysCode.toString()},false);
     }
@@ -189,6 +213,64 @@ public class PedidoServiceImpl implements PedidoService{
         }
 
         return list;
+    }
+
+    @Override
+    public Collection<PedidoEntity> findPedidoByForm(PedidoFindForm pedidoFindForm) {
+        List<PedidoEntity> list = commonDao.findByNativeQuery(this.getQuery(pedidoFindForm),
+                PedidoEntity.class,
+                this.getParamNames(pedidoFindForm),
+                this.getParamValues(pedidoFindForm));
+
+        for (PedidoEntity p : list){
+            p.setStatusAtual(this.getStatusAtual(p.getId()));
+            p.setItens(this.getItens(p.getId()));
+            p.setCliente(this.clienteService.getClienteById(p.getIdCliente()));
+        }
+
+        return list;
+    }
+
+    private String getQuery(PedidoFindForm pedidoFindForm) {
+        String query = QUERY_FIND_PEDIDO;
+        if (pedidoFindForm.getSysCode() != null){
+            query += " " + QUERY_FIND_PARAM_STATUS;
+        }
+        if (pedidoFindForm.getIdCliente() != null){
+            query += " " + QUERY_FIND_PARAM_CLIENTE;
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(pedidoFindForm.getCodigo())){
+            query += " " + QUERY_FIND_PARAM_CODIGO;
+        }
+        return query;
+    }
+
+    private Object[] getParamValues(PedidoFindForm pedidoFindForm) {
+        List<Object> paramValues = new ArrayList<>();
+        if (pedidoFindForm.getSysCode() != null){
+            paramValues.add(pedidoFindForm.getSysCode().toString());
+        }
+        if (pedidoFindForm.getIdCliente() != null){
+            paramValues.add(pedidoFindForm.getIdCliente());
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(pedidoFindForm.getCodigo())){
+            paramValues.add(pedidoFindForm.getCodigo());
+        }
+        return paramValues.toArray(new Object[]{});
+    }
+
+    private String[] getParamNames(PedidoFindForm pedidoFindForm) {
+        List<String> paramNames = new ArrayList<>();
+        if (pedidoFindForm.getSysCode() != null){
+            paramNames.add("sysCode");
+        }
+        if (pedidoFindForm.getIdCliente() != null){
+            paramNames.add("idCliente");
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(pedidoFindForm.getCodigo())){
+            paramNames.add("codigo");
+        }
+        return paramNames.toArray(new String[]{});
     }
 
     private List<ItemPedidoEntity> getItens(Long id) {

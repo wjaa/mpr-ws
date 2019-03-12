@@ -18,10 +18,6 @@ public class ProdutoRestTest extends BaseMvcTest {
     @Autowired
     private ProdutoService produtoService;
 
-    private ResultActions ra;
-
-
-
     @Test
     public void listAll() {
         try{

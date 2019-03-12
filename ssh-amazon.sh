@@ -1,1 +1,1 @@
-ssh -i /Users/wagner/Documents/mpr-key.pem ubuntu@ec2-18-228-136-145.sa-east-1.compute.amazonaws.com
+ssh -i /home/wagner/mpr-key.pem ubuntu@ec2-18-228-136-145.sa-east-1.compute.amazonaws.com

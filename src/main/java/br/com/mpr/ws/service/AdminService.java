@@ -2,9 +2,12 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
+import br.com.mpr.ws.vo.PedidoFindForm;
 import br.com.mpr.ws.vo.ProdutoEstoqueVo;
+import br.com.mpr.ws.vo.ProdutoFindForm;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,4 +47,6 @@ public interface AdminService {
     void removeTabelaPrecoById(long id) throws AdminServiceException;
     void removeProdutoById(Long id) throws AdminServiceException;
 
+    Collection<PedidoEntity> findPedido(PedidoFindForm pedidoFindForm);
+    Collection<ProdutoEntity> findProduto(ProdutoFindForm findForm);
 }

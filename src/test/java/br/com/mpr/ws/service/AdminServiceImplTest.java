@@ -7,6 +7,7 @@ import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
+import br.com.mpr.ws.vo.PedidoFindForm;
 import br.com.mpr.ws.vo.ProdutoEstoqueVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,10 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by wagner on 6/25/18.
@@ -674,6 +672,41 @@ public class AdminServiceImplTest extends BaseDBTest {
         Assert.assertEquals(imgDestaque.getProduto().getId(), produtoEntity.getId());
         Assert.assertNotNull(produtoEntity.getListImgDestaque().get(0).getId());
         Assert.assertNotNull(imgDestaque.getImg());
+    }
+
+    @Test
+    public void testFindPedidoByStatus(){
+        PedidoFindForm pedidoFindForm = new PedidoFindForm(SysCodeType.PECR);
+        Collection<PedidoEntity> pedidos = this.adminService.findPedido(pedidoFindForm);
+        Assert.assertNotNull(pedidos);
+        Assert.assertTrue(pedidos.size() > 0);
+
+    }
+
+    @Test
+    public void  testFindPedidoByCodigo(){
+        PedidoFindForm pedidoFindForm = new PedidoFindForm("123456AA");
+        Collection<PedidoEntity> pedidos = this.adminService.findPedido(pedidoFindForm);
+        Assert.assertNotNull(pedidos);
+        Assert.assertTrue(pedidos.size() > 0);
+    }
+
+    @Test
+    public void testFindPedidoByIdCliente(){
+        PedidoFindForm pedidoFindForm = new PedidoFindForm(1l);
+        Collection<PedidoEntity> pedidos = this.adminService.findPedido(pedidoFindForm);
+        Assert.assertNotNull(pedidos);
+        Assert.assertTrue(pedidos.size() > 0);
+    }
+
+    @Test
+    public void testFindPedido(){
+        PedidoFindForm pedidoFindForm = new PedidoFindForm(1l);
+        pedidoFindForm.setCodigo("123456AA");
+        pedidoFindForm.setSysCode(SysCodeType.PECR);
+        Collection<PedidoEntity> pedidos = this.adminService.findPedido(pedidoFindForm);
+        Assert.assertNotNull(pedidos);
+        Assert.assertTrue(pedidos.size() > 0);
     }
 
 }

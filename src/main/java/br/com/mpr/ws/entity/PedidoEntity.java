@@ -1,8 +1,10 @@
 package br.com.mpr.ws.entity;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by wagner on 04/06/18.
@@ -24,6 +26,9 @@ public class PedidoEntity {
 
     @Column(name = "ID_CLIENTE", nullable = false)
     private Long idCliente;
+
+    @Transient
+    private ClienteEntity cliente;
 
     @Column(name = "ID_ENDERECO", nullable = false)
     private Long idEndereco;
@@ -211,5 +216,43 @@ public class PedidoEntity {
 
     public void setPagamentoType(PagamentoType pagamentoType) {
         this.pagamentoType = pagamentoType;
+    }
+
+    public ClienteEntity getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(ClienteEntity cliente) {
+        this.cliente = cliente;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PedidoEntity that = (PedidoEntity) o;
+        return id.equals(that.id) &&
+                codigoPedido.equals(that.codigoPedido) &&
+                data.equals(that.data) &&
+                idCliente.equals(that.idCliente) &&
+                idEndereco.equals(that.idEndereco) &&
+                Objects.equals(cupom, that.cupom) &&
+                Objects.equals(idCupom, that.idCupom) &&
+                valorProdutos.equals(that.valorProdutos) &&
+                valorFrete.equals(that.valorFrete) &&
+                valorDesconto.equals(that.valorDesconto) &&
+                valorTotal.equals(that.valorTotal) &&
+                Objects.equals(codigoTransacao, that.codigoTransacao) &&
+                Objects.equals(codigoRastreio, that.codigoRastreio) &&
+                TipoFrete == that.TipoFrete &&
+                pagamentoType == that.pagamentoType &&
+                Objects.equals(dataEntrega, that.dataEntrega);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, codigoPedido, data, idCliente, idEndereco, cupom, idCupom,
+                valorProdutos, valorFrete, valorDesconto, valorTotal, codigoTransacao,
+                codigoRastreio, TipoFrete, pagamentoType, dataEntrega);
     }
 }

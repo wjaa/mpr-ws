@@ -64,6 +64,31 @@
                 ) AS PRECO
                 FROM produto P
                 JOIN tipo_produto TP ON TP.ID = P.ID_TIPO_PRODUTO
+                WHERE 1 = 1
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="findAllProduto.filterDescricao" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                AND P.DESCRICAO like :descricao
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="findAllProduto.filterTipoProduto" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                AND P.ID_TIPO_PRODUTO = :idTipoProduto
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="findAllProduto.orderByTipoProduto" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                ORDER BY TP.DESCRICAO
             </value>
         </constructor-arg>
     </bean>
@@ -266,7 +291,7 @@
         </constructor-arg>
     </bean>
 
-    <bean name="PedidoService.findPedidoByStatus" class="java.lang.String">
+    <bean name="PedidoService.findPedido" class="java.lang.String">
         <constructor-arg>
             <value>
                 SELECT P.* FROM (SELECT P.ID,
@@ -290,8 +315,31 @@
                 ORDER BY DATA DESC LIMIT 1) ID_STATUS_PEDIDO
                 FROM pedido P ) P
                 JOIN status_pedido ST ON ST.ID = P.ID_STATUS_PEDIDO
-                WHERE ST.SYS_CODE = :sysCode
+                WHERE 1 = 1
+            </value>
+        </constructor-arg>
+    </bean>
 
+    <bean name="PedidoService.findPedidoParamStatus" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                and ST.SYS_CODE = :sysCode
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="PedidoService.findPedidoParamCliente" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                and P.ID_CLIENTE = :idCliente
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="PedidoService.findPedidoParamCodigo" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                and P.CODIGO_PEDIDO = :codigo
             </value>
         </constructor-arg>
     </bean>

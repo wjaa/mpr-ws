@@ -43,10 +43,14 @@ public class TipoProdutoEntity implements Serializable {
     }
 
     public Boolean getAcessorio() {
-        return acessorio == null ? false : acessorio;
+        return acessorio == null ? Boolean.FALSE : acessorio;
     }
 
     public void setAcessorio(Boolean acessorio) {
-        this.acessorio = acessorio;
+        if (acessorio != null){
+            this.acessorio = acessorio;
+        }else{
+            this.acessorio = Boolean.FALSE;
+        }
     }
 }

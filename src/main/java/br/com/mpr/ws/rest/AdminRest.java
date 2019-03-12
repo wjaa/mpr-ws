@@ -3,15 +3,20 @@ package br.com.mpr.ws.rest;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.service.AdminService;
+import br.com.mpr.ws.vo.PedidoFindForm;
+import br.com.mpr.ws.vo.ProdutoFindForm;
+import br.com.mpr.ws.vo.SysCodeVo;
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -98,5 +103,29 @@ public class AdminRest extends BaseRest{
         return this.adminService.saveCliente(entity);
     }
 
+    @RequestMapping(value = "/PedidoEntity/find",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public Collection<PedidoEntity> findPedido(@RequestBody PedidoFindForm pedidoFindForm){
+        return this.adminService.findPedido(pedidoFindForm);
+    }
+
+    @RequestMapping(value = "/ProdutoEntity/find",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public Collection<ProdutoEntity> findProduto(@RequestBody ProdutoFindForm produtoFindForm){
+        return this.adminService.findProduto(produtoFindForm);
+    }
+
+    @RequestMapping(value = "/SysCode/list",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public Collection<SysCodeVo> listAllSysCode(){
+        Collection<SysCodeVo> list = new ArrayList<>();
+        for ( SysCodeType s : SysCodeType.values() ){
+            list.add(new SysCodeVo(s.toString(), s.getDesc()));
+        }
+        return list;
+    }
 
 }

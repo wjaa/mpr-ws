@@ -48,7 +48,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(ServiceException.class)
-    public final ResponseEntity<ErrorMessageVo> handleAdminException(ServiceException ex, WebRequest request) {
+    public final ResponseEntity<ErrorMessageVo> handleServiceException(ServiceException ex, WebRequest request) {
         LOG.error("m=handleAdminException, error=" + ex.getMessage());
         ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.BAD_REQUEST.value(),
                 new Date(),"Erro de negócio",
@@ -58,6 +58,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     @ExceptionHandler(Throwable.class)
     public final ResponseEntity<ErrorMessageVo> handleException(Throwable ex, WebRequest request) {
+        LOG.error("m=handleException, error=" + ex.getMessage());
+        ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                new Date(),"Erro interno",
+                ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public final ResponseEntity<ErrorMessageVo> handleException(RuntimeException ex, WebRequest request) {
         LOG.error("m=handleException, error=" + ex.getMessage());
         ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new Date(),"Erro interno",

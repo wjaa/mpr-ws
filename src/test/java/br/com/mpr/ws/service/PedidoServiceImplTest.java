@@ -5,13 +5,13 @@ import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.CheckoutServiceException;
 import br.com.mpr.ws.exception.PedidoServiceException;
+import br.com.mpr.ws.helper.PedidoHelper;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.vo.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +31,9 @@ public class PedidoServiceImplTest extends BaseDBTest {
 
     @Autowired
     private CarrinhoService carrinhoService;
+
+    @Autowired
+    private PedidoHelper pedidoHelper;
 
     @Test
     public void testCreatePedido() {
@@ -80,7 +83,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
             EstoqueEntity estoque = adminService.listEstoqueByIdProduto(4l).get(0);
             Assert.assertTrue(estoque.getQuantidadeAtual() > 0);
             Integer quantidadeInicial = estoque.getQuantidadeAtual();
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             estoque = adminService.listEstoqueByIdProduto(4l).get(0);
             //retirando um item do estoque
@@ -104,34 +107,13 @@ public class PedidoServiceImplTest extends BaseDBTest {
         }
     }
 
-    private CheckoutForm createCheckoutForm() throws CarrinhoServiceException, CheckoutServiceException {
-        ItemCarrinhoForm ic = new ItemCarrinhoForm();
-        ic.setIdCliente(1l);
-        ic.setIdProduto(4l);
-        ic.setAnexos(new ArrayList<>());
-        AnexoVo anexo = new AnexoVo();
-        anexo.setFoto(new byte[]{0, 0, 0, 0});
-        anexo.setNomeArquivo("semluz.jpg");
-        ic.getAnexos().add(anexo);
-        CarrinhoVo carrinho = carrinhoService.addCarrinho(ic);
 
-        //TODO CONTINUAR AQUI CRIANDO UM NOVO CARRINHO PQ O TESTE DE CIMA REMOVE O CARRINHO NO FINAL.
-        //PRECISA TER UM CARRINHO PARA CADA TESTE.
-
-        CheckoutVo checkout = this.checkoutService.checkout(carrinho.getIdCarrinho());
-        CheckoutForm checkoutForm = new CheckoutForm();
-        FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-        formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
-        checkoutForm.setFormaPagamento(formaPagamentoVo);
-        checkoutForm.setIdCheckout(checkout.getId());
-        return checkoutForm;
-    }
 
     @Test
     public void testConfirmarPedido() {
 
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             pedido = pedidoService.confirmarPedido("XXXYYYZZZ", pedido.getId());
 
@@ -151,7 +133,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testCreateNovoHistorico() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             pedido = pedidoService.confirmarPedido("AAABBBCCC", pedido.getId());
             pedidoService.createNovoHistorico(pedido.getId(), SysCodeType.PGCF);
@@ -172,7 +154,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testFindPedidoByCodigo() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             PedidoEntity findPedido = pedidoService.findPedidoByCodigo(pedido.getCodigoPedido());
             Assert.assertNotNull(findPedido);
@@ -190,7 +172,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testFindPedidoByStatus() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             List<PedidoEntity> listPedidos = pedidoService.findPedidoByStatus(SysCodeType.PECR);
             Assert.assertNotNull(listPedidos);
@@ -229,7 +211,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testFindPedidoByTransactionCode() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             pedido = pedidoService.confirmarPedido("JJJ666888", pedido.getId());
             Assert.assertNotNull(pedido);
@@ -250,7 +232,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testGetPedido() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             PedidoEntity findPedido = pedidoService.getPedido(pedido.getId());
             Assert.assertNotNull(findPedido);
@@ -268,7 +250,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
     @Test
     public void testFindPedidoByIdCliente() {
         try {
-            CheckoutForm checkoutForm = createCheckoutForm();
+            CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             List<PedidoEntity> listPedidos = pedidoService.findPedidoByIdCliente(1l);
             Assert.assertNotNull(listPedidos);
