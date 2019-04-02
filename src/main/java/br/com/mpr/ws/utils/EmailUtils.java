@@ -6,10 +6,7 @@ import br.com.mpr.ws.vo.EmailServerConfigVo;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 
 /**
@@ -20,9 +17,9 @@ public class EmailUtils {
 
     public static EmailServerConfigVo scNoreply = new EmailServerConfigVo();
     static{
-        scNoreply = ObjectUtils.fromJSON("{\"smtp\":\"smtp.zoho.com\"," +
+        scNoreply = ObjectUtils.fromJSON("{\"smtp\":\"smtp.gmail.com\"," +
                         "\"port\":465,\"user\":\"noreply@meuportaretrato.com\"," +
-                        "\"pass\":\"*F071212f*\",\"ssl\":true, \"from\":\"noreply@meuportaretrato.com\"," +
+                        "\"pass\":\"*f071212*\",\"ssl\":true, \"from\":\"noreply@meuportaretrato.com\"," +
                         "\"name\":\"MeuPortaRetrato.com\"}"
                 , EmailServerConfigVo.class);
     }
@@ -62,7 +59,7 @@ public class EmailUtils {
     }
 
     public static void main(String args[]) throws IOException {
-        File file = File.createTempFile("boleto-mpr-",".pdf");
+       File file = File.createTempFile("boleto-mpr-",".pdf");
         try {
             BufferedInputStream in = new BufferedInputStream(new URL("https://sandbox.pagseguro.uol.com.br/checkout/imprimeBoleto.jhtml?code=BAD19119DE0B41EC812968E5E87C8E48").openStream());
 
@@ -79,15 +76,27 @@ public class EmailUtils {
 
 
         try {
+
+            FileReader in = new FileReader(new File("/home/wagner/dev/workspace/mpr-notification/src/main/resources/templates/pedido_criado.html"));
+
+            StringBuilder sb = new StringBuilder();
+            int c = 0;
+            char bff[] = new char[1024];
+            while ( (c = in.read(bff,0,1024)) != -1){
+                sb.append(bff,0,c);
+            }
+
             EmailUtils.sendAttachment(new EmailParamVo()
-                            .setBody("Segue boleto em anexo")
+                            .setBody(sb.toString())
                             .setEmail("wag182@gmail.com")
-                            .setTitle("Transação confirmada"),
+                            .setTitle("Teste template"),
                             EmailUtils.scNoreply,
                             file
             );
         } catch (EmailException e) {
             e.printStackTrace();
         }
+
+
     }
 }
