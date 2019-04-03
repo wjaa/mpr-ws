@@ -21,6 +21,8 @@ public class MprWsProperties {
     private String baseUrlPreview;
     private String baseUrlCliente;
     private String baseUrlCatalogo;
+    private String notificationUrl;
+    private String notificationEmail;
 
     public String getPathImg() {
         return pathImg;
@@ -108,5 +110,21 @@ public class MprWsProperties {
 
     public void setBaseUrlCatalogo(String baseUrlCatalogo) {
         this.baseUrlCatalogo = baseUrlCatalogo;
+    }
+
+    public String getNotificationUrl() {
+        return notificationUrl;
+    }
+
+    public void setNotificationUrl(String notificationUrl) {
+        this.notificationUrl = notificationUrl;
+    }
+
+    public String getNotificationEmail() {
+        return notificationEmail;
+    }
+
+    public void setNotificationEmail(String notificationEmail) {
+        this.notificationEmail = notificationEmail;
     }
 }

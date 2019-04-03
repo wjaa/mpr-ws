@@ -1,14 +1,11 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.entity.PedidoEntity;
-import br.com.mpr.ws.properties.MprWsProperties;
-import br.com.mpr.ws.utils.EmailUtils;
+import br.com.mpr.ws.utils.NotificationUtils;
 import br.com.mpr.ws.vo.ClienteVo;
 import br.com.mpr.ws.vo.EmailParamVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.mail.EmailException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +39,11 @@ public class NotificationServiceImpl implements NotificationService {
         body.append("  Equipe meuportaretrato.com :) <br/>");
 
         try {
-            EmailUtils.send(new EmailParamVo()
+            NotificationUtils.sendEmail(new EmailParamVo()
                             .setBody(body.toString())
                             .setEmail(emailTo)
                             .setTitle("Recebemos seu pedido!"),
-                    EmailUtils.scNoreply
+                    NotificationUtils.scNoreply
             );
         } catch (Exception e) {
             //TODO VERIFICAR O ERRO E SE FOR UM ERRO DE CONEXAO, JOGAR O EMAIL NA FILA DE ENVIO NOVAMENTE.
@@ -74,11 +71,11 @@ public class NotificationServiceImpl implements NotificationService {
         body.append("  Equipe meuportaretrato.com :) <br/>");
 
         try {
-            EmailUtils.send(new EmailParamVo()
+            NotificationUtils.sendEmail(new EmailParamVo()
                             .setBody(body.toString())
                             .setEmail(emailTo)
                             .setTitle("Recebemos seu pedido!"),
-                    EmailUtils.scNoreply
+                    NotificationUtils.scNoreply
             );
         } catch (Exception e) {
             //TODO VERIFICAR O ERRO E SE FOR UM ERRO DE CONEXAO, JOGAR O EMAIL NA FILA DE ENVIO NOVAMENTE.
@@ -104,11 +101,11 @@ public class NotificationServiceImpl implements NotificationService {
         body.append("  Equipe meuportaretrato.com :) <br/>");
 
         try {
-            EmailUtils.send(new EmailParamVo()
+            NotificationUtils.sendEmail(new EmailParamVo()
                             .setBody(body.toString())
                             .setEmail(emailTo)
                             .setTitle("Recebemos seu pedido!"),
-                    EmailUtils.scNoreply
+                    NotificationUtils.scNoreply
             );
         } catch (Exception e) {
             //TODO VERIFICAR O ERRO E SE FOR UM ERRO DE CONEXAO, JOGAR O EMAIL NA FILA DE ENVIO NOVAMENTE.

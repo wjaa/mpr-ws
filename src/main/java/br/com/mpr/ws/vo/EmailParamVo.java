@@ -1,40 +1,57 @@
 package br.com.mpr.ws.vo;
 
+import java.util.Map;
+
 /**
  * Created by wagner on 08/02/19.
  */
 public class EmailParamVo {
-    private String email;
-    private String title;
-    private String body;
+    private String to;
+    private String template;
+    private Map<String,String> params;
 
-    public EmailParamVo(String email,String title, String body) {
-        this.email = email;
-        this.title = title;
-        this.body = body;
-    }
 
     public EmailParamVo(){}
 
-    public String getTitle() {
-        return title;
+
+    public EmailParamVo(String to, String template, Map<String, String> params) {
+        this.to = to;
+        this.template = template;
+        this.params = params;
     }
-    public EmailParamVo setTitle(String title) {
-        this.title = title;
-        return this;
+
+
+    public String getTo() {
+        return to;
     }
-    public String getBody() {
-        return body;
+
+    public void setTo(String to) {
+        this.to = to;
     }
-    public EmailParamVo setBody(String body) {
-        this.body = body;
-        return this;
+
+    public String getTemplate() {
+        return template;
     }
-    public String getEmail() {
-        return email;
+
+    public void setTemplate(String template) {
+        this.template = template;
     }
-    public EmailParamVo setEmail(String email) {
-        this.email = email;
-        return this;
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
+
+
+    @Override
+    public String toString() {
+        return "EmailParamVo{" +
+                "to='" + to + '\'' +
+                ", template='" + template + '\'' +
+                ", params=" + params +
+                '}';
     }
 }
