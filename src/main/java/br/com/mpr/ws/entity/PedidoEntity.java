@@ -255,4 +255,14 @@ public class PedidoEntity {
                 valorProdutos, valorFrete, valorDesconto, valorTotal, codigoTransacao,
                 codigoRastreio, TipoFrete, pagamentoType, dataEntrega);
     }
+
+    @Transient
+    public Double getValorTotalItens() {
+        Double t = 0.0;
+        for (ItemPedidoEntity item : this.itens){
+            t += item.getValor();
+        }
+        return t;
+
+    }
 }

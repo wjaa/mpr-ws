@@ -59,4 +59,7 @@ public class ClienteVo {
     public void setEnderecos(List<EnderecoVo> enderecos) {
         this.enderecos = enderecos;
     }
+
+
+
 }
