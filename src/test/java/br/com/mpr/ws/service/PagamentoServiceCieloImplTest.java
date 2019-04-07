@@ -1,15 +1,12 @@
 package br.com.mpr.ws.service;
 
-import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.PagamentoType;
-import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.vo.CartaoCreditoVo;
 import br.com.mpr.ws.vo.CheckoutForm;
 import br.com.mpr.ws.vo.FormaPagamentoVo;
 import br.com.mpr.ws.vo.ResultadoPagamentoVo;
 import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
@@ -17,14 +14,14 @@ import java.util.Calendar;
 /**
  *
  */
-public class PagamentoServiceCieloImplTest extends BaseDBTest {
+public class PagamentoServiceCieloImplTest{
 
 
     @Autowired
     private PagamentoService pagamentoService;
 
 
-    @Test
+
     public void testPagamentoBoleto(){
 
         try{
@@ -39,7 +36,6 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
         }
     }
 
-    @Test
     public void testPagamentoCartaoCredito(){
 
         try{
@@ -59,13 +55,11 @@ public class PagamentoServiceCieloImplTest extends BaseDBTest {
     }
 
 
-    @Test
     public void testErrorPagamentoCartao(){
 
 
     }
 
-    @Test
     public void testErrorPagamentoBoleto(){
 
 

@@ -63,7 +63,7 @@ public class PedidoServiceImpl implements PedidoService{
     public PedidoEntity createPedido(CheckoutForm checkoutForm) throws PedidoServiceException {
         LOG.info("m=createPedido, idCheckout=" + checkoutForm.getIdCheckout());
         CheckoutVo checkout = checkoutService.getCheckout(checkoutForm.getIdCheckout());
-        PedidoEntity pedido = this.createPedido("START", checkout);
+        PedidoEntity pedido = this.createPedido("START", checkout, checkoutForm.getFormaPagamento());
         pedido = commonDao.save(pedido);
         pedido.setItens(this.createItens(checkout.getCarrinho(), pedido.getId()));
 
@@ -87,10 +87,6 @@ public class PedidoServiceImpl implements PedidoService{
         }else{
             throw new PedidoServiceException("Erro ao gerar o pedido");
         }
-
-        //enviado notificacao de criado.
-        LOG.debug("m=createPedido, enviando notificação de pedido criados.");
-        notificationService.sendPedidoCriado(checkout.getCliente(), pedido);
 
         return pedido;
     }
@@ -151,9 +147,10 @@ public class PedidoServiceImpl implements PedidoService{
             throw new PedidoServiceException("Pedido não existe!");
         }
         pedido.setCodigoTransacao(org.springframework.util.StringUtils.isEmpty(code) ? "NO_TRANSACTION" : code);
-        commonDao.update(pedido);
+        pedido = commonDao.update(pedido);
         HistoricoPedidoEntity historicoPedidoEntity = this.createNovoHistorico(pedido.getId(),SysCodeType.AGPG);
         pedido.setStatusAtual(historicoPedidoEntity.getStatusPedido());
+        pedido.setItens(getItens(idPedido));
         return pedido;
     }
 
@@ -161,9 +158,7 @@ public class PedidoServiceImpl implements PedidoService{
     public PedidoEntity getPedido(Long idPedido) {
         PedidoEntity pedido = commonDao.get(PedidoEntity.class, idPedido);
         pedido.setStatusAtual(this.getStatusAtual(idPedido));
-        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
-                new String[]{"idPedido"},
-                new Object[]{pedido.getId()}));
+        pedido.setItens(this.getItens(pedido.getId()));
 
         return pedido;
     }
@@ -174,9 +169,7 @@ public class PedidoServiceImpl implements PedidoService{
                 new String[]{"codigoTransacao"},
                 new Object[]{transactionCode});
         pedido.setStatusAtual(this.getStatusAtual(pedido.getId()));
-        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
-                new String[]{"idPedido"},
-                new Object[]{pedido.getId()}));
+        pedido.setItens(this.getItens(pedido.getId()));
         return pedido;
     }
 
@@ -186,9 +179,7 @@ public class PedidoServiceImpl implements PedidoService{
                 new String[]{"codigoPedido"},
                 new Object[]{codigo});
         pedido.setStatusAtual(this.getStatusAtual(pedido.getId()));
-        pedido.setItens(commonDao.findByProperties(ItemPedidoEntity.class,
-                new String[]{"idPedido"},
-                new Object[]{pedido.getId()}));
+        pedido.setItens(this.getItens(pedido.getId()));
         return pedido;
     }
 
@@ -274,9 +265,20 @@ public class PedidoServiceImpl implements PedidoService{
     }
 
     private List<ItemPedidoEntity> getItens(Long id) {
-        return commonDao.findByProperties(ItemPedidoEntity.class,
+        List<ItemPedidoEntity> items = commonDao.findByProperties(ItemPedidoEntity.class,
                 new String[]{"idPedido"},
                 new Object[]{id});
+
+        for (ItemPedidoEntity item : items){
+            item.setAnexos(this.getAnexos(item.getId()));
+        }
+        return items;
+    }
+
+    private List<ItemPedidoAnexoEntity> getAnexos(Long idItemPedido) {
+        return commonDao.findByProperties(ItemPedidoAnexoEntity.class,
+                new String[]{"idItemPedido"},
+                new Object[]{idItemPedido});
     }
 
     private StatusPedidoEntity getStatusAtual(Long idPedido) {
@@ -315,7 +317,7 @@ public class PedidoServiceImpl implements PedidoService{
         commonDao.remove(CarrinhoEntity.class, checkout.getCarrinho().getIdCarrinho());
     }
 
-    private PedidoEntity createPedido(String code, CheckoutVo checkout) {
+    private PedidoEntity createPedido(String code, CheckoutVo checkout, FormaPagamentoVo formaPagamento) {
         PedidoEntity pedido = new PedidoEntity();
         pedido.setCodigoTransacao(code);
         pedido.setIdEndereco(checkout.getEndereco().getId());
@@ -331,6 +333,7 @@ public class PedidoServiceImpl implements PedidoService{
         pedido.setIdCupom(checkout.getCupom() != null ? checkout.getCupom().getId() : null);
         pedido.setDataEntrega(checkout.getFreteSelecionado().getPrevisaoEntrega());
         pedido.setTipoFrete(checkout.getFreteSelecionado().getFreteType());
+        pedido.setPagamentoType(formaPagamento.getPagamentoType());
 
         return pedido;
     }

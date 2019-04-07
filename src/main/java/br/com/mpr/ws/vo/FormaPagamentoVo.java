@@ -2,6 +2,8 @@ package br.com.mpr.ws.vo;
 
 import br.com.mpr.ws.entity.PagamentoType;
 
+import javax.validation.constraints.NotNull;
+
 public class FormaPagamentoVo {
 
     public boolean isBoleto() {
@@ -11,6 +13,7 @@ public class FormaPagamentoVo {
         return PagamentoType.CARTAO_CREDITO.equals(pagamentoType);
     }
 
+    @NotNull(message = "Tipo do pagamento é obrigatório!")
     private PagamentoType pagamentoType;
     private CartaoCreditoVo cartaoCredito;
 

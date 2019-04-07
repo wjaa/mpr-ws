@@ -1,10 +1,17 @@
 package br.com.mpr.ws.vo;
 
 
+import javax.validation.constraints.NotNull;
+
 public class CheckoutForm {
 
+    @NotNull(message = "Id do checkout é obrigatório!")
     private Long idCheckout;
+
+    @NotNull(message = "Forma de pagamento é obrigatória!")
     private FormaPagamentoVo formaPagamento;
+
+    @NotNull(message = "SenderHash é obrigatório!")
     private String senderHash;
 
     public Long getIdCheckout() {

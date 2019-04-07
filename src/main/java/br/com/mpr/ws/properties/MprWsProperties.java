@@ -23,6 +23,11 @@ public class MprWsProperties {
     private String baseUrlCatalogo;
     private String notificationUrl;
     private String notificationEmail;
+    private String linkPedido;
+    private String linkTrocaSenha;
+    private String imgIconeBoletoEmail;
+    private String imgIconeCartaoEmail;
+    private String imgImpressaoFoto;
 
     public String getPathImg() {
         return pathImg;
@@ -126,5 +131,45 @@ public class MprWsProperties {
 
     public void setNotificationEmail(String notificationEmail) {
         this.notificationEmail = notificationEmail;
+    }
+
+    public String getLinkPedido() {
+        return linkPedido;
+    }
+
+    public void setLinkPedido(String linkPedido) {
+        this.linkPedido = linkPedido;
+    }
+
+    public String getImgIconeBoletoEmail() {
+        return imgIconeBoletoEmail;
+    }
+
+    public void setImgIconeBoletoEmail(String imgIconeBoletoEmail) {
+        this.imgIconeBoletoEmail = imgIconeBoletoEmail;
+    }
+
+    public String getImgIconeCartaoEmail() {
+        return imgIconeCartaoEmail;
+    }
+
+    public void setImgIconeCartaoEmail(String imgIconeCartaoEmail) {
+        this.imgIconeCartaoEmail = imgIconeCartaoEmail;
+    }
+
+    public String getImgImpressaoFoto() {
+        return imgImpressaoFoto;
+    }
+
+    public void setImgImpressaoFoto(String imgImpressaoFoto) {
+        this.imgImpressaoFoto = imgImpressaoFoto;
+    }
+
+    public String getLinkTrocaSenha() {
+        return linkTrocaSenha;
+    }
+
+    public void setLinkTrocaSenha(String linkTrocaSenha) {
+        this.linkTrocaSenha = linkTrocaSenha;
     }
 }

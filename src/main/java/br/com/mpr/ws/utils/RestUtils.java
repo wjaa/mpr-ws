@@ -83,7 +83,7 @@ public class RestUtils {
 
         CloseableHttpResponse response = null;
         try {
-            HttpPost httpPost = new HttpPost("http://" + targetUrl + "/" + uri);
+            HttpPost httpPost = new HttpPost(targetUrl + "/" + uri);
 
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(TIMEOUT_MILLIS_40s)

@@ -115,7 +115,7 @@ public class ClienteRestTest extends BaseMvcTest {
             Assert.assertNotNull(clienteResult.getId());
             Assert.assertEquals(new Long(1),clienteResult.getId());
             Assert.assertNotNull(clienteResult.getEnderecos());
-            Assert.assertEquals(1, clienteResult.getEnderecos().size());
+            Assert.assertEquals(2, clienteResult.getEnderecos().size());
             Assert.assertNotNull(clienteResult.getLogin());
             Assert.assertNotNull(clienteResult.getLogin().getKeyDeviceGcm());
         }catch(Exception ex){
@@ -140,7 +140,7 @@ public class ClienteRestTest extends BaseMvcTest {
             ClienteEntity clienteResult = ObjectUtils.fromJSON(resultJson,ClienteEntity.class);
             Assert.assertNotNull(clienteResult.getId());
             Assert.assertNotNull(clienteResult.getEnderecos());
-            Assert.assertEquals(1, clienteResult.getEnderecos().size());
+            Assert.assertEquals(2, clienteResult.getEnderecos().size());
             Assert.assertNotNull(clienteResult.getLogin());
             Assert.assertNotNull(clienteResult.getLogin().getKeyDeviceGcm());
             Assert.assertEquals("ZAZAZAZA", clienteResult.getLogin().getKeyDeviceGcm());

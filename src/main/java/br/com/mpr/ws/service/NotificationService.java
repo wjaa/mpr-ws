@@ -1,5 +1,6 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.vo.ClienteVo;
 
@@ -8,10 +9,14 @@ import br.com.mpr.ws.vo.ClienteVo;
  */
 public interface NotificationService {
 
-    void sendPedidoCriado(ClienteVo cliente, PedidoEntity pedido);
+    void sendTransactionCriadaBoleto(ClienteEntity cliente, PedidoEntity pedido, String urlBoleto);
 
-    void sendTransactionCriadaBoleto(ClienteVo cliente, PedidoEntity pedido, Byte[] boleto);
+    void sendTransactionCriadaCartao(ClienteEntity cliente, PedidoEntity pedido);
 
-    void sendTransactionCriadaCartao(ClienteVo cliente, PedidoEntity pedido);
+    void sendPedidoCancelado(ClienteEntity cliente, PedidoEntity pedido);
+
+    void sendEsqueceuSenha(ClienteEntity cliente, String hashTrocaSenha);
+
+    void sendUsuarioCriado(ClienteEntity cliente);
 
 }

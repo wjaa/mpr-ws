@@ -1,5 +1,7 @@
 package br.com.mpr.ws.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -166,10 +168,32 @@ public class EnderecoEntity {
     }
 
     @Transient
+    @JsonIgnore
     public String getEnderecoFull() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.logradouro)
                 .append(this.numero != null ? ", " + this.numero : "")
+                .append(this.bairro != null ? " - " + this.bairro : "")
+                .append(this.cidade != null ? " - " + this.cidade : "")
+                .append(this.uf != null ? " - " + this.uf : "");
+        return sb.toString() ;
+    }
+
+    @Transient
+    @JsonIgnore
+    public String getEnderecoPart1() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.logradouro)
+                .append(this.numero != null ? ", " + this.numero : "")
+                .append(this.complemento != null ? " - " + this.complemento : "");
+        return sb.toString() ;
+    }
+
+    @Transient
+    @JsonIgnore
+    public String getEnderecoPart2() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.cep)
                 .append(this.bairro != null ? " - " + this.bairro : "")
                 .append(this.cidade != null ? " - " + this.cidade : "")
                 .append(this.uf != null ? " - " + this.uf : "");

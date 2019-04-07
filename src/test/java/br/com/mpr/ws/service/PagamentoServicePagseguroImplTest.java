@@ -1,13 +1,10 @@
 package br.com.mpr.ws.service;
 
-import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.PagamentoType;
-import br.com.mpr.ws.entity.PedidoEntity;
 import br.com.mpr.ws.exception.RestException;
 import br.com.mpr.ws.utils.RestUtils;
 import br.com.mpr.ws.vo.*;
 import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -21,7 +18,7 @@ import java.util.Map;
 /**
  * Created by wagner on 21/01/19.
  */
-public class PagamentoServicePagseguroImplTest extends BaseDBTest {
+public class PagamentoServicePagseguroImplTest{
 
     @Autowired
     @Qualifier("PagamentoServicePagseguroImpl")
@@ -31,7 +28,6 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
     private CheckoutService checkoutService;
 
 
-    @Test
     public void pagamentoBoleto() throws Exception {
 
         CheckoutVo checkoutVo = checkoutService.checkout(1l);

@@ -21,7 +21,7 @@ public class NotificationUtils {
     private static final Log LOG = LogFactory.getLog(NotificationUtils.class);
 
 
-    public static void sendEmail(EmailParamVo param, MprWsProperties properties) throws EmailException {
+    public static void sendEmail(EmailParamVo param, MprWsProperties properties){
 
         try {
             SendResultVo sendResult = RestUtils.postJson(SendResultVo.class,
@@ -39,6 +39,5 @@ public class NotificationUtils {
         }
 
     }
-
 
 }

@@ -162,7 +162,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public <T> List<T> findByNativeQuery(String query, Class<T> resultClass, String [] nameParams, Object [] params, boolean ignoreEntity) {
         if (resultClass.isAnnotationPresent(Entity.class) &&  !ignoreEntity) {
 

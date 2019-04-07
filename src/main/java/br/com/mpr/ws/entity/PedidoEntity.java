@@ -1,5 +1,7 @@
 package br.com.mpr.ws.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Comparator;
 import java.util.Date;
@@ -257,6 +259,7 @@ public class PedidoEntity {
     }
 
     @Transient
+    @JsonIgnore
     public Double getValorTotalItens() {
         Double t = 0.0;
         for (ItemPedidoEntity item : this.itens){

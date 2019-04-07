@@ -9,6 +9,7 @@ import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
 import br.com.uol.pagseguro.api.common.domain.PaymentItem;
 import br.com.uol.pagseguro.api.common.domain.ShippingType;
+import br.com.uol.pagseguro.api.common.domain.TransactionMethod;
 import br.com.uol.pagseguro.api.common.domain.builder.*;
 import br.com.uol.pagseguro.api.common.domain.enums.Currency;
 import br.com.uol.pagseguro.api.common.domain.enums.DocumentType;
@@ -121,26 +122,33 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
             return this.getResultadoPagamentoVo(pedido,creditCardTransaction);
         }
 
-        pedido = this.atualizaStatusPedido(pedido, creditCardTransaction);
+        pedido = this.atualizaStatusPedido(cliente, pedido, creditCardTransaction, true);
+
+
 
         LOG.debug("m=checkoutCartaoCredito, pedido finalizado.");
 
         return this.getResultadoPagamentoVo(pedido,creditCardTransaction);
     }
 
-    private PedidoEntity atualizaStatusPedido(PedidoEntity pedido,
-                                              TransactionDetail transactionDetail) throws PedidoServiceException {
+    private PedidoEntity atualizaStatusPedido(ClienteEntity cliente, PedidoEntity pedido,
+                                              TransactionDetail transactionDetail, Boolean isCreditcard) throws PedidoServiceException {
         switch (transactionDetail.getStatus().getStatus()){
 
             //estao confirmando o pagamento
             case WAITING_PAYMENT:
-            case IN_REVIEW: return pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
+            case IN_REVIEW: {
+                pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
+                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
+                return pedido;
+            }
 
             //já foi aprovado o pagamento
             case AVAILABLE:
             case APPROVED: {
                 pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
                 pedidoService.createNovoHistorico(pedido.getId(), SysCodeType.PGCF);
+                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
                 return pedido;
             }
 
@@ -148,11 +156,25 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
             case CANCELLED: {
                 pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
                 pedido = pedidoService.cancelarPedido(pedido.getId());
+                notificationService.sendPedidoCancelado(cliente,pedido);
                 return pedido;
             }
 
             //default caso venha outro status.
-            default: return pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
+            default: {
+                pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
+                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
+                return pedido;
+            }
+        }
+    }
+
+    private void sendNotificationTransactionCriada(ClienteEntity cliente, PedidoEntity pedido,
+                                                   TransactionDetail transactionDetail, Boolean isCreditcard) {
+        if (isCreditcard){
+            notificationService.sendTransactionCriadaCartao(cliente,pedido);
+        }else{
+            notificationService.sendTransactionCriadaBoleto(cliente,pedido,transactionDetail.getPaymentLink());
         }
     }
 
@@ -245,10 +267,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
             return this.getResultadoPagamentoVo(pedido,bankSlipTransaction);
         }
 
-        pedido = this.atualizaStatusPedido(pedido, bankSlipTransaction);
-
-
-        //notificationService.sendTransacaoCriada(pedido,bankSlipTransaction)
+        pedido = this.atualizaStatusPedido(cliente, pedido, bankSlipTransaction, false);
 
         LOG.debug("m=checkoutBoleto, pedido finalizado.");
         return this.getResultadoPagamentoVo(pedido,bankSlipTransaction);
@@ -280,6 +299,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                 .withReference(pedido.getCodigoPedido())
                 .withSender(this.getSender(cliente, form.getSenderHash()))
                 .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))
+
 
         ).withBankSlip();
     }

@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
  * Created by wagner on 6/25/18.
  */
 @Service
-@Transactional(rollbackFor = Throwable.class, readOnly = true)
 public class AdminServiceImpl implements AdminService {
 
     public static final int MAX_DAYS_CUPOM = 60;
@@ -534,7 +533,6 @@ public class AdminServiceImpl implements AdminService {
 
             commonDao.update(estoqueMerged);
         }
-
 
         return this.getEstoqueById(estoque.getId());
     }

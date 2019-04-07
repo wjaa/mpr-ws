@@ -9,6 +9,7 @@ public class EmailParamVo {
     private String to;
     private String template;
     private Map<String,String> params;
+    private String title;
 
 
     public EmailParamVo(){}
@@ -25,26 +26,38 @@ public class EmailParamVo {
         return to;
     }
 
-    public void setTo(String to) {
+    public EmailParamVo setTo(String to) {
         this.to = to;
+        return this;
     }
 
     public String getTemplate() {
         return template;
     }
 
-    public void setTemplate(String template) {
+    public EmailParamVo setTemplate(String template) {
         this.template = template;
+        return this;
     }
 
     public Map<String, String> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public EmailParamVo setParams(Map<String, String> params) {
         this.params = params;
+        return this;
     }
 
+
+    public String getTitle() {
+        return title;
+    }
+
+    public EmailParamVo setTitle(String title) {
+        this.title = title;
+        return this;
+    }
 
     @Override
     public String toString() {

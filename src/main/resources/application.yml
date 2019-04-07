@@ -38,8 +38,13 @@ mpr:
   baseUrlCliente: ${mpr.staticHost}/images/${mpr.folderCliente}/
   baseUrlCatalogo: ${mpr.staticHost}/images/${mpr.folderCatalogo}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png
-  notificationUrl: http://localhost:8080/
+  notificationUrl: http://localhost:8282/
   notificationEmail: email/send
+  linkPedido: https://meuportaretrato.com/meusPedidos/
+  linkTrocaSenha: https://meuportaretrato.com/trocarSenha/
+  imgIconeBoletoEmail: ${mpr.staticHost}/images/email/boleto.png
+  imgIconeCartaoEmail: ${mpr.staticHost}/images/email/cartao.png
+  imgImpressaoFoto: ${mpr.staticHost}/images/email/impressao_foto.png
 
 ---
 
