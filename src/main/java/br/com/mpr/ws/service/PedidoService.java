@@ -23,7 +23,7 @@ public interface PedidoService {
 
     PedidoEntity cancelarPedido(Long idPedido) throws PedidoServiceException;
 
-    PedidoEntity confirmarPedido(String code, Long idPedido) throws PedidoServiceException;
+    PedidoEntity confirmarPedido(String code, Long idPedido, String urlBoleto) throws PedidoServiceException;
 
     PedidoEntity getPedido(Long idPedido);
 
@@ -36,4 +36,6 @@ public interface PedidoService {
     List<PedidoEntity> findPedidoByIdCliente(Long idCliente);
 
     Collection<PedidoEntity> findPedidoByForm(PedidoFindForm pedidoFindForm);
+
+    PedidoEntity confirmarPagamento(String code, Long idPedido) throws PedidoServiceException;
 }

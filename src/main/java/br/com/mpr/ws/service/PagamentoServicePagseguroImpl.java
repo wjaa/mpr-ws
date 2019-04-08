@@ -54,9 +54,6 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     @Autowired
     private CommonDao commonDao;
 
-    @Autowired
-    private NotificationService notificationService;
-
     @PostConstruct
     private void init(){
         //Credential credential = Credential.applicationCredential("app3620108836", "2E3924589797D5A8848FCF8A50692011");
@@ -138,43 +135,27 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
             //estao confirmando o pagamento
             case WAITING_PAYMENT:
             case IN_REVIEW: {
-                pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
-                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
-                return pedido;
+                //aqui ele envia uma notificao para o cliente.
+                return pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId(),
+                        transactionDetail.getPaymentLink());
             }
 
             //já foi aprovado o pagamento
             case AVAILABLE:
             case APPROVED: {
-                pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
-                pedidoService.createNovoHistorico(pedido.getId(), SysCodeType.PGCF);
-                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
-                return pedido;
+                return pedidoService.confirmarPagamento(transactionDetail.getCode(), pedido.getId());
             }
 
             //já foi cancelada direto.
             case CANCELLED: {
-                pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
-                pedido = pedidoService.cancelarPedido(pedido.getId());
-                notificationService.sendPedidoCancelado(cliente,pedido);
-                return pedido;
+                return pedidoService.cancelarPedido(pedido.getId());
             }
 
             //default caso venha outro status.
             default: {
-                pedido = pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId());
-                this.sendNotificationTransactionCriada(cliente, pedido, transactionDetail, isCreditcard);
-                return pedido;
+                return pedidoService.confirmarPedido(transactionDetail.getCode(), pedido.getId(),
+                        transactionDetail.getPaymentLink());
             }
-        }
-    }
-
-    private void sendNotificationTransactionCriada(ClienteEntity cliente, PedidoEntity pedido,
-                                                   TransactionDetail transactionDetail, Boolean isCreditcard) {
-        if (isCreditcard){
-            notificationService.sendTransactionCriadaCartao(cliente,pedido);
-        }else{
-            notificationService.sendTransactionCriadaBoleto(cliente,pedido,transactionDetail.getPaymentLink());
         }
     }
 

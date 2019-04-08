@@ -115,7 +115,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
         try {
             CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
-            pedido = pedidoService.confirmarPedido("XXXYYYZZZ", pedido.getId());
+            pedido = pedidoService.confirmarPedido("XXXYYYZZZ", pedido.getId(),null);
 
             Assert.assertEquals("XXXYYYZZZ", pedido.getCodigoTransacao());
             Assert.assertEquals(SysCodeType.AGPG, pedido.getStatusAtual().getSyscode());
@@ -135,7 +135,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
         try {
             CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
-            pedido = pedidoService.confirmarPedido("AAABBBCCC", pedido.getId());
+            pedido = pedidoService.confirmarPedido("AAABBBCCC", pedido.getId(), null);
             pedidoService.createNovoHistorico(pedido.getId(), SysCodeType.PGCF);
             pedido = pedidoService.getPedido(pedido.getId());
 
@@ -213,7 +213,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
         try {
             CheckoutForm checkoutForm = pedidoHelper.createCheckoutForm();
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
-            pedido = pedidoService.confirmarPedido("JJJ666888", pedido.getId());
+            pedido = pedidoService.confirmarPedido("JJJ666888", pedido.getId(), null);
             Assert.assertNotNull(pedido);
             PedidoEntity findPedido = pedidoService.findPedidoByTransactionCode("JJJ666888");
             Assert.assertEquals(findPedido.getCodigoPedido(), pedido.getCodigoPedido());

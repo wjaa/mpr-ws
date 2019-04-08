@@ -96,7 +96,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             NotificationUtils.sendEmail(new EmailParamVo()
                             .setTo(cliente.getEmail())
-                            .setTemplate("PEDIDO_CRIADO")
+                            .setTemplate("PEDIDO_CRIADO_CARTAO")
                             .setParams(params)
                             .setTitle(String.format("Pedido %s Criado!",pedido.getCodigoPedido()))
                     ,
@@ -165,6 +165,46 @@ public class NotificationServiceImpl implements NotificationService {
                 properties
         );
 
+    }
+
+    @Override
+    public void sendPagamentoConfirmado(ClienteEntity cliente, PedidoEntity pedido) {
+        //nao faz isso no ambiente de
+        if ("test".equalsIgnoreCase(activeProfile)){
+            return;
+        }
+
+        try{
+
+            Map<String, String> params = new HashMap<>();
+            params.put("{NOME_CLIENTE}",cliente.getNome());
+            params.putAll(this.getParamTipoPagamento(pedido));
+            params.putAll(getParamsPedido(pedido));
+
+            NotificationUtils.sendEmail(new EmailParamVo()
+                            .setTo(cliente.getEmail())
+                            .setTemplate("PEDIDO_CONFIRMADO")
+                            .setParams(params)
+                            .setTitle(String.format("Pedido %s Confirmado!",pedido.getCodigoPedido()))
+                    ,
+                    properties
+            );
+        }catch (Exception ex){
+            LOG.error("m=sendTransactionCriadaCartao, erro ao montar o email de pedido criado.", ex);
+        }
+
+    }
+
+    private Map<String,String> getParamTipoPagamento(PedidoEntity pedido) {
+        Map<String, String> params = new HashMap<>(2);
+        if (PagamentoType.BOLETO.equals(pedido.getPagamentoType())){
+            params.put("{IMG_TIPO_PAGAMENTO}" , properties.getImgIconeBoletoEmail());
+            params.put("{TIPO_PAGAMENTO}" , "Boleto");
+        }else{
+            params.put("{IMG_TIPO_PAGAMENTO}" , properties.getImgIconeCartaoEmail());
+            params.put("{TIPO_PAGAMENTO}" , "Cartão de Crédito");
+        }
+        return params;
     }
 
     class ItemPedidoEmailParam{

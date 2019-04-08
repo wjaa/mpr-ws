@@ -73,6 +73,9 @@ public class PedidoEntity {
     @Column(name = "DATA_ENTREGA", nullable = false)
     private Date dataEntrega;
 
+    @Column(name = "URL_BOLETO")
+    private String urlBoleto;
+
     @Transient
     private StatusPedidoEntity statusAtual;
 
@@ -226,6 +229,14 @@ public class PedidoEntity {
 
     public void setCliente(ClienteEntity cliente) {
         this.cliente = cliente;
+    }
+
+    public String getUrlBoleto() {
+        return urlBoleto;
+    }
+
+    public void setUrlBoleto(String urlBoleto) {
+        this.urlBoleto = urlBoleto;
     }
 
     @Override

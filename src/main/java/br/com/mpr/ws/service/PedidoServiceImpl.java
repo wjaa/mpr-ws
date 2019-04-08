@@ -7,6 +7,7 @@ import br.com.mpr.ws.exception.PedidoServiceException;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.*;
+import br.com.uol.pagseguro.api.transaction.search.TransactionDetail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,22 +137,53 @@ public class PedidoServiceImpl implements PedidoService{
         } catch (EstoqueServiceException e) {
             throw new PedidoServiceException(e.getMessage());
         }
+        notificationService.sendPedidoCancelado(clienteService.getClienteById(pedido.getIdCliente()),
+                pedido);
         return pedido;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
-    public PedidoEntity confirmarPedido(String code, Long idPedido) throws PedidoServiceException {
+    public PedidoEntity confirmarPedido(String code, Long idPedido, String urlBoleto) throws PedidoServiceException {
+        PedidoEntity pedido = commonDao.get(PedidoEntity.class, idPedido);
+        if (pedido == null){
+            throw new PedidoServiceException("Pedido não existe!");
+        }
+        pedido.setCodigoTransacao(org.springframework.util.StringUtils.isEmpty(code) ? "NO_TRANSACTION" : code);
+        pedido.setUrlBoleto(urlBoleto);
+        pedido = commonDao.update(pedido);
+        HistoricoPedidoEntity historicoPedidoEntity = this.createNovoHistorico(pedido.getId(),SysCodeType.AGPG);
+        pedido.setStatusAtual(historicoPedidoEntity.getStatusPedido());
+        pedido.setItens(getItens(idPedido));
+
+        ClienteEntity cliente = clienteService.getClienteById(pedido.getIdCliente());
+        if (PagamentoType.BOLETO.equals(pedido.getPagamentoType())){
+            this.sendTransactionCriadaBoleto(cliente, pedido);
+        }else{
+            this.sendTransactionCriadaCartao(cliente, pedido);
+        }
+
+        return pedido;
+    }
+
+    @Override
+    public PedidoEntity confirmarPagamento(String code, Long idPedido) throws PedidoServiceException {
+
         PedidoEntity pedido = commonDao.get(PedidoEntity.class, idPedido);
         if (pedido == null){
             throw new PedidoServiceException("Pedido não existe!");
         }
         pedido.setCodigoTransacao(org.springframework.util.StringUtils.isEmpty(code) ? "NO_TRANSACTION" : code);
         pedido = commonDao.update(pedido);
-        HistoricoPedidoEntity historicoPedidoEntity = this.createNovoHistorico(pedido.getId(),SysCodeType.AGPG);
+        HistoricoPedidoEntity historicoPedidoEntity = this.createNovoHistorico(pedido.getId(), SysCodeType.PGCF);
         pedido.setStatusAtual(historicoPedidoEntity.getStatusPedido());
         pedido.setItens(getItens(idPedido));
+
+        this.sendPagamentoConfirmado(clienteService.getClienteById(pedido.getIdCliente()), pedido);
+
         return pedido;
+
+
     }
 
     @Override
@@ -370,5 +402,17 @@ public class PedidoServiceImpl implements PedidoService{
         return itemAnexos;
     }
 
+
+    private void sendTransactionCriadaCartao(ClienteEntity cliente, PedidoEntity pedido) {
+        notificationService.sendTransactionCriadaCartao(cliente,pedido);
+    }
+
+    private void sendTransactionCriadaBoleto(ClienteEntity cliente, PedidoEntity pedido) {
+        notificationService.sendTransactionCriadaBoleto(cliente, pedido, pedido.getUrlBoleto());
+    }
+
+    private void sendPagamentoConfirmado(ClienteEntity cliente, PedidoEntity pedido) {
+        notificationService.sendPagamentoConfirmado(cliente, pedido);
+    }
 
 }

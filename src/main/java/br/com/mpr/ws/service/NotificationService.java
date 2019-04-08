@@ -19,4 +19,5 @@ public interface NotificationService {
 
     void sendUsuarioCriado(ClienteEntity cliente);
 
+    void sendPagamentoConfirmado(ClienteEntity cliente, PedidoEntity pedido);
 }
