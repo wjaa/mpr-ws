@@ -38,7 +38,7 @@ mpr:
   baseUrlCliente: ${mpr.staticHost}/images/${mpr.folderCliente}/
   baseUrlCatalogo: ${mpr.staticHost}/images/${mpr.folderCatalogo}/
   imgSemFoto: ${mpr.staticHost}/images/semFoto.png
-  notificationUrl: http://localhost:8282/
+  notificationUrl: http://notification.meuportaretrato.com:8282/
   notificationEmail: email/send
   linkPedido: https://meuportaretrato.com/meusPedidos/
   linkTrocaSenha: https://meuportaretrato.com/trocarSenha/

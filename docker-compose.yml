@@ -26,4 +26,4 @@ services:
     volumes:
     - /etc/localtime:/etc/localtime
     - /var/www/static/mpr:/var/www/static/mpr
-    domainname: api.meuportaretrato.com.br
+    domainname: api.meuportaretrato.com
