@@ -4,6 +4,7 @@ import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.PagamentoServiceException;
 import br.com.mpr.ws.exception.PedidoServiceException;
+import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.vo.*;
 import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
@@ -53,6 +54,9 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
 
     @Autowired
     private CommonDao commonDao;
+
+    @Autowired
+    private MprWsProperties properties;
 
     @PostConstruct
     private void init(){
@@ -169,8 +173,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                         .withPaymentMode("default")
                         .withCurrency(Currency.BRL)
                         .addItems(this.getPaymentItems(checkout.getCarrinho().getItems()))
-                        //TODO VERIFICAR SE PRECISA PASSAR A URL DE NOTIFICACATION OU APENAS CADASTRAR NO PAGSEGURO
-                        //.withNotificationURL("api.meuportaretrato.com/psNotification")
+                        .withNotificationURL(properties.getCallbackNotification())
                         .withReference(pedido.getCodigoPedido())
                         .withSender(this.getSender(cliente, form.getSenderHash()))
                         .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))
@@ -275,8 +278,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
                 .withPaymentMode("default")
                 .withCurrency(Currency.BRL)
                 .addItems(this.getPaymentItems(checkout.getCarrinho().getItems()))
-                //TODO VERIFICAR SE PRECISA PASSAR A URL DE NOTIFICACATION OU APENAS CADASTRAR NO PAGSEGURO
-                //.withNotificationURL("www.sualoja.com.br/notification")
+                .withNotificationURL(properties.getCallbackNotification())
                 .withReference(pedido.getCodigoPedido())
                 .withSender(this.getSender(cliente, form.getSenderHash()))
                 .withShipping(this.getShipping(enderecoEntrega, checkout.getFreteSelecionado()))

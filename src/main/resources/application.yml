@@ -45,6 +45,7 @@ mpr:
   imgIconeBoletoEmail: ${mpr.staticHost}/images/email/boleto.png
   imgIconeCartaoEmail: ${mpr.staticHost}/images/email/cartao.png
   imgImpressaoFoto: ${mpr.staticHost}/images/email/impressao_foto.png
+  callbackNotification: http://api.meuportaretrato.com/ps/notification
 
 ---
 

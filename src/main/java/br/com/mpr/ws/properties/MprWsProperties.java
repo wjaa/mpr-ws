@@ -28,6 +28,7 @@ public class MprWsProperties {
     private String imgIconeBoletoEmail;
     private String imgIconeCartaoEmail;
     private String imgImpressaoFoto;
+    private String callbackNotification;
 
     public String getPathImg() {
         return pathImg;
@@ -171,5 +172,13 @@ public class MprWsProperties {
 
     public void setLinkTrocaSenha(String linkTrocaSenha) {
         this.linkTrocaSenha = linkTrocaSenha;
+    }
+
+    public String getCallbackNotification() {
+        return callbackNotification;
+    }
+
+    public void setCallbackNotification(String callbackNotification) {
+        this.callbackNotification = callbackNotification;
     }
 }
