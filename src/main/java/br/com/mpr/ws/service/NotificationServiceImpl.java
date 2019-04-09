@@ -123,7 +123,9 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationUtils.sendEmail(new EmailParamVo()
                         .setTo(cliente.getEmail())
                         .setTemplate("PEDIDO_CANCELADO")
-                        .setParams(params),
+                        .setParams(params)
+                        .setTitle(String.format("Pedido %s Cancelado!",pedido.getCodigoPedido()))
+                        ,
                 properties
         );
     }
@@ -142,7 +144,9 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationUtils.sendEmail(new EmailParamVo()
                         .setTo(cliente.getEmail())
                         .setTemplate("ESQUECEU_SENHA")
-                        .setParams(params),
+                        .setParams(params)
+                .setTitle("Altere sua senha.")
+                ,
                 properties
         );
 
@@ -161,7 +165,8 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationUtils.sendEmail(new EmailParamVo()
                         .setTo(cliente.getEmail())
                         .setTemplate("USUARIO_CRIADO")
-                        .setParams(params),
+                        .setParams(params)
+                        .setTitle("Usuário Criado!"),
                 properties
         );
 
