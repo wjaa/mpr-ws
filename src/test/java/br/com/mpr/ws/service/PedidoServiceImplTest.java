@@ -53,7 +53,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertEquals("START", pedido.getCodigoTransacao());
             Assert.assertEquals(DateUtils.formatddMMyyyy(new Date()), DateUtils.formatddMMyyyy(pedido.getData()));
             Assert.assertNotNull(pedido.getDataEntrega());
-            Assert.assertNull(pedido.getPagamentoType());
+            Assert.assertNotNull(pedido.getPagamentoType());
             Assert.assertNotNull(pedido.getIdEndereco());
             Assert.assertNull(pedido.getStatusAtual());
             Assert.assertNotNull(pedido.getIdCliente());

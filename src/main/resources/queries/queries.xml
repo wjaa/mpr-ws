@@ -309,6 +309,7 @@
                 P.TIPO_FRETE,
                 P.TIPO_PAGAMENTO,
                 P.DATA_ENTREGA,
+                P.URL_BOLETO,
                 ( SELECT HP.ID_STATUS_PEDIDO
                 FROM historico_pedido HP
                 WHERE HP.ID_PEDIDO = P.ID
