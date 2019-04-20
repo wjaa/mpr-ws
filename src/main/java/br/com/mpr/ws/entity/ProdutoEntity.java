@@ -90,6 +90,12 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "ALT", nullable = false)
     private Double alt;
 
+    @Column(name = "LANCAMENTO")
+    private Boolean lancamento;
+
+    @Column(name = "POPULAR")
+    private Boolean popular;
+
     @Transient
     private byte [] byteImgPreview;
 
@@ -300,5 +306,21 @@ public class ProdutoEntity implements Serializable {
 
     public void setAlt(Double alt) {
         this.alt = alt;
+    }
+
+    public Boolean getLancamento() {
+        return lancamento;
+    }
+
+    public void setLancamento(Boolean lancamento) {
+        this.lancamento = lancamento;
+    }
+
+    public Boolean getPopular() {
+        return popular;
+    }
+
+    public void setPopular(Boolean popular) {
+        this.popular = popular;
     }
 }

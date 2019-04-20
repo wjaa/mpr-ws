@@ -361,13 +361,22 @@ public class PedidoServiceImpl implements PedidoService{
         pedido.setData(new Date());
 
         //passou no teste de mais de 500mil sorteios sem repetir
-        pedido.setCodigoPedido(StringUtils.createRandomHash() + StringUtils.createRandomHash());
+        pedido.setCodigoPedido(this.createCodigoPedido());
+
+
+
         pedido.setIdCupom(checkout.getCupom() != null ? checkout.getCupom().getId() : null);
         pedido.setDataEntrega(checkout.getFreteSelecionado().getPrevisaoEntrega());
         pedido.setTipoFrete(checkout.getFreteSelecionado().getFreteType());
         pedido.setPagamentoType(formaPagamento.getPagamentoType());
 
         return pedido;
+    }
+
+    private String createCodigoPedido() {
+        String longTime = String.valueOf(new Date().getTime());
+        return StringUtils.createRandomHash() +
+                longTime.substring(longTime.length()-2);
     }
 
     private List<ItemPedidoEntity> createItens(CarrinhoVo carrinho, Long idPedido) {

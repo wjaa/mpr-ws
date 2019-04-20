@@ -60,6 +60,7 @@ public class FreteServiceCorreioImpl implements FreteService {
                     "N", // Indica se a encomenda será entregue com o serviço adicional aviso de recebimento. Valores possíveis: S ou N (S – Sim, N – Não)
                     DateUtils.formatddMMyyyy(new Date())//Data do calculo.
             );
+            //TODO ADICIONAR MARGEM DE MONTAGEM 2 DIAS (ISSO TEM QUE SER CONFIGURAVEL).
         }catch(Exception ex){
             //TODO: NOTIFICAR SISTEMA DE MONITORACAO. ERRO CRITICO
             LOG.error("m=calcFrete, error=Erro ao calcular o frente", ex);

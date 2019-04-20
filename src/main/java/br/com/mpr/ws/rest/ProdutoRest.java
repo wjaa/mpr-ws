@@ -40,4 +40,34 @@ public class ProdutoRest extends BaseRest{
     }
 
 
+    @RequestMapping(value = "/produto/lancamento/{limite}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<ProdutoVo> findByLancamento(@PathVariable Integer limite){
+        return this.produtoService.listLancamentos(limite == null ? 10 : limite);
+    }
+
+    @RequestMapping(value = "/produto/popular/{limite}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<ProdutoVo> findByPopular(@PathVariable Integer limite){
+        return this.produtoService.listPopulares(limite == null ? 10 : limite);
+    }
+
+    @RequestMapping(value = "/produto/menorPreco/{limite}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<ProdutoVo> findByMenorPreco(@PathVariable Integer limite){
+        return this.produtoService.listProdutos(ProdutoService.OrderBy.MENOR_PRECO,
+                limite == null ? 10 : limite);
+    }
+
+    @RequestMapping(value = "/produto/maiorPreco/{limite}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<ProdutoVo> findByMaiorPreco(@PathVariable Integer limite){
+        return this.produtoService.listProdutos(ProdutoService.OrderBy.MAIOR_PRECO,
+                limite == null ? 10 : limite);
+    }
+
 }

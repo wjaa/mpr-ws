@@ -1,18 +1,18 @@
 package br.com.mpr.ws.service;
 
+import java.util.Date;
 import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.ClienteEntity;
+import br.com.mpr.ws.entity.LoginEntity;
 import br.com.mpr.ws.exception.LoginServiceException;
+import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.LoginForm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 /**
@@ -25,6 +25,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private CommonDao dao;
+
+    @Autowired
+    private NotificationService notification;
 
 
     @Override
@@ -55,6 +58,45 @@ public class LoginServiceImpl implements LoginService {
         }
 
         throw new LoginServiceException("Usuário não encontrado!");
+    }
+
+    @Override
+    public void resetSenha(String email, String cpf) throws LoginServiceException {
+
+        ClienteEntity cliente = this.dao.findByPropertiesSingleResult(
+                ClienteEntity.class, new String[]{"email","cpf"}, new Object[]{email,cpf});
+
+        if (cliente == null){
+            throw new LoginServiceException("Cadastro não encontrado");
+        }
+        LoginEntity login = cliente.getLogin();
+        Date today = new Date();
+        login.setHashTrocaSenha(StringUtils.createMD5(cliente.getId().toString() + today.getTime() + email));
+        //5 DIAS PARA EXPIRAR A TROCA DE SENHA.
+        login.setExpirationTrocaSenha(DateUtils.addDays(today,5));
+
+        dao.update(login);
+
+        notification.sendEsqueceuSenha(cliente,login.getHashTrocaSenha());
+
+
+    }
+
+    @Override
+    public void trocarSenha(String hash, String novaSenha) throws LoginServiceException {
+        LoginEntity login = dao.findByPropertiesSingleResult(LoginEntity.class, new String[]{"hashTrocaSenha"},
+                new Object[]{hash});
+
+        if (login == null){
+            throw new LoginServiceException("Código para troca de senha não encontrado!");
+        }
+
+        if (login.getExpirationTrocaSenha().before(new Date())){
+            throw new LoginServiceException("Código para troca de senha expirou, solicite uma nova troca de senha.");
+        }
+
+        login.setSenha(novaSenha);
+        dao.update(login);
     }
 
     private ClienteEntity findBySocialKey(String socialKey, LoginType loginType) throws LoginServiceException {

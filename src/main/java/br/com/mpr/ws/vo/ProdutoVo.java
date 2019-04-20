@@ -1,7 +1,6 @@
 package br.com.mpr.ws.vo;
 
 import br.com.mpr.ws.entity.ProdutoEntity;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public class ProdutoVo {
 
     private String descricao;
     private String descricaoDetalhada;
-    private List<String> listUrlFotoDestaque;
+    private List<String> listImgDestaque;
     private String imgPreview;
     private String imgDestaque;
     private String imgSemFoto;
@@ -61,12 +60,12 @@ public class ProdutoVo {
         this.descricaoDetalhada = descricaoDetalhada;
     }
 
-    public List<String> getListUrlFotoDestaque() {
-        return listUrlFotoDestaque;
+    public List<String> getListImgDestaque() {
+        return listImgDestaque;
     }
 
-    public void setListUrlFotoDestaque(List<String> listUrlFotoDestaque) {
-        this.listUrlFotoDestaque = listUrlFotoDestaque;
+    public void setListImgDestaque(List<String> listImgDestaque) {
+        this.listImgDestaque = listImgDestaque;
     }
 
     public String getImgDestaque() {

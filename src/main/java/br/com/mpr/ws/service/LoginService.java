@@ -10,4 +10,8 @@ import br.com.mpr.ws.vo.LoginForm;
 public interface LoginService {
 
     ClienteEntity login(LoginForm loginForm) throws LoginServiceException;
+
+    void resetSenha(String emailTeste, String cpfTeste) throws LoginServiceException;
+
+    void trocarSenha(String hash, String novaSenha) throws LoginServiceException;
 }

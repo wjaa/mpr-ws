@@ -13,6 +13,8 @@ import java.util.List;
 public interface ProdutoService {
 
 
+    enum OrderBy {MAIOR_PRECO, MENOR_PRECO}
+
     List<ProdutoVo> listAll();
 
     ProdutoVo getProdutoById(Long id);
@@ -22,5 +24,12 @@ public interface ProdutoService {
     List<ProdutoVo> getProdutosRelacionados(Long idProduto);
 
     boolean isAcessorio(Long idProduto);
+
+    List<ProdutoVo> listLancamentos(int limite);
+
+    List<ProdutoVo> listPopulares(int limite);
+
+    List<ProdutoVo> listProdutos(OrderBy orderBy, int limite);
+
 
 }

@@ -4,6 +4,7 @@ import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.exception.ClienteServiceException;
+import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.ObjectUtils;
@@ -73,8 +74,13 @@ public class AdminServiceImpl implements AdminService {
     @Resource(name = "findEstoqueById")
     private String findEstoqueById;
 
+    @Resource(name = "findCatalogoGrupo")
+    private String findCatalogoGrupo;
+
+
     @Autowired
     private MprWsProperties properties;
+
 
 
     @Override
@@ -150,6 +156,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public CatalogoGrupoEntity getCatalogoGrupoById(Long id) {
+        return commonDao.get(CatalogoGrupoEntity.class, id);
+    }
+
+    @Override
+    public CatalogoEntity getCatalogoById(Long id) {
+        return commonDao.get(CatalogoEntity.class, id);
+    }
+
+    @Override
     public List<FornecedorEntity> listAllFornecedor() {
         //TODO IMPLEMENTAR UM PAGINATION
         return commonDao.listAll(FornecedorEntity.class);
@@ -182,6 +198,14 @@ public class AdminServiceImpl implements AdminService {
                         getProdutoFilterValue(findForm),
                         true);
         return listProdutos;
+    }
+
+    @Override
+    public void removeEntityById(String entity, Long id) throws AdminServiceException {
+
+        switch (entity){
+            case "CatalogoEntity" : this.removeCatalogoById(id); break;
+        }
     }
 
     private Object[] getProdutoFilterValue(ProdutoFindForm findForm) {
@@ -240,6 +264,16 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<ProdutoEstoqueVo> listProdutoEmEstoque(){
         return commonDao.findByNativeQuery(findProdutoEmEstoque,ProdutoEstoqueVo.class);
+    }
+
+    @Override
+    public List<CatalogoGrupoEntity> listAllCatalogoGrupo() {
+        return commonDao.listAll(CatalogoGrupoEntity.class);
+    }
+
+    @Override
+    public List<CatalogoEntity> listAllCatalogo() {
+        return commonDao.listAll(CatalogoEntity.class);
     }
 
 
@@ -492,6 +526,69 @@ public class AdminServiceImpl implements AdminService {
 
         return tabPreco;
     }
+
+    @Override
+    public CatalogoGrupoEntity saveCatalogoGrupo(CatalogoGrupoEntity catalogoGrupo) throws AdminServiceException {
+
+        List<CatalogoGrupoEntity> listGrupos = commonDao.findByNativeQuery(findCatalogoGrupo,CatalogoGrupoEntity.class,
+                new String[]{"nome"}, new Object[]{catalogoGrupo.getNome().toUpperCase()});
+
+        if (listGrupos.size() > 0){
+            if (isNew(catalogoGrupo.getId())){
+                throw new AdminServiceException("Já existe um grupo com o nome " + catalogoGrupo.getNome());
+            }
+
+            CatalogoGrupoEntity grupoMesmoNome = listGrupos.get(0);
+
+
+            if (!grupoMesmoNome.getId().equals(catalogoGrupo.getId())){
+                throw new AdminServiceException("Já existe um grupo com o nome " + catalogoGrupo.getNome());
+            }
+
+        }
+
+        if (isNew(catalogoGrupo.getId())){
+            catalogoGrupo.setId(null);
+            catalogoGrupo = commonDao.save(catalogoGrupo);
+        }else{
+            catalogoGrupo = commonDao.update(catalogoGrupo);
+        }
+
+        return catalogoGrupo;
+    }
+
+    @Override
+    public CatalogoEntity saveCatalogo(CatalogoEntity catalogo) throws AdminServiceException {
+
+        if (catalogo.getByteImg() != null && catalogo.getByteImg().length > 0){
+            try {
+                this.saveImgCatalogo(catalogo);
+            } catch (ImagemServiceException e) {
+                throw new AdminServiceException(e.getMessage());
+            }
+        }else{
+            if (isNew(catalogo.getId())){
+                throw new AdminServiceException("Nenhuma imagem foi selecionada.");
+            }
+        }
+
+        if (isNew(catalogo.getId())){
+            catalogo.setId(null);
+            catalogo = commonDao.save(catalogo);
+        }else{
+            CatalogoEntity catalogoMerge = commonDao.get(CatalogoEntity.class, catalogo.getId());
+            BeanUtils.copyProperties(catalogo,catalogoMerge);
+            catalogo = commonDao.update(catalogoMerge);
+        }
+        return catalogo;
+    }
+
+    private void saveImgCatalogo(CatalogoEntity catalogo) throws ImagemServiceException {
+        String img = imagemService.uploadFotoCatalogo(catalogo.getByteImg(),catalogo.getNameImg());
+        catalogo.setImg(img);
+
+    }
+
     @Override
     public EstoqueEntity saveEstoque(EstoqueEntity estoque) throws AdminServiceException {
 
@@ -702,6 +799,21 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void removeCatalogoById(Long id) throws AdminServiceException {
+        ItemPedidoAnexoEntity itemPedido = commonDao.findByPropertiesSingleResult(ItemPedidoAnexoEntity.class,
+                new String[]{"idCatalogo"},
+                new Object[]{id});
+
+        if (itemPedido != null){
+            throw new AdminServiceException("Você não pode remover essa imagem exclusiva, porque existe um Pedido " +
+                    "vinculado com ela. Você pode inativar essa imagem.");
+        }
+
+        commonDao.remove(CatalogoEntity.class, id);
+
+    }
+
+    @Override
     public Collection<PedidoEntity> findPedido(PedidoFindForm pedidoFindForm) {
         return pedidoService.findPedidoByForm(pedidoFindForm);
     }
@@ -718,6 +830,8 @@ public class AdminServiceImpl implements AdminService {
             case "EstoqueEntity": return getEstoqueById(id);
             case "CupomEntity": return getCupom(id);
             case "ClienteEntity": return getClienteById(id);
+            case "CatalogoGrupoEntity": return getCatalogoGrupoById(id);
+            case "CatalogoEntity": return getCatalogoById(id);
             default: throw new AdminServiceException("Argumento [entity] inválido!");
 
         }
@@ -735,6 +849,8 @@ public class AdminServiceImpl implements AdminService {
             case "CupomEntity": return listaAllCupom();
             case "ClienteEntity": return listAllCliente();
             case "EstoqueEntity": return listProdutoEmEstoque();
+            case "CatalogoGrupoEntity": return listAllCatalogoGrupo();
+            case "CatalogoEntity": return listAllCatalogo();
             default: throw new AdminServiceException("Argumento [entity] inválido!");
 
         }
@@ -753,6 +869,8 @@ public class AdminServiceImpl implements AdminService {
             case "EstoqueEntity": return saveEstoque(ObjectUtils.fromJSON(jsonEntity, EstoqueEntity.class));
             case "CupomEntity": return saveCupom(ObjectUtils.fromJSON(jsonEntity, CupomEntity.class));
             case "ClienteEntity": return saveCliente(ObjectUtils.fromJSON(jsonEntity, ClienteEntity.class));
+            case "CatalogoGrupoEntity": return saveCatalogoGrupo(ObjectUtils.fromJSON(jsonEntity, CatalogoGrupoEntity.class));
+            case "CatalogoEntity": return saveCatalogo(ObjectUtils.fromJSON(jsonEntity, CatalogoEntity.class));
             default: throw new AdminServiceException("Argumento [entity] {" +
                     "inválido!");
 

@@ -53,6 +53,14 @@ public class AdminRest extends BaseRest{
         return obj == null ? "{}" : obj;
     }
 
+
+    @RequestMapping(value = "/{entity}/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.DELETE)
+    public void removeEntityById(@PathVariable String entity, @PathVariable Long id) throws AdminServiceException {
+        this.adminService.removeEntityById(entity, id);
+    }
+
     @RequestMapping(value = "/FornecedorEntity/save",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
@@ -101,6 +109,20 @@ public class AdminRest extends BaseRest{
             method = RequestMethod.POST)
     public Serializable saveCliente(@RequestBody @Valid ClienteEntity entity) throws AdminServiceException {
         return this.adminService.saveCliente(entity);
+    }
+
+    @RequestMapping(value = "/CatalogoGrupoEntity/save",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public Serializable saveCatalogo(@RequestBody @Valid CatalogoGrupoEntity entity) throws AdminServiceException {
+        return this.adminService.saveCatalogoGrupo(entity);
+    }
+
+    @RequestMapping(value = "/CatalogoEntity/save",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public Serializable saveImagemExclusiva(@RequestBody @Valid CatalogoEntity entity) throws AdminServiceException {
+        return this.adminService.saveCatalogo(entity);
     }
 
     @RequestMapping(value = "/PedidoEntity/find",

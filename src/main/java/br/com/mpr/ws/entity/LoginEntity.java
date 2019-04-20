@@ -51,6 +51,14 @@ public class LoginEntity {
     @NotNull(message = "Key device é obrigatório")
     private String keyDeviceGcm;
 
+    @JsonIgnore
+    @Column(name = "HASH_TROCA_SENHA", length = 64)
+    private String hashTrocaSenha;
+
+    @JsonIgnore
+    @Column(name = "DATA_EXPIRATION_TROCA_SENHA")
+    private Date expirationTrocaSenha;
+
 
     public Long getId() {
         return id;
@@ -115,5 +123,21 @@ public class LoginEntity {
 
     public void setKeyDeviceGcm(String keyDeviceGcm) {
         this.keyDeviceGcm = keyDeviceGcm;
+    }
+
+    public String getHashTrocaSenha() {
+        return hashTrocaSenha;
+    }
+
+    public void setHashTrocaSenha(String hashTrocaSenha) {
+        this.hashTrocaSenha = hashTrocaSenha;
+    }
+
+    public Date getExpirationTrocaSenha() {
+        return expirationTrocaSenha;
+    }
+
+    public void setExpirationTrocaSenha(Date expirationTrocaSenha) {
+        this.expirationTrocaSenha = expirationTrocaSenha;
     }
 }

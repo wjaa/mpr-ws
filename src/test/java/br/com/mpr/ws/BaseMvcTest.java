@@ -76,12 +76,36 @@ public abstract class BaseMvcTest extends BaseDBTest {
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
+    public ResultActions getMvcPostFormResultAction(String endPoint, String content) throws Exception {
+        return mvc.perform(post(endPoint)
+                .with(httpBasic("user","password"))
+                .header("Origin","api.meuportaretrato.com")
+                .content(content)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
     public ResultActions getMvcPostErrorResultAction(String endPoint, String content) throws Exception {
         return mvc.perform(post(endPoint)
                 .with(httpBasic("user","password"))
                 .header("Origin","api.meuportaretrato.com")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    public ResultActions getMvcPostFormErrorResultAction(String endPoint, String content) throws Exception {
+        return mvc.perform(post(endPoint)
+                .with(httpBasic("user","password"))
+                .header("Origin","api.meuportaretrato.com")
+                .content(content)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest())
                 .andExpect(content()

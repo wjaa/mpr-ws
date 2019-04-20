@@ -24,9 +24,22 @@ public class CatalogoEntity implements Serializable {
     @NotNull(message = "Descrição da foto é obrigatória!")
     private String descricao;
 
-
     @Column(name = "IMG", nullable = false, length = 100)
     private String img;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_CATALOGO_GRUPO", updatable = false, insertable = false)
+    private CatalogoGrupoEntity catalogoGrupo;
+
+    @Column(name = "ATIVO", nullable = false)
+    @NotNull(message = "Campo ativo não pode ser nulo.")
+    private Boolean ativo;
+
+    @Transient
+    private byte [] byteImg;
+
+    @Transient
+    private String nameImg;
 
 
     public Long getId() {
@@ -59,5 +72,37 @@ public class CatalogoEntity implements Serializable {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public CatalogoGrupoEntity getCatalogoGrupo() {
+        return catalogoGrupo;
+    }
+
+    public void setCatalogoGrupo(CatalogoGrupoEntity catalogoGrupo) {
+        this.catalogoGrupo = catalogoGrupo;
+    }
+
+    public byte[] getByteImg() {
+        return byteImg;
+    }
+
+    public void setByteImg(byte[] byteImg) {
+        this.byteImg = byteImg;
+    }
+
+    public String getNameImg() {
+        return nameImg;
+    }
+
+    public void setNameImg(String nameImg) {
+        this.nameImg = nameImg;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }
