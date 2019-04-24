@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.OrderBy;
 import java.util.List;
 
 /**
@@ -56,9 +55,9 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         Assert.assertNotNull(produto.getProdutosRelacionados());
         Assert.assertTrue(produto.getProdutosRelacionados().size() > 0);
         Assert.assertTrue(produto.getImgSemFoto().contains("stc.meuportaretrato.com/images"));
-        Assert.assertNotNull(produto.getListImgDestaque());
-        Assert.assertTrue(produto.getListImgDestaque().size() > 0);
-        for (String foto : produto.getListImgDestaque()){
+        Assert.assertNotNull(produto.getImagensDestaque());
+        Assert.assertTrue(produto.getImagensDestaque().size() > 0);
+        for (String foto : produto.getImagensDestaque()){
             Assert.assertTrue(foto.contains("stc.meuportaretrato.com/images/d"));
         }
     }
@@ -118,8 +117,8 @@ public class ProdutoServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(p.getPreco());
             Assert.assertNotNull(p.getImgDestaque());
             Assert.assertNotNull(p.getDescricaoDetalhada());
-            Assert.assertNotNull(p.getListImgDestaque());
-            Assert.assertTrue(p.getListImgDestaque().size() > 0);
+            Assert.assertNotNull(p.getImagensDestaque());
+            Assert.assertTrue(p.getImagensDestaque().size() > 0);
         }
     }
 

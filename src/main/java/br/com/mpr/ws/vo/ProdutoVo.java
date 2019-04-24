@@ -15,7 +15,7 @@ public class ProdutoVo {
 
     private String descricao;
     private String descricaoDetalhada;
-    private List<String> listImgDestaque;
+    private List<String> imagensDestaque;
     private String imgPreview;
     private String imgDestaque;
     private String imgSemFoto;
@@ -60,12 +60,12 @@ public class ProdutoVo {
         this.descricaoDetalhada = descricaoDetalhada;
     }
 
-    public List<String> getListImgDestaque() {
-        return listImgDestaque;
+    public List<String> getImagensDestaque() {
+        return imagensDestaque;
     }
 
-    public void setListImgDestaque(List<String> listImgDestaque) {
-        this.listImgDestaque = listImgDestaque;
+    public void setImagensDestaque(List<String> imagensDestaque) {
+        this.imagensDestaque = imagensDestaque;
     }
 
     public String getImgDestaque() {

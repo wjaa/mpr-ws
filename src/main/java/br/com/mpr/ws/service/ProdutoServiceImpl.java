@@ -94,7 +94,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
             vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
             vo.setImgSemFoto(properties.getImgSemFoto());
-            vo.setListImgDestaque(this.getListFotoDestaque(vo.getId()));
+            vo.setImagensDestaque(this.getListFotoDestaque(vo.getId()));
             vo.setProdutosRelacionados(this.getProdutosRelacionados(vo.getId()));
         }
         return vo;
@@ -200,7 +200,7 @@ public class ProdutoServiceImpl implements ProdutoService {
             vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
             vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
             vo.setImgSemFoto(properties.getImgSemFoto());
-            vo.setListImgDestaque(this.getListFotoDestaque(vo.getId()));
+            vo.setImagensDestaque(this.getListFotoDestaque(vo.getId()));
     }
 
 }

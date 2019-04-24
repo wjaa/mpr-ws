@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 public class ProdutoRestTest extends BaseMvcTest {
@@ -119,8 +117,8 @@ public class ProdutoRestTest extends BaseMvcTest {
             Assert.assertNotNull(p.getPreco());
             Assert.assertNotNull(p.getImgDestaque());
             Assert.assertNotNull(p.getDescricaoDetalhada());
-            Assert.assertNotNull(p.getListImgDestaque());
-            Assert.assertTrue(p.getListImgDestaque().size() > 0);
+            Assert.assertNotNull(p.getImagensDestaque());
+            Assert.assertTrue(p.getImagensDestaque().size() > 0);
         }
     }
 

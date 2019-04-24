@@ -3,9 +3,7 @@ package br.com.mpr.ws.service;
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
-import br.com.mpr.ws.entity.ItemCarrinhoEntity;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
-import br.com.mpr.ws.service.thread.ClienteCarrinhoThread;
 import br.com.mpr.ws.service.thread.ClienteCarrinhoThreadMonitor;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.AnexoVo;
@@ -18,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class CarrinhoServiceImplTest extends BaseDBTest {
 
@@ -39,18 +35,116 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
      * 6. Validar se conseguiu sucesso.
      */
     @Test
-    public void addCarrinhoSemThread(){
+    public void addCarrinhoFotoSemThread(){
 
         try{
-            CarrinhoVo vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            CarrinhoVo vo = carrinhoService.addCarrinho(createItemComFotoCarrinhoFormClienteDinamico(5l));
             Assert.assertNotNull(vo);
-            vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo.getItems());
+            Assert.assertEquals(1, vo.getItems().size());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> Assert.assertNotNull(a.getUrlFoto()));
+            });
+            vo = carrinhoService.addCarrinho(createItemComFotoCarrinhoFormClienteDinamico(5l));
             Assert.assertNotNull(vo);
-            vo = carrinhoService.addCarrinho(createItemCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo.getItems());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> Assert.assertNotNull(a.getUrlFoto()));
+            });
+            vo = carrinhoService.addCarrinho(createItemComFotoCarrinhoFormClienteDinamico(5l));
             Assert.assertNotNull(vo);
+            Assert.assertNotNull(vo.getItems());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> Assert.assertNotNull(a.getUrlFoto()));
+            });
 
         }catch(Exception ex){
-            Assert.assertTrue(ex.getMessage().contains("Infelizmente"));
+            Assert.assertTrue(ex.getMessage(), false);
+        }
+    }
+
+
+    /**
+     * Teste de validacao do carrinho sem foto
+     */
+    @Test
+    public void addCarrinhoSemFoto(){
+
+        ItemCarrinhoForm item = createItemSemFotoCarrinhoFormClienteDinamico(5l);
+        try{
+            CarrinhoVo vo = carrinhoService.addCarrinho(item);
+            Assert.assertTrue("Nao pode chegar aqui", false);
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage().contains("uma imagem é obrigatória"));
+            CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoByIdCliente(item.getIdCliente());
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertNull("Não pode ter itens",carrinhoVo.getItems());
+
+        }
+    }
+
+    /**
+     * 1. Adicionar um produto (id=5) para um cliente1
+     * 2. Validar se conseguiu sucesso.
+     * 3. Adicionar um produto (id=5) para um cliente2
+     * 4. Validar se conseguiu sucesso.
+     * 5. Adicionar um produto (id=5) para um cliente3
+     * 6. Validar se conseguiu sucesso.
+     */
+    @Test
+    public void addCarrinhoCatalogoSemThread(){
+
+        try{
+            CarrinhoVo vo = carrinhoService.addCarrinho(createItemComCatalogoCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
+            Assert.assertNotNull(vo.getItems());
+            Assert.assertEquals(1, vo.getItems().size());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> {
+                    Assert.assertNotNull(a.getUrlFoto());
+                    Assert.assertNotNull(a.getIdCatalogo());
+                });
+            });
+
+
+            vo = carrinhoService.addCarrinho(createItemComCatalogoCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
+            Assert.assertNotNull(vo.getItems());
+            Assert.assertEquals(1, vo.getItems().size());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> {
+                    Assert.assertNotNull(a.getUrlFoto());
+                    Assert.assertNotNull(a.getIdCatalogo());
+                });
+            });
+
+
+            vo = carrinhoService.addCarrinho(createItemComCatalogoCarrinhoFormClienteDinamico(5l));
+            Assert.assertNotNull(vo);
+            Assert.assertNotNull(vo.getItems());
+            Assert.assertEquals(1, vo.getItems().size());
+            vo.getItems().stream().forEach(i -> {
+                Assert.assertEquals(new Long(5l), i.getProduto().getId());
+                Assert.assertNotNull(i.getAnexos());
+                i.getAnexos().stream().forEach(a -> {
+                    Assert.assertNotNull(a.getUrlFoto());
+                    Assert.assertNotNull(a.getIdCatalogo());
+                });
+            });
+
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
         }
     }
 
@@ -71,7 +165,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
         ClienteCarrinhoThreadMonitor monitor = new ClienteCarrinhoThreadMonitor();
         for (int i = 0; i < 20; i++){
-            monitor.addThread(carrinhoService, this.createItemCarrinhoFormClienteDinamico(4l));
+            monitor.addThread(carrinhoService, this.createItemComFotoCarrinhoFormClienteDinamico(4l));
         }
 
         monitor.start();
@@ -88,7 +182,8 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
     }
 
-    private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
+
+    private ItemCarrinhoForm createItemComFotoCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
         itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
@@ -96,6 +191,27 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});
         anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
+        return itemCarrinhoForm;
+    }
+    private ItemCarrinhoForm createItemSemFotoCarrinhoFormClienteDinamico(Long idProduto) {
+        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
+        itemCarrinhoForm.setIdProduto(idProduto);
+        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
+        return itemCarrinhoForm;
+    }
+
+    private ItemCarrinhoForm createItemComCatalogoCarrinhoFormClienteDinamico(Long idProduto) {
+        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
+        itemCarrinhoForm.setIdProduto(idProduto);
+        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setIdCatalogo(1l);
         itemCarrinhoForm.getAnexos().add(anexoVo);
         return itemCarrinhoForm;
     }
@@ -109,9 +225,9 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     public void getCarrinho() {
 
         try {
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            ItemCarrinhoForm item1 = createItemComFotoCarrinhoFormClienteDinamico(5l);
             this.carrinhoService.addCarrinho(item1);
-            ItemCarrinhoForm item2 = createItemCarrinhoFormClienteDinamico(5l);
+            ItemCarrinhoForm item2 = createItemComFotoCarrinhoFormClienteDinamico(5l);
             item2.setKeyDevice(item1.getKeyDevice());
             this.carrinhoService.addCarrinho(item2);
 
@@ -167,14 +283,14 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
 
         try {
             //ADICIONEI O ULTIMO PRODUTO QUE ESTÁ NA TABELA DE TESTE
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(6l);
+            ItemCarrinhoForm item1 = createItemComFotoCarrinhoFormClienteDinamico(6l);
             CarrinhoVo carrinhoVo = this.carrinhoService.addCarrinho(item1);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNotNull(carrinhoVo.getItems());
             Assert.assertEquals(1, carrinhoVo.getItems().size());
 
 
-            ItemCarrinhoForm outroClienteitem1 = createItemCarrinhoFormClienteDinamico(6l);
+            ItemCarrinhoForm outroClienteitem1 = createItemComFotoCarrinhoFormClienteDinamico(6l);
             try{
                 //TENTANDO ADICIONAR O MESMO PRODUTO PARA OUTRO CLIENTE E ESPERANDO O ERRO.
                 CarrinhoVo  carr1 = this.carrinhoService.addCarrinho(outroClienteitem1);

@@ -29,7 +29,10 @@ import org.junit.runners.Suite;
         MprParameterServiceImplTest.class,
 
         PedidoServiceImplTest.class,
-        PedidoRestTest.class
+        PedidoRestTest.class,
+
+        CatalogoServiceImplTest.class,
+        CatalogoRestTest.class
 
 })
 public class SuiteTest {

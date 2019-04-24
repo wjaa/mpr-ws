@@ -75,6 +75,7 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
     }
 
 
+    @JsonIgnore
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,11 +85,13 @@ public class ProdutoImagemDestaqueEntity implements Serializable {
                 Objects.equals(nameImgDestaque, that.nameImgDestaque);
     }
 
+    @JsonIgnore
     @Override
     public int hashCode() {
         return Objects.hash(id, nameImgDestaque);
     }
 
+    @JsonIgnore
     @Transient
     public boolean isEmpty() {
         return id == null && img == null && this.byteImgDestaque == null && this.nameImgDestaque == null;

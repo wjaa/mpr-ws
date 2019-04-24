@@ -304,7 +304,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
 
     private SenderBuilder getSender(ClienteEntity clienteEntity, String senderHash) {
         return new SenderBuilder()
-                .withEmail("v00849507912235340423@sandbox.pagseguro.com.br")
+                .withEmail(clienteEntity.getEmail())
                 .withName(clienteEntity.getNome())
                 .withCPF(clienteEntity.getCpf())
                 .withHash(senderHash)

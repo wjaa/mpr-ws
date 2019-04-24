@@ -1,5 +1,7 @@
 package br.com.mpr.ws.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by wagner on 04/02/19.
  */
@@ -51,4 +53,15 @@ public class AnexoVo {
     public void setId(Long id) {
         this.id = id;
     }
+
+    @JsonIgnore
+    public boolean temCatalogo(){
+        return this.idCatalogo != null;
+    }
+
+    @JsonIgnore
+    public boolean temFoto(){
+        return this.foto != null && this.foto.length > 0;
+    }
+
 }

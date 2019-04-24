@@ -56,7 +56,28 @@ insert into status_pedido values (null,'Recusado.','Recusado.','RCSD');
 insert into status_pedido values (null,'Pagto não confirmado.','Recusado','PGNC');
 insert into status_pedido values (null,'Devolução','Pedido cancelado.','DVLC');
 insert into status_pedido values (null,'Erro no pedido','Pedido recebido (aguardando pagto).','ERRO');
+/**********************************************************************/
 
+
+
+
+/** CATALOGO DE IMAGENS EXCLUSIVAS **/
+insert into catalogo_grupo values(1,'GEEK');
+insert into catalogo_grupo values(2,'PLANETAS');
+
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(1,1,'foto do homem aranha','aranha.jpg',1);
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(2,1,'foto do capitao america','capitao.jpg',1);
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(3,1,'foto do homem de ferro','ferro.jpg',1);
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(4,1,'foto do hulk','hulk.jpg',0);
+
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(5,2,'foto do terra','terra.jpg',1);
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(6,2,'foto de marte','marte.jpg',1);
+insert into catalogo (ID,ID_CATALOGO_GRUPO,DESCRICAO,IMG,ATIVO) values(7,2,'foto de venus','venus.jpg',0);
+
+
+
+
+/*************************************/
 
 /*usando os parameters ja criados para testar os tipos*/
 insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
@@ -321,6 +342,12 @@ values (6,5,'IMGDESTAQUE.JPG');
 insert into ESTOQUE (ID,ID_FORNECEDOR,DATA_COMPRA,DATA_ATUALIZACAO,PRECO_COMPRA,OBSERVACAO,QUANTIDADE)
 values(5,1,'2018-01-01','2018-01-01',10,'TESTE_OUTRO LOTE PRODUTO5',6);
 
+insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
+values(null,5,5,0);
+insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
+values(null,5,5,0);
+insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
+values(null,5,5,0);
 insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)
 values(null,5,5,0);
 insert into ESTOQUE_ITEM (ID,ID_ESTOQUE,ID_PRODUTO, INVALIDO)

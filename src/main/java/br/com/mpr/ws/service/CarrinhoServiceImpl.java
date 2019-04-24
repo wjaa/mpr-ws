@@ -1,10 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
-import br.com.mpr.ws.entity.CarrinhoEntity;
-import br.com.mpr.ws.entity.EstoqueItemEntity;
-import br.com.mpr.ws.entity.ItemCarrinhoAnexoEntity;
-import br.com.mpr.ws.entity.ItemCarrinhoEntity;
+import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.vo.AnexoVo;
@@ -175,23 +172,32 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 //TODO: DISPARAR UM EMAIL AQUI, PORQUE ISSO NAO PODE ACONTECER.
                 throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
             }
+            if (CollectionUtils.isEmpty(item.getAnexos()) ){
+                throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
+            }
+
+            for (AnexoVo anexoVo : item.getAnexos()) {
+                if (!anexoVo.temFoto() && !anexoVo.temCatalogo()) {
+                    throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
+                }
+            }
 
             itemCarrinhoEntity.setIdEstoqueItem(estoqueItemEntity.getId());
             itemCarrinhoEntity = commonDao.save(itemCarrinhoEntity);
 
             //CLIENTES PODEM ADICIONAR ACESSORIOS, SE NAO FOR UM ACESSORIO ENTÃO TEM FOTO.
             if ( !produtoService.isAcessorio(item.getIdProduto()) ){
-
-                if (CollectionUtils.isEmpty(item.getAnexos()) ){
-                    throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
-                }
-
                 for (AnexoVo anexoVo : item.getAnexos()){
-                    if ( (anexoVo.getFoto() == null || anexoVo.getFoto().length == 0) && anexoVo.getIdCatalogo() == null){
-                        throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
-                    }
                     ItemCarrinhoAnexoEntity anexo = new ItemCarrinhoAnexoEntity();
-                    anexo.setFoto(imagemService.uploadFotoCliente(anexoVo.getFoto(),anexoVo.getNomeArquivo()));
+
+                    if (anexoVo.temFoto()){
+                        anexo.setFoto(imagemService.uploadFotoCliente(anexoVo.getFoto(),anexoVo.getNomeArquivo()));
+                    }
+
+                    if (anexoVo.temCatalogo()){
+                        CatalogoEntity catalogo = commonDao.get(CatalogoEntity.class,anexoVo.getIdCatalogo());
+                        anexo.setFoto(catalogo.getImg());
+                    }
                     anexo.setIdCatalogo(anexoVo.getIdCatalogo());
                     anexo.setIdItemCarrinho(itemCarrinhoEntity.getId());
                     commonDao.save(anexo);
@@ -295,6 +301,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                     AnexoVo anexoVo = new AnexoVo();
                     anexoVo.setId(anexo.getId());
                     if (anexo.getIdCatalogo() != null){
+                        anexoVo.setIdCatalogo(anexo.getIdCatalogo());
                         anexoVo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(anexo.getFoto()));
                     }else{
                         anexoVo.setUrlFoto(this.imagemService.getUrlFotoCliente(anexo.getFoto()));

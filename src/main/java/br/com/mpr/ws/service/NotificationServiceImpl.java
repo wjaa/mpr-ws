@@ -310,7 +310,7 @@ public class NotificationServiceImpl implements NotificationService {
         params.put("{JSON_ITEMS}",this.createJsonItens(pedido));
         params.put("{SUB_TOTAL}", NumberUtils.formatPTbr(pedido.getValorTotalItens()));
         params.put("{FRETE}", NumberUtils.formatPTbr(pedido.getValorFrete()));
-        params.put("{TOTAL}", NumberUtils.formatPTbr(pedido.getValorProdutos()));
+        params.put("{TOTAL}", NumberUtils.formatPTbr(pedido.getValorTotal()));
         EnderecoEntity endereco = commonDao.get(EnderecoEntity.class, pedido.getIdEndereco());
         if (endereco != null){
             params.put("{NOME_ENDERECO}", endereco.getDescricao());
