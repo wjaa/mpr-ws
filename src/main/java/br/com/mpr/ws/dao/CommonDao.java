@@ -1,5 +1,7 @@
 package br.com.mpr.ws.dao;
 
+import org.springframework.data.domain.Page;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -37,5 +39,11 @@ public interface CommonDao{
 
     <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams, Object [] params);
 
+    <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams,
+                                        Object [] params, boolean ignoreEntity);
+
     <T>List<T> findByNativeQuery(String query, Class<T> resultClass, boolean ignoreEntity);
+
+    <T>Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, int pageSize, int page,
+                                      boolean ignoreEntity);
 }

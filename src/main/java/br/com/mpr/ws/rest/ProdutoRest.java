@@ -70,4 +70,11 @@ public class ProdutoRest extends BaseRest{
                 limite == null ? 10 : limite);
     }
 
+    @RequestMapping(value = "/produto/destaque",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public ProdutoVo getDestaque(){
+        return this.produtoService.getProdutoDestaque();
+    }
+
 }

@@ -2,6 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +26,49 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         Assert.assertEquals(6,listProduto.size());
 
         for (ProdutoVo p : listProduto){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+    }
+
+    @Test
+    public void listAllPaged(){
+        PageVo<ProdutoVo> page = produtoService.listAllPaged(3,1);
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() > 0);
+        Assert.assertEquals(1,page.getPage());
+        Assert.assertEquals(3,page.getPageSize());
+        Assert.assertEquals(2,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+        page = produtoService.listAllPaged(3,2);
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() > 0);
+        Assert.assertEquals(2,page.getPage());
+        Assert.assertEquals(3,page.getPageSize());
+        Assert.assertEquals(2,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
             Assert.assertNotNull(p.getId());
             Assert.assertNotNull(p.getDescricao());
             Assert.assertNotNull(p.getPreco());
@@ -72,6 +116,16 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
 
     @Test
+    public void getProdutoDestaque(){
+        ProdutoVo produtoVo = produtoService.getProdutoDestaque();
+        Assert.assertNotNull(produtoVo);
+        this.validarInfoProduto(produtoVo);
+
+    }
+
+
+
+    @Test
     public void findProdutoLancamentos(){
         int limite = 2;
         List<ProdutoVo> produtos = produtoService.listLancamentos(limite);
@@ -113,13 +167,17 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
     private void validarInfoProduto(List<ProdutoVo> produtos) {
         for (ProdutoVo p : produtos){
-            Assert.assertNotNull(p.getDescricao());
-            Assert.assertNotNull(p.getPreco());
-            Assert.assertNotNull(p.getImgDestaque());
-            Assert.assertNotNull(p.getDescricaoDetalhada());
-            Assert.assertNotNull(p.getImagensDestaque());
-            Assert.assertTrue(p.getImagensDestaque().size() > 0);
+            validarInfoProduto(p);
         }
+    }
+
+    private void validarInfoProduto(ProdutoVo p) {
+        Assert.assertNotNull(p.getDescricao());
+        Assert.assertNotNull(p.getPreco());
+        Assert.assertNotNull(p.getImgDestaque());
+        Assert.assertNotNull(p.getDescricaoDetalhada());
+        Assert.assertNotNull(p.getImagensDestaque());
+        Assert.assertTrue(p.getImagensDestaque().size() > 0);
     }
 
 }

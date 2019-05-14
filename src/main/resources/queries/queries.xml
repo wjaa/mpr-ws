@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
@@ -235,6 +234,16 @@
             <value>
                AND P.LANCAMENTO = 1
                LIMIT :limite
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="ProdutoService.findByDestaque" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                AND P.DESTAQUE = 1
+                ORDER BY RAND()
+                LIMIT 1
             </value>
         </constructor-arg>
     </bean>

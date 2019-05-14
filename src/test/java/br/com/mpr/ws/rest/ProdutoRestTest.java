@@ -14,8 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProdutoRestTest extends BaseMvcTest {
 
 
-
-
     @Autowired
     private ProdutoService produtoService;
 
@@ -41,6 +39,21 @@ public class ProdutoRestTest extends BaseMvcTest {
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
         }
+    }
+
+
+    @Test
+    public void getProdutoDestaque(){
+        try{
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/produto/destaque");
+            ProdutoVo produto = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),
+                    ProdutoVo.class);
+            Assert.assertNotNull(produto);
+            this.validarInfoProduto(produto);
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+
     }
 
 
@@ -113,13 +126,17 @@ public class ProdutoRestTest extends BaseMvcTest {
 
     private void validarInfoProduto(ProdutoVo [] produtos) {
         for (ProdutoVo p : produtos){
-            Assert.assertNotNull(p.getDescricao());
-            Assert.assertNotNull(p.getPreco());
-            Assert.assertNotNull(p.getImgDestaque());
-            Assert.assertNotNull(p.getDescricaoDetalhada());
-            Assert.assertNotNull(p.getImagensDestaque());
-            Assert.assertTrue(p.getImagensDestaque().size() > 0);
+            validarInfoProduto(p);
         }
+    }
+
+    private void validarInfoProduto(ProdutoVo p) {
+        Assert.assertNotNull(p.getDescricao());
+        Assert.assertNotNull(p.getPreco());
+        Assert.assertNotNull(p.getImgDestaque());
+        Assert.assertNotNull(p.getDescricaoDetalhada());
+        Assert.assertNotNull(p.getImagensDestaque());
+        Assert.assertTrue(p.getImagensDestaque().size() > 0);
     }
 
 

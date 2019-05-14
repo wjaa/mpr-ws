@@ -2,6 +2,11 @@ package br.com.mpr.ws.dao;
 
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +83,36 @@ public class CommonDaoImpl implements CommonDao {
 
         }
 
+    }
+
+    @Override
+    public <T> Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, int pageSize, int page,
+                                              boolean ignoreEntity) {
+
+        int firstResult = page > 1 ? 0 : (pageSize * page) - pageSize + 1;
+        if (resultClass.isAnnotationPresent(Entity.class) && !ignoreEntity){
+            Query q = entityManager.createNativeQuery(query, resultClass);
+            q.setFirstResult(firstResult);
+            q.setMaxResults(pageSize);
+            List<T> resultPaged = q.getResultList();
+
+            Query qSize = entityManager.createNativeQuery(query, resultClass);
+            int total = qSize.getResultList().size();
+            return new PageImpl(resultPaged, PageRequest.of(page,pageSize),total);
+        }else{
+            Session session = (Session) entityManager.getDelegate();
+            Session s = session.getSessionFactory().openSession();
+            NativeQuery nq = s.createNativeQuery(query);
+            nq.setFirstResult(firstResult);
+            nq.setMaxResults(pageSize);
+            nq.setResultTransformer(new ReflectionResultTransformer(resultClass));
+            List<T> resultPaged = nq.getResultList();
+            NativeQuery nqSize = s.createNativeQuery(query);
+            int total = nqSize.getResultList().size();
+            s.close();
+            return new PageImpl(resultPaged, PageRequest.of(page,pageSize),total);
+
+        }
     }
 
     @Override
@@ -187,11 +222,18 @@ public class CommonDaoImpl implements CommonDao {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams, Object [] params) {
+    public <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String [] nameParams,
+                                               Object [] params) {
         List<T> list = findByNativeQuery(query,resultClass,nameParams,params);
         return list.size() > 0 ? list.get(0) : null;
     }
 
+    @Override
+    public <T> T findByNativeQuerySingleResult(String query, Class<T> resultClass, String[] nameParams,
+                                               Object[] params, boolean ignoreEntity) {
+        List<T> list = findByNativeQuery(query,resultClass,nameParams,params, ignoreEntity);
+        return list.size() > 0 ? list.get(0) : null;
+    }
 
 
     @Override

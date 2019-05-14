@@ -6,8 +6,10 @@ import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.entity.ProdutoImagemDestaqueEntity;
 import br.com.mpr.ws.entity.TipoProdutoEntity;
 import br.com.mpr.ws.properties.MprWsProperties;
+import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,8 @@ public class ProdutoServiceImpl implements ProdutoService {
     private String QUERY_FIND_PRODUTO;
     @Resource(name = "ProdutoService.findByLancamento")
     private String FIND_BY_LANCAMENTO;
+    @Resource(name = "ProdutoService.findByDestaque")
+    private String FIND_BY_DESTAQUE;
     @Resource(name = "ProdutoService.findByPopular")
     private String FIND_BY_POPULAR;
     @Resource(name = "ProdutoService.orderByMenorPreco")
@@ -74,6 +78,13 @@ public class ProdutoServiceImpl implements ProdutoService {
         return list;
     }
 
+    @Override
+    public PageVo listAllPaged(int pageSize, int page) {
+        Page<ProdutoVo> p = commonDao.findByNativeQueryPaged(QUERY_ALL_PRODUTO,ProdutoVo.class,
+                pageSize, page,true);
+        return PageVo.from(p);
+    }
+
 
     /**
      * Lista um produto pelo ID.
@@ -91,10 +102,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         ProdutoVo vo = null;
         if (result.size() > 0){
             vo = result.get(0);
-            vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
-            vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
-            vo.setImgSemFoto(properties.getImgSemFoto());
-            vo.setImagensDestaque(this.getListFotoDestaque(vo.getId()));
+            addImgs(vo);
             vo.setProdutosRelacionados(this.getProdutosRelacionados(vo.getId()));
         }
         return vo;
@@ -141,6 +149,16 @@ public class ProdutoServiceImpl implements ProdutoService {
                     tipoProdutoEntity.getAcessorio() : true;
         }
         return true;
+    }
+
+    @Override
+    public ProdutoVo getProdutoDestaque() {
+        ProdutoVo produto = commonDao.findByNativeQuerySingleResult(QUERY_FIND_PRODUTO + FIND_BY_DESTAQUE,
+                ProdutoVo.class,
+                new String[]{},
+                new Object[]{}, true);
+        this.addImgs(produto);
+        return produto;
     }
 
     @Override

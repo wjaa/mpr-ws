@@ -96,6 +96,9 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "POPULAR")
     private Boolean popular;
 
+    @Column(name = "DESTAQUE")
+    private Boolean destaque;
+
     @Transient
     private byte [] byteImgPreview;
 
@@ -322,5 +325,13 @@ public class ProdutoEntity implements Serializable {
 
     public void setPopular(Boolean popular) {
         this.popular = popular;
+    }
+
+    public Boolean getDestaque() {
+        return destaque;
+    }
+
+    public void setDestaque(Boolean destaque) {
+        this.destaque = destaque;
     }
 }

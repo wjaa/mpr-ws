@@ -1,6 +1,5 @@
 package br.com.mpr.ws.rest;
 
-
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.exception.ClienteServiceException;
 import br.com.mpr.ws.exception.LoginServiceException;
