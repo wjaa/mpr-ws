@@ -18,9 +18,9 @@ public class PageVo<T> {
     @JsonIgnore
     public static PageVo from(Page<ProdutoVo> p) {
         PageVo page = new PageVo();
-        page.page = p.getNumber();
+        page.page = p.getNumber() +1;
         page.pageTotal = p.getTotalPages();
-        page.pageSize = p.getSize();
+        page.pageSize = p.getContent().size();
         page.result = p.getContent();
         return page;
     }

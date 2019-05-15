@@ -7,6 +7,8 @@ import br.com.mpr.ws.vo.ProdutoVo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -38,14 +40,89 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         }
     }
 
+
+    /**
+     *
+     * TESTES DE PAGINACAO FOI ESCRITO CONTANDO QUE TEM 6 PRODUTOS EM ESTOQUE
+     * ESSES TESTES PRECISAM SER MELHORADOS PARA VALIDAR A PAGINACAO SEM ESPERAR
+     * UMA QUANTIDADE ESPECIFICA DE PRODUTOS.
+     *
+     */
+
     @Test
-    public void listAllPaged(){
-        PageVo<ProdutoVo> page = produtoService.listAllPaged(3,1);
+    public void listAllPaged2In2(){
+
+        int size = 2;
+        PageVo<ProdutoVo> page = produtoService.listAllPaged(PageRequest.of(0,size));
 
         Assert.assertNotNull(page);
-        Assert.assertTrue(page.getResult().size() > 0);
+        Assert.assertTrue(page.getResult().size() == size);
         Assert.assertEquals(1,page.getPage());
-        Assert.assertEquals(3,page.getPageSize());
+        Assert.assertEquals(size,page.getPageSize());
+        Assert.assertEquals(3,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+        page = produtoService.listAllPaged(PageRequest.of(1,2));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == size);
+        Assert.assertEquals(2,page.getPage());
+        Assert.assertEquals(size,page.getPageSize());
+        Assert.assertEquals(3,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+        page = produtoService.listAllPaged(PageRequest.of(2,size));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == size);
+        Assert.assertEquals(3,page.getPage());
+        Assert.assertEquals(size,page.getPageSize());
+        Assert.assertEquals(3,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+    }
+
+    @Test
+    public void listAllPaged3In3(){
+        int size = 3;
+        PageVo<ProdutoVo> page = produtoService.listAllPaged(PageRequest.of(0,size));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == size);
+        Assert.assertEquals(1,page.getPage());
+        Assert.assertEquals(size,page.getPageSize());
         Assert.assertEquals(2,page.getPageTotal());
 
         for (ProdutoVo p : page.getResult()){
@@ -60,14 +137,107 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
         }
 
-        page = produtoService.listAllPaged(3,2);
+        page = produtoService.listAllPaged(PageRequest.of(1,size));
 
         Assert.assertNotNull(page);
-        Assert.assertTrue(page.getResult().size() > 0);
+        Assert.assertTrue(page.getResult().size() == size);
         Assert.assertEquals(2,page.getPage());
-        Assert.assertEquals(3,page.getPageSize());
+        Assert.assertEquals(size,page.getPageSize());
         Assert.assertEquals(2,page.getPageTotal());
 
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+
+    }
+
+    @Test
+    public void listAllPaged4In4(){
+        int size = 4;
+        PageVo<ProdutoVo> page = produtoService.listAllPaged(PageRequest.of(0,size));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == size);
+        Assert.assertEquals(1,page.getPage());
+        Assert.assertEquals(size,page.getPageSize());
+        Assert.assertEquals(2,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+        page = produtoService.listAllPaged(PageRequest.of(1,size));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == 2);
+        Assert.assertEquals(2,page.getPage());
+        Assert.assertEquals(2,page.getPageSize());
+        Assert.assertEquals(2,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+
+
+    }
+
+
+    @Test
+    public void listAllPaged6In6(){
+        int size = 6;
+        PageVo<ProdutoVo> page = produtoService.listAllPaged(PageRequest.of(0,size));
+
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() == size);
+        Assert.assertEquals(1,page.getPage());
+        Assert.assertEquals(size,page.getPageSize());
+        Assert.assertEquals(1,page.getPageTotal());
+
+        for (ProdutoVo p : page.getResult()){
+            Assert.assertNotNull(p.getId());
+            Assert.assertNotNull(p.getDescricao());
+            Assert.assertNotNull(p.getPreco());
+
+            //o produto 1 não tem itens no estoque.
+            if (p.getId() == 1){
+                Assert.assertEquals(new Integer(0),p.getQuantidade());
+            }
+
+        }
+    }
+
+    @Test
+    public void findProdutoByNameOrDesc(){
+        int size = 2;
+        PageVo<ProdutoVo> page = produtoService.findProdutoByNameOrDesc("retrato",PageRequest.of(0,size),
+                ProdutoService.OrderBy.MAIOR_PRECO);
+        Assert.assertNotNull(page);
+        Assert.assertTrue(page.getResult().size() > 0);
         for (ProdutoVo p : page.getResult()){
             Assert.assertNotNull(p.getId());
             Assert.assertNotNull(p.getDescricao());

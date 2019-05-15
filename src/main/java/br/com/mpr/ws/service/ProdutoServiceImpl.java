@@ -10,6 +10,7 @@ import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     private String ORDER_BY_MENOR_PRECO;
     @Resource(name = "ProdutoService.orderByMaiorPreco")
     private String ORDER_BY_MAIOR_PRECO;
+    @Resource(name = "ProdutoService.limite")
+    private String LIMITE;
+
+    @Resource(name = "ProdutoService.filterByNameOrDesc")
+    private String FILTER_BY_NAME_OR_DESC;
+
+
 
     /***************************************************/
 
@@ -79,9 +87,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public PageVo listAllPaged(int pageSize, int page) {
+    public PageVo listAllPaged(Pageable pageable) {
         Page<ProdutoVo> p = commonDao.findByNativeQueryPaged(QUERY_ALL_PRODUTO,ProdutoVo.class,
-                pageSize, page,true);
+                pageable,true);
         return PageVo.from(p);
     }
 
@@ -184,12 +192,26 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public List<ProdutoVo> listProdutos(OrderBy orderBy, int limite) {
         List<ProdutoVo> result = commonDao.findByNativeQuery(QUERY_FIND_PRODUTO +
-                        (OrderBy.MAIOR_PRECO.equals(orderBy) ? ORDER_BY_MAIOR_PRECO : ORDER_BY_MENOR_PRECO) ,
+                        (OrderBy.MAIOR_PRECO.equals(orderBy) ? ORDER_BY_MAIOR_PRECO : ORDER_BY_MENOR_PRECO) +
+                        LIMITE,
                 ProdutoVo.class,
                 new String[]{"limite"},
                 new Object[]{limite}, true);
         this.addImgs(result);
         return result;
+    }
+
+    @Override
+    public PageVo findProdutoByNameOrDesc(String param, Pageable pageable, OrderBy orderBy) {
+        Page<ProdutoVo> p = commonDao.findByNativeQueryPaged(QUERY_ALL_PRODUTO +
+                        FILTER_BY_NAME_OR_DESC +
+                        (OrderBy.MAIOR_PRECO.equals(orderBy) ? ORDER_BY_MAIOR_PRECO : ORDER_BY_MENOR_PRECO),
+                ProdutoVo.class,
+                pageable,
+                new String[]{"param"},
+                new Object[]{ "%" + param + "%"},
+                true);
+        return PageVo.from(p);
     }
 
 

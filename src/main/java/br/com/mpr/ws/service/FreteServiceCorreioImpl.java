@@ -38,6 +38,7 @@ public class FreteServiceCorreioImpl implements FreteService {
     @Override
     public ResultFreteVo calcFrete(FreteParam param){
         CalcPrecoPrazoWS ws = new CalcPrecoPrazoWS();
+
         CResultado resultado = null;
 
         try{

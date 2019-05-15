@@ -1,10 +1,12 @@
 package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.service.ProdutoService;
+import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,23 @@ public class ProdutoRest extends BaseRest{
             method = RequestMethod.GET)
     public List<ProdutoVo> getAllProduto(){
         return this.produtoService.listAll();
+    }
+
+    @RequestMapping(value = "/produto/all/{page}/{size}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public PageVo getAllProdutoPaged(@PathVariable int page, @PathVariable int size){
+        return this.produtoService.listAllPaged(PageRequest.of(page-1,size));
+    }
+
+    @RequestMapping(value = "/produto/find/{param}/{page}/{size}/{orderBy}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public PageVo getAllProdutoPaged(@PathVariable String param, @PathVariable int page,
+                                     @PathVariable int size,
+                                     @PathVariable int orderBy){
+        return this.produtoService.findProdutoByNameOrDesc(param,PageRequest.of(page-1,size),
+                ProdutoService.OrderBy.byId(orderBy));
     }
 
 
@@ -76,5 +95,7 @@ public class ProdutoRest extends BaseRest{
     public ProdutoVo getDestaque(){
         return this.produtoService.getProdutoDestaque();
     }
+
+
 
 }

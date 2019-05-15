@@ -176,6 +176,19 @@
         </constructor-arg>
     </bean>
 
+    <bean name="ProdutoService.filterByNameOrDesc" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                AND
+                ( UPPER(P.DESCRICAO) like UPPER(:param)
+                OR
+                 UPPER(P.DESCRICAO_DETALHADA) like UPPER(:param)
+                )
+
+            </value>
+        </constructor-arg>
+    </bean>
+
     <bean name="ProdutoService.getProdutoById" class="java.lang.String">
         <constructor-arg>
             <value>
@@ -261,15 +274,22 @@
         <constructor-arg>
             <value>
                 ORDER BY TP.PRECO
-                LIMIT :limite
             </value>
         </constructor-arg>
     </bean>
+
 
     <bean name="ProdutoService.orderByMaiorPreco" class="java.lang.String">
         <constructor-arg>
             <value>
                 ORDER BY TP.PRECO DESC
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean name="ProdutoService.limite" class="java.lang.String">
+        <constructor-arg>
+            <value>
                 LIMIT :limite
             </value>
         </constructor-arg>

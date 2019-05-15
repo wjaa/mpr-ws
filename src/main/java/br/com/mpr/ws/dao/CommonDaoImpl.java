@@ -86,33 +86,81 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    public <T> Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, int pageSize, int page,
+    public <T> Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, Pageable pageable,
                                               boolean ignoreEntity) {
 
-        int firstResult = page > 1 ? 0 : (pageSize * page) - pageSize + 1;
+        int firstResult = pageable.getPageNumber() == 0 ? 0 :
+                pageable.getPageNumber() == 1 ? pageable.getPageSize() :
+                (pageable.getPageNumber() * pageable.getPageSize()) - pageable.getPageSize();
         if (resultClass.isAnnotationPresent(Entity.class) && !ignoreEntity){
             Query q = entityManager.createNativeQuery(query, resultClass);
             q.setFirstResult(firstResult);
-            q.setMaxResults(pageSize);
+            q.setMaxResults(pageable.getPageSize());
             List<T> resultPaged = q.getResultList();
 
             Query qSize = entityManager.createNativeQuery(query, resultClass);
             int total = qSize.getResultList().size();
-            return new PageImpl(resultPaged, PageRequest.of(page,pageSize),total);
+            return new PageImpl(resultPaged, pageable,total);
         }else{
             Session session = (Session) entityManager.getDelegate();
             Session s = session.getSessionFactory().openSession();
             NativeQuery nq = s.createNativeQuery(query);
             nq.setFirstResult(firstResult);
-            nq.setMaxResults(pageSize);
+            nq.setMaxResults(pageable.getPageSize());
             nq.setResultTransformer(new ReflectionResultTransformer(resultClass));
             List<T> resultPaged = nq.getResultList();
             NativeQuery nqSize = s.createNativeQuery(query);
             int total = nqSize.getResultList().size();
             s.close();
-            return new PageImpl(resultPaged, PageRequest.of(page,pageSize),total);
+            return new PageImpl(resultPaged, pageable,total);
 
         }
+    }
+
+    @Override
+    public <T> Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, Pageable pageable,
+                                              String[] nameParams, Object[] params, boolean ignoreEntity) {
+
+        int firstResult = pageable.getPageNumber() == 0 ? 0 :
+                pageable.getPageNumber() == 1 ? pageable.getPageSize() :
+                        (pageable.getPageNumber() * pageable.getPageSize()) - pageable.getPageSize();
+        if (resultClass.isAnnotationPresent(Entity.class) && !ignoreEntity){
+            Query q = entityManager.createNativeQuery(query, resultClass);
+            q.setFirstResult(firstResult);
+            q.setMaxResults(pageable.getPageSize());
+            for (int i = 0; i < nameParams.length; i++) {
+                q.setParameter(nameParams[i], params[i]);
+            }
+            List<T> resultPaged = q.getResultList();
+
+            Query qSize = entityManager.createNativeQuery(query, resultClass);
+            for (int i = 0; i < nameParams.length; i++) {
+                qSize.setParameter(nameParams[i], params[i]);
+            }
+
+            int total = qSize.getResultList().size();
+            return new PageImpl(resultPaged, pageable,total);
+        }else{
+            Session session = (Session) entityManager.getDelegate();
+            Session s = session.getSessionFactory().openSession();
+            NativeQuery nq = s.createNativeQuery(query);
+            nq.setFirstResult(firstResult);
+            nq.setMaxResults(pageable.getPageSize());
+            nq.setResultTransformer(new ReflectionResultTransformer(resultClass));
+            for (int i = 0; i < nameParams.length; i++) {
+                nq.setParameter(nameParams[i], params[i]);
+            }
+            List<T> resultPaged = nq.getResultList();
+            NativeQuery nqSize = s.createNativeQuery(query);
+            for (int i = 0; i < nameParams.length; i++) {
+                nqSize.setParameter(nameParams[i], params[i]);
+            }
+            int total = nqSize.getResultList().size();
+            s.close();
+            return new PageImpl(resultPaged, pageable,total);
+
+        }
+
     }
 
     @Override

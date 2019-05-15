@@ -1,6 +1,7 @@
 package br.com.mpr.ws.dao;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -44,6 +45,11 @@ public interface CommonDao{
 
     <T>List<T> findByNativeQuery(String query, Class<T> resultClass, boolean ignoreEntity);
 
-    <T>Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, int pageSize, int page,
+    <T>Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, Pageable pageable,
+                                      boolean ignoreEntity);
+
+    <T>Page<T> findByNativeQueryPaged(String query, Class<T> resultClass, Pageable pageable,
+                                      String [] nameParams,
+                                      Object [] params,
                                       boolean ignoreEntity);
 }
