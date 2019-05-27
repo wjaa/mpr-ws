@@ -35,7 +35,7 @@ public class CalculaValorFreteJobs {
 
 
     //RODAR A CADA 2 MESES
-    @Scheduled(fixedRate = 1000*60*60*24*2, initialDelay = -1)
+    @Scheduled(fixedRate = 1000*60*60*24*90, initialDelay = -1)
     public void run() {
         embalagens = commonDao.listAll(EmbalagemEntity.class);
         Page<CepEntity> page = commonDao.listAllPaged(CepEntity.class, PageRequest.of(1,5000));
