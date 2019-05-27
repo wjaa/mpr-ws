@@ -42,6 +42,7 @@ public class NumberUtils {
 
     public static Double convertNumberPtBr(String numberStr) {
         try {
+            System.out.println("FORMAT = " + numberStr);
             return getFormat().parse(numberStr).doubleValue();
         } catch (ParseException e) {
             e.printStackTrace();

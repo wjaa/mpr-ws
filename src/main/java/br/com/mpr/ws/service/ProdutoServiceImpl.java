@@ -77,11 +77,13 @@ public class ProdutoServiceImpl implements ProdutoService {
      * liste os produtos, o terceiro cliente receberá um produto esgotado, caso ele liste novamente, os dois clientes
      * retiraram o produto do carrinho, esse produto estará disponível novamente.
      * @return
+     * @param limite
      */
     @Override
-    public List<ProdutoVo> listAll() {
+    public List<ProdutoVo> listAll(int limite) {
 
-        List<ProdutoVo> list = commonDao.findByNativeQuery(QUERY_ALL_PRODUTO,ProdutoVo.class);
+        List<ProdutoVo> list = commonDao.findByNativeQuery(QUERY_ALL_PRODUTO + LIMITE,ProdutoVo.class,
+                new String[]{"limite"}, new Object[]{limite});
 
         return list;
     }
@@ -157,6 +159,11 @@ public class ProdutoServiceImpl implements ProdutoService {
                     tipoProdutoEntity.getAcessorio() : true;
         }
         return true;
+    }
+
+    @Override
+    public ProdutoEntity getProdutoEntityById(Long idProduto) {
+        return commonDao.get(ProdutoEntity.class, idProduto);
     }
 
     @Override

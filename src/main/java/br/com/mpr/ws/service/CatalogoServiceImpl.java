@@ -2,6 +2,8 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.CatalogoEntity;
+import br.com.mpr.ws.entity.CatalogoGrupoEntity;
+import br.com.mpr.ws.vo.CatalogoVo;
 import br.com.mpr.ws.vo.ImagemExclusivaVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +27,12 @@ public class CatalogoServiceImpl implements CatalogoService {
                 new Object[]{idCatalogoGrupo, Boolean.TRUE});
 
         return ImagemExclusivaVo.toVo(list);
+    }
+
+    @Override
+    public List<CatalogoVo> listAllCagalogo() {
+        List<CatalogoGrupoEntity> list = commonDao.listAll(CatalogoGrupoEntity.class, "nome");
+
+        return CatalogoVo.toVo(list);
     }
 }

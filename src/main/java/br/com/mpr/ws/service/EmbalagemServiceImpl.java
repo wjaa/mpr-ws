@@ -57,6 +57,12 @@ public class EmbalagemServiceImpl implements EmbalagemService {
 
         }
 
+        EmbalagemEntity embalagemEntity = this.getEmbalagemEntity(produtos.size(), maxComp, maxLarg, sumAlt);
+
+        return embalagemEntity;
+    }
+
+    private EmbalagemEntity getEmbalagemEntity(Integer totalProdutos, Double maxComp, Double maxLarg, Double sumAlt) {
         EmbalagemEntity embalagemEntity = commonDao.findByNativeQuerySingleResult(
                 QUERY_FIND_EMBALAGEM,
                 EmbalagemEntity.class,
@@ -69,11 +75,10 @@ public class EmbalagemServiceImpl implements EmbalagemService {
             LOG.warn("m=getEmbalagem, criando embalagem aproximada.");
             embalagemEntity = new EmbalagemEntity();
             embalagemEntity.setAlt(sumAlt);
-            embalagemEntity.setComp(maxComp * produtos.size());
-            embalagemEntity.setLarg(maxLarg * produtos.size());
+            embalagemEntity.setComp(maxComp * totalProdutos);
+            embalagemEntity.setLarg(maxLarg * totalProdutos);
 
         }
-
         return embalagemEntity;
     }
 }

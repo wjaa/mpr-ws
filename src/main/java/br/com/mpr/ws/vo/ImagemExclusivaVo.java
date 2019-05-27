@@ -15,7 +15,7 @@ import java.util.List;
 public class ImagemExclusivaVo {
 
 
-    private Long idCatalogo;
+    private Long idImagem;
     private Long idCatalogoGrupo;
     private String urlImg;
     private String descricao;
@@ -26,7 +26,7 @@ public class ImagemExclusivaVo {
 
     public ImagemExclusivaVo(CatalogoEntity c) {
         BeanUtils.copyProperties(c,this);
-        this.idCatalogo = c.getId();
+        this.idImagem = c.getId();
         this.urlImg = c.getImg();
         this.nomeCatalogo = c.getCatalogoGrupo().getNome();
     }
@@ -47,12 +47,12 @@ public class ImagemExclusivaVo {
         return listVo;
     }
 
-    public Long getIdCatalogo() {
-        return idCatalogo;
+    public Long getIdImagem() {
+        return idImagem;
     }
 
-    public void setIdCatalogo(Long idCatalogo) {
-        this.idCatalogo = idCatalogo;
+    public void setIdImagem(Long idImagem) {
+        this.idImagem = idImagem;
     }
 
     public Long getIdCatalogoGrupo() {

@@ -2,9 +2,9 @@ package br.com.mpr.ws.service;
 
 
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -14,6 +14,8 @@ import java.util.List;
  */
 
 public interface ProdutoService {
+
+
 
 
     enum OrderBy {MAIOR_PRECO, MENOR_PRECO;
@@ -28,9 +30,11 @@ public interface ProdutoService {
         }
     }
 
+    ProdutoEntity getProdutoEntityById(Long idProduto);
+
     ProdutoVo getProdutoDestaque();
 
-    List<ProdutoVo> listAll();
+    List<ProdutoVo> listAll(int i);
 
     PageVo listAllPaged(Pageable pageable);
 

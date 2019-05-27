@@ -58,4 +58,14 @@ public class CarrinhoRest extends BaseRest {
         return this.carrinhoService.removeItem(idItem);
     }
 
+
+    @RequestMapping(value = "/carrinho/alterarQtdeItem/{idItem}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public CarrinhoVo alterarQtdeItem(@PathVariable Long idItem) throws CarrinhoServiceException {
+        //TODO CONTINUAR AQUI...
+        return null;
+    }
+
+
 }

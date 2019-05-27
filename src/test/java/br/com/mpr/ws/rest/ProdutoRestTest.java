@@ -24,8 +24,8 @@ public class ProdutoRestTest extends BaseMvcTest {
     @Test
     public void listAll() {
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/produto/all");
-            ra.andExpect(content().json(ObjectUtils.toJson(produtoService.listAll())));
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/produto/all/10");
+            ra.andExpect(content().json(ObjectUtils.toJson(produtoService.listAll(10))));
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
         }

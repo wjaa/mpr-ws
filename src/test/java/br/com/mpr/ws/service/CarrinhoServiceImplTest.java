@@ -194,6 +194,20 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
         itemCarrinhoForm.getAnexos().add(anexoVo);
         return itemCarrinhoForm;
     }
+
+
+    private ItemCarrinhoForm createItemComFotoCarrinhoFormClienteCadastrado(Long idProduto) {
+        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
+        itemCarrinhoForm.setIdProduto(idProduto);
+        itemCarrinhoForm.setIdCliente(1l);
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
+        return itemCarrinhoForm;
+    }
+
     private ItemCarrinhoForm createItemSemFotoCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
@@ -248,6 +262,51 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
                 Assert.assertNotNull(i.getAnexos().get(0).getUrlFoto());
             }
 
+
+        } catch (CarrinhoServiceException e) {
+            Assert.assertTrue(e.getMessage(),false);
+        }
+
+
+    }
+
+
+
+    /**
+     * 1. Adicionar dois produtos no carrinho de um cliente
+     * 2, Buscar o carrinho do cliente e validar todos os campos.
+     */
+    @Test
+    public void getCarrinhoClienteCadastrado() {
+
+        try {
+            ItemCarrinhoForm item1 = createItemComFotoCarrinhoFormClienteCadastrado(5l);
+            this.carrinhoService.addCarrinho(item1);
+            ItemCarrinhoForm item2 = createItemComFotoCarrinhoFormClienteCadastrado(5l);
+            this.carrinhoService.addCarrinho(item2);
+
+
+            CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoByIdCliente(item1.getIdCliente());
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertNotNull(carrinhoVo.getIdCarrinho());
+            Assert.assertEquals(item1.getIdCliente(),carrinhoVo.getIdCliente());
+            Assert.assertNotNull(carrinhoVo.getItems());
+            Assert.assertEquals(2, carrinhoVo.getItems().size());
+            for (ItemCarrinhoVo i : carrinhoVo.getItems()){
+                Assert.assertNotNull(i.getId());
+                Assert.assertNotNull(i.getIdCarrinho());
+                Assert.assertNotNull(i.getProduto());
+                Assert.assertNotNull(i.getProduto().getId());
+                Assert.assertNotNull(i.getProduto().getDescricao());
+                Assert.assertNotNull(i.getProduto().getImgPreview());
+                Assert.assertNotNull(i.getAnexos().get(0).getUrlFoto());
+            }
+            Assert.assertNotNull(carrinhoVo.getResultFrete());
+            Assert.assertTrue(carrinhoVo.getResultFrete().getValor() > 0);
+
+            for (ItemCarrinhoVo item : carrinhoVo.getItems()){
+                this.carrinhoService.removeItem(item.getId());
+            }
 
         } catch (CarrinhoServiceException e) {
             Assert.assertTrue(e.getMessage(),false);

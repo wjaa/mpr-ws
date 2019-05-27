@@ -1,14 +1,13 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
+import br.com.mpr.ws.vo.CatalogoVo;
 import br.com.mpr.ws.vo.ImagemExclusivaVo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class CatalogoServiceImplTest extends BaseDBTest {
 
@@ -24,7 +23,7 @@ public class CatalogoServiceImplTest extends BaseDBTest {
         Assert.assertEquals(3, result.size());
         for(ImagemExclusivaVo vo : result){
             Assert.assertNotNull(vo);
-            Assert.assertNotNull(vo.getIdCatalogo());
+            Assert.assertNotNull(vo.getIdImagem());
             Assert.assertEquals(new Long(1l), vo.getIdCatalogoGrupo());
             Assert.assertNotNull(vo.getIdCatalogoGrupo());
 
@@ -39,7 +38,7 @@ public class CatalogoServiceImplTest extends BaseDBTest {
         Assert.assertEquals(2, result.size());
         for(ImagemExclusivaVo vo : result){
             Assert.assertNotNull(vo);
-            Assert.assertNotNull(vo.getIdCatalogo());
+            Assert.assertNotNull(vo.getIdImagem());
             Assert.assertEquals(new Long(2l), vo.getIdCatalogoGrupo());
             Assert.assertNotNull(vo.getIdCatalogoGrupo());
 
@@ -49,5 +48,16 @@ public class CatalogoServiceImplTest extends BaseDBTest {
         }
 
 
+    }
+
+    @Test
+    public void listAllCagalogo(){
+        List<CatalogoVo> result = catalogoService.listAllCagalogo();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        result.stream().forEach( c -> {
+            Assert.assertNotNull(c.getId());
+            Assert.assertNotNull(c.getNome());
+        });
     }
 }

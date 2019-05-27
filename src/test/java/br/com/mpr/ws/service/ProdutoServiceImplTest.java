@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
     @Test
     public void listAll() throws Exception {
-        List<ProdutoVo> listProduto = produtoService.listAll();
+        List<ProdutoVo> listProduto = produtoService.listAll(10);
 
         Assert.assertNotNull(listProduto);
         Assert.assertTrue(listProduto.size() > 0);

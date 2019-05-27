@@ -5,20 +5,23 @@ import br.com.mpr.ws.entity.MprParameterType;
 import br.com.mpr.ws.frete.correios.CResultado;
 import br.com.mpr.ws.frete.correios.CServico;
 import br.com.mpr.ws.frete.correios.CalcPrecoPrazoWS;
+import br.com.mpr.ws.frete.correios.CalcPrecoPrazoWSSoap;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.NumberUtils;
 import br.com.mpr.ws.vo.ResultFreteVo;
+import com.sun.xml.ws.client.BindingProviderProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+import javax.xml.ws.BindingProvider;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -34,16 +37,28 @@ public class FreteServiceCorreioImpl implements FreteService {
 
     @Autowired
     private MprParameterService parameterService;
+    private final int readTimeoutInMS = 10000;
+    private final int connectTimeoutInMS = 10000;
+    private static CalcPrecoPrazoWS ws;
+
+    @PostConstruct
+    private void construct(){
+        ws = new CalcPrecoPrazoWS();
+    }
 
     @Override
     public ResultFreteVo calcFrete(FreteParam param){
-        CalcPrecoPrazoWS ws = new CalcPrecoPrazoWS();
+
 
         CResultado resultado = null;
 
         try{
-
-            resultado = ws.getCalcPrecoPrazoWSSoap().calcPrecoPrazoData(
+            CalcPrecoPrazoWSSoap soap = ws.getCalcPrecoPrazoWSSoap();
+            Map requestCtx = ((BindingProvider) soap).getRequestContext();
+            LOG.info("CXF JAX_WS Client Read_Timeout=" + readTimeoutInMS + " Connect_Timeout=" + connectTimeoutInMS);
+            requestCtx.put(BindingProviderProperties.REQUEST_TIMEOUT, readTimeoutInMS);
+            requestCtx.put(BindingProviderProperties.CONNECT_TIMEOUT, connectTimeoutInMS);
+            resultado = soap.calcPrecoPrazoData(
                     "", //codigo da empresa
                     "", //senha da empresa
                     FreteType.ECONOMICO.equals(param.getFreteType()) ? PAC :
@@ -68,8 +83,7 @@ public class FreteServiceCorreioImpl implements FreteService {
             return this.getResultFreteGenerico();
         }
 
-        if (resultado.getServicos().getCServico().size() == 0 ||
-                !StringUtils.isEmpty(resultado.getServicos().getCServico().get(0).getMsgErro()) ){
+        if (this.estaComErro(resultado)){
             //TODO: NOTIFICAR SISTEMA DE MONITORACAO. ERRO CRITICO
             LOG.error("Erro no calculo do frete, " +
                     (resultado.getServicos().getCServico().size() > 0 ?
@@ -80,7 +94,7 @@ public class FreteServiceCorreioImpl implements FreteService {
                     resultado.getServicos().getCServico().get(0) : null);
         }
         try{
-            return this.convertResultFrete(resultado);
+            return this.convertResultFrete(resultado, param.getFreteType());
         }catch (Exception ex){
             //TODO: NOTIFICAR SISTEMA DE MONITORACAO. ERRO CRITICO
             LOG.error("Erro ao converter o resultado do frente.", ex);
@@ -88,6 +102,13 @@ public class FreteServiceCorreioImpl implements FreteService {
         }
 
 
+    }
+
+    private boolean estaComErro(CResultado resultado) {
+        CServico frete = resultado.getServicos().getCServico().get(0);
+        return resultado.getServicos().getCServico().size() == 0 ||
+                (!StringUtils.isEmpty(frete.getMsgErro()) &&
+                        StringUtils.isEmpty(frete.getValor()) );
     }
 
     private ResultFreteVo getResultFreteError(CServico cServico) {
@@ -101,16 +122,28 @@ public class FreteServiceCorreioImpl implements FreteService {
         ResultFreteVo result = new ResultFreteVo();
         result.setDiasUteis(30);
         result.setValor(50.0);
+        result.setFreteType(FreteType.ECONOMICO);
+        result.setMessageError("Erro no calculo do frete, usando valor genérico.");
         result.setPrevisaoEntrega(DateUtils.addDays(new Date(),30));
         return result;
     }
 
-    private ResultFreteVo convertResultFrete(CResultado resultado) {
+    private ResultFreteVo convertResultFrete(CResultado resultado, FreteType freteType) {
         ResultFreteVo result = new ResultFreteVo();
         for (CServico servico : resultado.getServicos().getCServico()){
-            result.setValor(NumberUtils.convertNumberPtBr(servico.getValor()));
+
+            Double valor = NumberUtils.convertNumberPtBr(servico.getValor());
+            if (valor == null && servico.getValor() != null){
+                //os correios as veses manda um valor assim 198.E1982E2, então pegamos o valor inteiro.
+                valor = NumberUtils.convertNumberPtBr(servico.getValor().split(".")[0]);
+            }
+
+            result.setValor(valor);
             result.setDiasUteis(Integer.valueOf(servico.getPrazoEntrega()));
             result.setPrevisaoEntrega(DateUtils.addDays(new Date(), Integer.valueOf(servico.getPrazoEntrega())));
+            result.setFreteType(freteType);
+            result.setMessageError(servico.getMsgErro());
+            result.setObs(servico.getObsFim());
         }
         LOG.debug("m=convertResultFrete, " + result);
         return result;

@@ -15,6 +15,10 @@ public interface CommonDao{
 
     <T>List<T> listAll(Class<T> clazz);
 
+    <T> List<T> listAll(Class<T> clazz, String orderBy);
+
+    <T>Page<T> listAllPaged(Class<T> clazz, Pageable pageable);
+
     <T> T save(T o);
 
     <T> T update(T o);
@@ -52,4 +56,5 @@ public interface CommonDao{
                                       String [] nameParams,
                                       Object [] params,
                                       boolean ignoreEntity);
+
 }

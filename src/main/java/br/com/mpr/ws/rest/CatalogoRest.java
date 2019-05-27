@@ -1,6 +1,7 @@
 package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.service.CatalogoService;
+import br.com.mpr.ws.vo.CatalogoVo;
 import br.com.mpr.ws.vo.ImagemExclusivaVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,6 +25,13 @@ public class CatalogoRest extends BaseRest {
             method = RequestMethod.GET)
     public List<ImagemExclusivaVo> findImagensExclusivasByCatalogo(@PathVariable Long idCatalogo){
         return this.catalogoService.listImgExclusivasByCatalogo(idCatalogo);
+    }
+
+    @RequestMapping(value = "/catalogo/all",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public List<CatalogoVo> listAllCatalogo(){
+        return this.catalogoService.listAllCagalogo();
     }
 
 

@@ -1,6 +1,11 @@
 package br.com.mpr.ws.vo;
 
 import br.com.mpr.ws.entity.FreteType;
+import br.com.mpr.ws.helper.JacksonDateDeserializer;
+import br.com.mpr.ws.helper.JacksonDateSerializer;
+import br.com.mpr.ws.utils.DateUtils;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -13,9 +18,12 @@ public class ResultFreteVo {
     private Boolean selecionado;
     private Integer diasUteis;
     private Double valor;
+    @JsonDeserialize(using = JacksonDateDeserializer.class)
+    @JsonSerialize(using = JacksonDateSerializer.class)
     private Date previsaoEntrega;
     private String messageError;
     private FreteType freteType;
+    private String obs;
 
 
     public Integer getDiasUteis() {
@@ -83,5 +91,13 @@ public class ResultFreteVo {
 
     public void setFreteType(FreteType freteType) {
         this.freteType = freteType;
+    }
+
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
     }
 }

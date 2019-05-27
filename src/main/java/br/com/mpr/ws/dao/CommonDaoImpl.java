@@ -46,6 +46,31 @@ public class CommonDaoImpl implements CommonDao {
                 .getResultList();
     }
 
+    public <T> List<T> listAll(Class<T> clazz, String orderBy) {
+        return entityManager
+                .createQuery("select e from " + clazz.getName() + " e order by "+ orderBy)
+                .getResultList();
+    }
+
+    @Override
+    public <T> Page<T> listAllPaged(Class<T> clazz, Pageable pageable) {
+        Query q = entityManager
+                .createQuery("select e from " + clazz.getName() + " e ");
+
+        int firstResult = pageable.getPageNumber() == 0 ? 0 :
+                pageable.getPageNumber() == 1 ? pageable.getPageSize() :
+                        (pageable.getPageNumber() * pageable.getPageSize()) - pageable.getPageSize();
+        q.setFirstResult(firstResult);
+        q.setMaxResults(pageable.getPageSize());
+        List<T> resultPaged = q.getResultList();
+
+        Query qSize = entityManager
+                .createQuery("select count(1) from " + clazz.getName() + " e ");
+        int total = ((Long)qSize.getSingleResult()).intValue();
+        return new PageImpl(resultPaged, pageable,total);
+
+    }
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public <T> T save(T o) {

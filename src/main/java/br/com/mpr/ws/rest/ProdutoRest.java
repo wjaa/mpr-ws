@@ -26,11 +26,11 @@ public class ProdutoRest extends BaseRest{
     private ProdutoService produtoService;
 
 
-    @RequestMapping(value = "/produto/all",
+    @RequestMapping(value = "/produto/all/{limite}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public List<ProdutoVo> getAllProduto(){
-        return this.produtoService.listAll();
+    public List<ProdutoVo> getAllProduto(@PathVariable Integer limite){
+        return this.produtoService.listAll(limite == null ? 10 : limite);
     }
 
     @RequestMapping(value = "/produto/all/{page}/{size}",
@@ -43,7 +43,7 @@ public class ProdutoRest extends BaseRest{
     @RequestMapping(value = "/produto/find/{param}/{page}/{size}/{orderBy}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public PageVo getAllProdutoPaged(@PathVariable String param, @PathVariable int page,
+    public PageVo findProdutoPaged(@PathVariable String param, @PathVariable int page,
                                      @PathVariable int size,
                                      @PathVariable int orderBy){
         return this.produtoService.findProdutoByNameOrDesc(param,PageRequest.of(page-1,size),

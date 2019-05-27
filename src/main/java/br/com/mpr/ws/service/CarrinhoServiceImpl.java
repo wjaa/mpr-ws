@@ -42,6 +42,15 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Autowired
     private ImagemService imagemService;
 
+    @Autowired
+    private EmbalagemService embalagemService;
+
+    @Autowired
+    private FreteService freteService;
+
+    @Autowired
+    private ClienteService clienteService;
+
     /**
      * Esse metodo cria uma fila de threads e executa 1 a 1 em startThreadAddCarrinho
      *
@@ -204,7 +213,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 }
             }
 
-            return this.getCarrinho(item.getIdCliente(),item.getKeyDevice());
+            return this.getCarrinho(item.getIdCliente(),item.getKeyDevice(), false);
 
 
         }catch (ConstraintViolationException ex){
@@ -253,15 +262,15 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     @Override
     public CarrinhoVo getCarrinhoByIdCliente(Long idCliente){
-        return getCarrinho(idCliente,null);
+        return getCarrinho(idCliente,null, true);
     }
 
     @Override
     public CarrinhoVo getCarrinhoByKeyDevice(String keyDevice){
-        return getCarrinho(null, keyDevice);
+        return getCarrinho(null, keyDevice, true);
     }
 
-    private CarrinhoVo getCarrinho(Long idCliente, String keyDevice) {
+    private CarrinhoVo getCarrinho(Long idCliente, String keyDevice, Boolean calculateFrete) {
         CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,keyDevice);
 
         if (carrinhoEntity == null){
@@ -271,10 +280,10 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             return vo;
         }
 
-        return this.getCarrinhoVo(carrinhoEntity);
+        return this.getCarrinhoVo(carrinhoEntity, calculateFrete);
     }
 
-    private CarrinhoVo getCarrinhoVo(CarrinhoEntity carrinhoEntity) {
+    private CarrinhoVo getCarrinhoVo(CarrinhoEntity carrinhoEntity, Boolean calculaFrete) {
         CarrinhoVo vo = CarrinhoVo.toVo(carrinhoEntity);
         List<ItemCarrinhoEntity> items =
                 commonDao.findByProperties(
@@ -284,37 +293,59 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
 
         List<ItemCarrinhoVo> listVos = new ArrayList<>();
-
+        List<ProdutoEntity> produtos = new ArrayList<>();
+        Double peso = 0.0;
         for (ItemCarrinhoEntity i : items){
-            i.setAnexos(this.commonDao.findByProperties(ItemCarrinhoAnexoEntity.class,
-                    new String[]{"idItemCarrinho"},
-                    new Object[]{i.getId()}));
-            ItemCarrinhoVo ivo = new ItemCarrinhoVo();
-            BeanUtils.copyProperties(i, ivo);
-            EstoqueItemEntity itemEstoque = this.commonDao.get(EstoqueItemEntity.class, i.getIdEstoqueItem());
-            ivo.setProduto(this.produtoService.getProdutoById(itemEstoque.getIdProduto()));
-            ivo.setIdEstoque(itemEstoque.getIdEstoque());
-            ivo.setIdEstoqueItem(itemEstoque.getId());
-            if (!CollectionUtils.isEmpty(i.getAnexos())){
-                ivo.setAnexos(new ArrayList<>());
-                for (ItemCarrinhoAnexoEntity anexo : i.getAnexos()){
-                    AnexoVo anexoVo = new AnexoVo();
-                    anexoVo.setId(anexo.getId());
-                    if (anexo.getIdCatalogo() != null){
-                        anexoVo.setIdCatalogo(anexo.getIdCatalogo());
-                        anexoVo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(anexo.getFoto()));
-                    }else{
-                        anexoVo.setUrlFoto(this.imagemService.getUrlFotoCliente(anexo.getFoto()));
-                    }
-                    ivo.getAnexos().add(anexoVo);
-                }
-            }
-
+            ItemCarrinhoVo ivo = getItemCarrinhoVo(i);
+            ProdutoEntity produtoEntity = produtoService.getProdutoEntityById(i.getEstoqueItem().getIdProduto());
+            produtos.add(produtoEntity);
+            peso = produtoEntity.getPeso();
             listVos.add(ivo);
+        }
+
+        //NAO PRECISA CALCULAR O FRETE PARA TODOS QUE SOLICITAM O CARRINHO VO e se o cliente ainda não tem cadastro.
+        if ( calculaFrete && carrinhoEntity.getIdCliente() != null){
+            EnderecoEntity enderecoCliente = clienteService.getEnderecoPrincipalByIdCliente(carrinhoEntity.getIdCliente());
+            EmbalagemEntity embalagem = embalagemService.getEmbalagem(produtos);
+            vo.setResultFrete(freteService.calcFrete(
+                    new FreteService.FreteParam(FreteType.ECONOMICO,
+                            enderecoCliente.getCep(),
+                            peso,
+                            embalagem.getComp(),
+                            embalagem.getLarg(),
+                            embalagem.getAlt()
+                    )) );
         }
 
         vo.setItems(listVos);
         return vo;
+    }
+
+    private ItemCarrinhoVo getItemCarrinhoVo(ItemCarrinhoEntity i) {
+        i.setAnexos(this.commonDao.findByProperties(ItemCarrinhoAnexoEntity.class,
+                new String[]{"idItemCarrinho"},
+                new Object[]{i.getId()}));
+        ItemCarrinhoVo ivo = new ItemCarrinhoVo();
+        BeanUtils.copyProperties(i, ivo);
+        EstoqueItemEntity itemEstoque = this.commonDao.get(EstoqueItemEntity.class, i.getIdEstoqueItem());
+        ivo.setProduto(this.produtoService.getProdutoById(itemEstoque.getIdProduto()));
+        ivo.setIdEstoque(itemEstoque.getIdEstoque());
+        ivo.setIdEstoqueItem(itemEstoque.getId());
+        if (!CollectionUtils.isEmpty(i.getAnexos())){
+            ivo.setAnexos(new ArrayList<>());
+            for (ItemCarrinhoAnexoEntity anexo : i.getAnexos()){
+                AnexoVo anexoVo = new AnexoVo();
+                anexoVo.setId(anexo.getId());
+                if (anexo.getIdCatalogo() != null){
+                    anexoVo.setIdCatalogo(anexo.getIdCatalogo());
+                    anexoVo.setUrlFoto(this.imagemService.getUrlFotoCatalogo(anexo.getFoto()));
+                }else{
+                    anexoVo.setUrlFoto(this.imagemService.getUrlFotoCliente(anexo.getFoto()));
+                }
+                ivo.getAnexos().add(anexoVo);
+            }
+        }
+        return ivo;
     }
 
     @Override
@@ -324,7 +355,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             if (item != null){
                 this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
                 CarrinhoEntity carrinhoEntity = this.commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
-                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getKeyDevice());
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getKeyDevice(), false);
             }
             return null;
         }catch(Exception ex){
@@ -341,6 +372,6 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             throw new CarrinhoServiceException("Carrinho não encontrado com o ID = " + idCarrinho);
         }
 
-        return this.getCarrinhoVo(carrinhoEntity);
+        return this.getCarrinhoVo(carrinhoEntity, true);
     }
 }

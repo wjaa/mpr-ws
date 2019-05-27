@@ -40,6 +40,7 @@ public class CalcPrecoPrazoWS
 
     public CalcPrecoPrazoWS() {
         super(__getWsdlLocation(), CALCPRECOPRAZOWS_QNAME);
+
     }
 
     public CalcPrecoPrazoWS(WebServiceFeature... features) {

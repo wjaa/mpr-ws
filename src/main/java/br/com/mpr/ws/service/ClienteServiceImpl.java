@@ -149,14 +149,19 @@ public class ClienteServiceImpl implements ClienteService{
         return clienteEntity;
     }
 
-
-    private List<EnderecoEntity> getEnderecosByIdCliente(Long idCliente) {
+    @Override
+    public List<EnderecoEntity> getEnderecosByIdCliente(Long idCliente) {
         return commonDao.findByProperties(EnderecoEntity.class,
-                new String[]{"idCliente"},
-                new Object[]{idCliente});
+                new String[]{"idCliente","ativo"},
+                new Object[]{idCliente,"true"});
     }
 
-
+    @Override
+    public EnderecoEntity getEnderecoPrincipalByIdCliente(Long idCliente) {
+        return commonDao.findByPropertiesSingleResult(EnderecoEntity.class,
+                new String[]{"idCliente","principal"},
+                new Object[]{idCliente,true});
+    }
 
     private void saveEnderecos(ClienteEntity cliente) throws ClienteServiceException {
         if (!CollectionUtils.isEmpty(cliente.getEnderecos())){
