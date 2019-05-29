@@ -37,18 +37,20 @@ public class CalculaValorFreteJobs {
     //RODAR A CADA 2 MESES
     @Scheduled(fixedRate = 1000*60*60*24, initialDelay = -1)
     public void run() {
-        embalagens = commonDao.listAll(EmbalagemEntity.class);
-        Page<CepEntity> page = commonDao.listAllPaged(CepEntity.class, PageRequest.of(1,5000));
+        //embalagens = commonDao.listAll(EmbalagemEntity.class);
+        //Page<CepEntity> page = commonDao.listAllPaged(CepEntity.class, PageRequest.of(1,5000));
 
         try {
-
-            while (page.getNumber() < page.getTotalPages()){
-                log.debug("PAGINA [" + page.getNumber() + "/" + page.getTotalPages() + "]");
-                List<CepEntity> ceps = page.getContent();
+            List<CepEntity> ceps = commonDao.findByNativeQuery("select cep from cep", CepEntity.class, true);
+            //while (page.getNumber() < page.getTotalPages()){
+                //log.debug("PAGINA [" + page.getNumber() + "/" + page.getTotalPages() + "]");
+                //List<CepEntity> ceps = page.getContent();
                 final CalculaValorFreteJobs.Gerenciador gerenciador = new CalculaValorFreteJobs.Gerenciador();
                 int item = 1;
                 for(CepEntity cep : ceps) {
-                    log.debug("FAZENDO ITEM [" + item++ + "/5000] - [" + page.getNumber() + "/" + page.getTotalPages() + "]" );
+                    //log.debug("FAZENDO ITEM [" + item++ + "/5000] - [" + page.getNumber() + "/" + page.getTotalPages() + "]" );
+                    log.debug("FAZENDO ITEM [" + item++ + "/" + ceps.size() + "]");
+                    log.debug("ESTAMOS COM " + (item / ceps.size())*100 + "%" );
                     CalculaValorFreteJobs.Executor executor;
                     while ( (executor = gerenciador.getExecutorLivre()) == null){
                         try {
@@ -58,10 +60,10 @@ public class CalculaValorFreteJobs {
                             e.printStackTrace();
                         }
                     }
-                    executor.execute(cep);
+                    executor.execute(cep.getCep());
                 }
-                page = commonDao.listAllPaged(CepEntity.class, page.nextPageable());
-            }
+                //page = commonDao.listAllPaged(CepEntity.class, page.nextPageable());
+            //}
 
 
         } catch (Exception e) {
@@ -94,7 +96,7 @@ public class CalculaValorFreteJobs {
     }
 
     class Executor extends Thread{
-        private CepEntity cep;
+        private String cep;
         private String name;
         private boolean viva = false;
         private Date end;
@@ -105,7 +107,7 @@ public class CalculaValorFreteJobs {
         }
 
 
-        public void execute(CepEntity cep){
+        public void execute(String cep){
             this.cep = cep;
             thread = new Thread(this);
             thread.start();
@@ -131,10 +133,10 @@ public class CalculaValorFreteJobs {
                                 new Object[]{cep.getCep(),freteType,peso});*/
 
                         //if (freteCep == null){
-                            log.debug(name + " - Calculando frete para " + cep.getCep() + " peso = " +
+                            log.debug(name + " - Calculando frete para " + cep + " peso = " +
                                     peso + " tipoFrete = " + freteType.getDescricao());
                             ResultFreteVo result = freteService.calcFrete(new FreteService.FreteParam(freteType,
-                                    cep.getCep(),
+                                    cep,
                                     new Double(peso),
                                     27.0,
                                     24.5,
@@ -144,7 +146,7 @@ public class CalculaValorFreteJobs {
                             if (result != null && result.getValor() != null &&
                                     ( !result.getMessageError().contains("Erro")) ){
                                 FreteCepEntity freteCep = new FreteCepEntity();
-                                freteCep.setCep(cep.getCep());
+                                freteCep.setCep(cep);
                                 freteCep.setTipoFrete(freteType);
                                 freteCep.setValor(result.getValor());
                                 freteCep.setDataCalculo(new Date());
