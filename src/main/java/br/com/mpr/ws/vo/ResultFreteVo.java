@@ -78,10 +78,13 @@ public class ResultFreteVo {
     @Override
     public String toString() {
         return "ResultFreteVo{" +
-                "diasUteis=" + diasUteis +
+                "selecionado=" + selecionado +
+                ", diasUteis=" + diasUteis +
                 ", valor=" + valor +
                 ", previsaoEntrega=" + previsaoEntrega +
                 ", messageError='" + messageError + '\'' +
+                ", freteType=" + freteType +
+                ", obs='" + obs + '\'' +
                 '}';
     }
 

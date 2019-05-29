@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  *
  */
-@Profile("!test")
+//@Profile("!test")
 @Service("FreteServiceCorreioImpl")
 public class FreteServiceCorreioImpl implements FreteService {
 

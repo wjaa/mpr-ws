@@ -76,7 +76,7 @@ public class CalculaValorFreteJobs {
         private List<CalculaValorFreteJobs.Executor> executores = new ArrayList<>();
 
         Gerenciador(){
-            for (int i = 0; i < 30; i ++){
+            for (int i = 0; i < 20; i ++){
                 executores.add(new CalculaValorFreteJobs.Executor(i+1));
             }
         }
@@ -118,46 +118,47 @@ public class CalculaValorFreteJobs {
         @Override
         public void run() {
 
-            //POR EMBALAGEM
-            embalagens.stream().forEach( embalagem -> {
+            int pesos [] = new int[]{1,2};
+
+            //POR PESO
+            for (int peso : pesos) {
                 //POR TIPO DE FRETE
                 for(FreteType freteType : FreteType.values()){
 
                     try{
+                        /*FreteCepEntity freteCep = commonDao.findByPropertiesSingleResult(FreteCepEntity.class,
+                                new String[]{"cep","tipoFrete","peso"},
+                                new Object[]{cep.getCep(),freteType,peso});*/
 
-                        FreteCepEntity freteCep = commonDao.findByPropertiesSingleResult(FreteCepEntity.class,
-                                new String[]{"cep","tipoFrete","idEmbalagem"},
-                                new Object[]{cep.getCep(),freteType,embalagem.getId()});
-
-                        if (freteCep == null){
-                            log.debug(name + " - Calculando frete para " + cep.getCep() + " embalagem = " +
-                                    embalagem.getDescricao() + " tipoFrete = " + freteType.getDescricao());
+                        //if (freteCep == null){
+                            log.debug(name + " - Calculando frete para " + cep.getCep() + " peso = " +
+                                    peso + " tipoFrete = " + freteType.getDescricao());
                             ResultFreteVo result = freteService.calcFrete(new FreteService.FreteParam(freteType,
                                     cep.getCep(),
-                                    1.0,
-                                    embalagem.getComp(),
-                                    embalagem.getLarg(),
-                                    embalagem.getAlt()
+                                    new Double(peso),
+                                    27.0,
+                                    24.5,
+                                    4.5
                             ));
                             log.debug(name + " - Fim do calculo do frete");
                             if (result != null && result.getValor() != null &&
                                     ( !result.getMessageError().contains("Erro")) ){
-                                freteCep = new FreteCepEntity();
+                                FreteCepEntity freteCep = new FreteCepEntity();
                                 freteCep.setCep(cep.getCep());
                                 freteCep.setTipoFrete(freteType);
                                 freteCep.setValor(result.getValor());
                                 freteCep.setDataCalculo(new Date());
-                                freteCep.setIdEmbalagem(embalagem.getId());
+                                freteCep.setPeso(1.0);
                                 commonDao.save(freteCep);
 
                             }
-                        }
+                        //}
                     }catch(Exception ex){
                         log.error("Erro do calculo do frente", ex);
                     }
 
                 }
-            });
+            }
 
             this.viva = false;
             end = new Date();

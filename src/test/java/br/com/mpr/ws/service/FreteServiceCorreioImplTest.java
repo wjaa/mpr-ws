@@ -26,14 +26,15 @@ public class FreteServiceCorreioImplTest{
     public void calcFrete() throws Exception {
         ResultFreteVo frete = freteService.calcFrete(
                 new FreteService.FreteParam(FreteType.ECONOMICO,
-                        "04634-900",
+                        "02323000",
                         0.3,
-                        30.0,
-                        25.0,
-                        4.0));
+                        150.1,
+                        150.1,
+                        4.5));
         Assert.assertNotNull(frete.getValor());
         Assert.assertNotNull(frete.getDiasUteis());
         Assert.assertNotNull(frete.getPrevisaoEntrega());
+        System.out.println(frete);
     }
 
     @Test

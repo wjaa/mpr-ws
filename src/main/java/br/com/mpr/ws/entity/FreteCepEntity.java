@@ -25,8 +25,8 @@ public class FreteCepEntity {
     @Column(name = "DATA_CALCULO", nullable = false)
     private Date dataCalculo;
 
-    @Column(name = "ID_EMBALAGEM", nullable = false)
-    private Long idEmbalagem;
+    @Column(name = "PESO", nullable = false)
+    private Double peso;
 
 
     public String getCep() {
@@ -69,11 +69,11 @@ public class FreteCepEntity {
         this.dataCalculo = dataCalculo;
     }
 
-    public Long getIdEmbalagem() {
-        return idEmbalagem;
+    public Double getPeso() {
+        return peso;
     }
 
-    public void setIdEmbalagem(Long idEmbalagem) {
-        this.idEmbalagem = idEmbalagem;
+    public void setPeso(Double peso) {
+        this.peso = peso;
     }
 }
