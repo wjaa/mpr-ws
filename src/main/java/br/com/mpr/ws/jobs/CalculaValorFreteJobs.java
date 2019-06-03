@@ -9,12 +9,10 @@ import br.com.mpr.ws.service.FreteService;
 import br.com.mpr.ws.vo.ResultFreteVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,20 +33,23 @@ public class CalculaValorFreteJobs {
 
 
     //RODAR A CADA 2 MESES
-    @Scheduled(fixedRate = 1000*60*60*24, initialDelay = -1)
+    //@Scheduled(fixedRate = 1000*60*60*24, initialDelay = -1)
     public void run() {
-        embalagens = commonDao.listAll(EmbalagemEntity.class);
-        Page<CepEntity> page = commonDao.listAllPaged(CepEntity.class, PageRequest.of(1,5000));
+        //embalagens = commonDao.listAll(EmbalagemEntity.class);
+        //Page<CepEntity> page = commonDao.listAllPaged(CepEntity.class, PageRequest.of(1,5000));
 
         try {
-
-            while (page.getNumber() < page.getTotalPages()){
-                log.debug("PAGINA [" + page.getNumber() + "/" + page.getTotalPages() + "]");
-                List<CepEntity> ceps = page.getContent();
+                List<CepEntity> ceps = commonDao.findByNativeQuery("select cep from cep",CepEntity.class, true);
+            //while (page.getNumber() < page.getTotalPages()){
+                //log.debug("PAGINA [" + page.getNumber() + "/" + page.getTotalPages() + "]");
+                //List<CepEntity> ceps = page.getContent();
                 final CalculaValorFreteJobs.Gerenciador gerenciador = new CalculaValorFreteJobs.Gerenciador();
                 int item = 1;
+                int size = ceps.size();
                 for(CepEntity cep : ceps) {
-                    log.debug("FAZENDO ITEM [" + item++ + "/5000] - [" + page.getNumber() + "/" + page.getTotalPages() + "]" );
+                    //log.debug("FAZENDO ITEM [" + item++ + "/5000] - [" + page.getNumber() + "/" + page.getTotalPages() + "]" );
+                    log.debug("******FAZENDO ITEM [" + item++ + "/" + size +"]");
+                    log.debug("*******PORCENTAGEM = " + (item/size)*100 + "%");
                     CalculaValorFreteJobs.Executor executor;
                     while ( (executor = gerenciador.getExecutorLivre()) == null){
                         try {
@@ -60,8 +61,8 @@ public class CalculaValorFreteJobs {
                     }
                     executor.execute(cep);
                 }
-                page = commonDao.listAllPaged(CepEntity.class, page.nextPageable());
-            }
+                //page = commonDao.listAllPaged(CepEntity.class, page.nextPageable());
+            //}
 
 
         } catch (Exception e) {
@@ -148,7 +149,7 @@ public class CalculaValorFreteJobs {
                                 freteCep.setTipoFrete(freteType);
                                 freteCep.setValor(result.getValor());
                                 freteCep.setDataCalculo(new Date());
-                                freteCep.setPeso(1.0);
+                                freteCep.setPeso(new Double(peso));
                                 commonDao.save(freteCep);
 
                             }

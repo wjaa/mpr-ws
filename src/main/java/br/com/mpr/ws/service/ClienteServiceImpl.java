@@ -153,7 +153,7 @@ public class ClienteServiceImpl implements ClienteService{
     public List<EnderecoEntity> getEnderecosByIdCliente(Long idCliente) {
         return commonDao.findByProperties(EnderecoEntity.class,
                 new String[]{"idCliente","ativo"},
-                new Object[]{idCliente,"true"});
+                new Object[]{idCliente,true});
     }
 
     @Override

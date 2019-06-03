@@ -1,6 +1,8 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.FreteType;
+import br.com.mpr.ws.entity.MprParameterType;
 import br.com.mpr.ws.vo.ResultFreteVo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,16 +16,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 /**
  * Created by wagner on 12/21/18.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class FreteServiceCorreioImplTest{
+public class FreteServiceCorreioImplTest extends BaseDBTest {
 
     @Autowired
     @Qualifier("FreteServiceCorreioImpl")
     private FreteService freteService;
 
+    @Autowired
+    private MprParameterService parameterService;
+
     @Test
     public void calcFrete() throws Exception {
+
         ResultFreteVo frete = freteService.calcFrete(
                 new FreteService.FreteParam(FreteType.ECONOMICO,
                         "02323000",
@@ -31,10 +35,13 @@ public class FreteServiceCorreioImplTest{
                         150.1,
                         150.1,
                         4.5));
-        Assert.assertNotNull(frete.getValor());
-        Assert.assertNotNull(frete.getDiasUteis());
+        Assert.assertNotNull(frete);
+        Assert.assertEquals(new Double(19.80), frete.getValor());
+        Assert.assertEquals(FreteType.ECONOMICO, frete.getFreteType());
+
+        Integer prazo = 2 + parameterService.getParameterInteger(MprParameterType.PRAZO_MONTAGEM,3);
+        Assert.assertEquals(prazo, frete.getDiasUteis());
         Assert.assertNotNull(frete.getPrevisaoEntrega());
-        System.out.println(frete);
     }
 
     @Test

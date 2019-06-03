@@ -40,6 +40,12 @@ public class ObjectUtils {
 
     }
 
+    public static <T>T toObject(String json, Class<T> clazz){
+        return g.fromJson(json,clazz);
+
+    }
+
+
     public static <T>T fromJSON(String json, Type type){
         return g.fromJson(json,type);
 

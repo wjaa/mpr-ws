@@ -12,7 +12,7 @@ import java.util.Date;
  * Created by wagner on 26/02/19.
  */
 @Profile("test")
-@Service
+//@Service
 public class FreteServiceMockImpl implements FreteService{
     @Override
     public ResultFreteVo calcFrete(FreteParam param) {

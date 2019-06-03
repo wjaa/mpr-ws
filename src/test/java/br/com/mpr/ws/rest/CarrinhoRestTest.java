@@ -58,7 +58,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
             raGet.andExpect(content().json(resultJson));
 
-            CarrinhoVo resultCarrinho = ObjectUtils.fromJSON(resultJson,CarrinhoVo.class);
+            CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
             Assert.assertEquals("AAABBBCCCDDD",resultCarrinho.getKeyDevice());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
@@ -98,7 +98,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
             raGet.andExpect(content().json(resultJson));
 
-            CarrinhoVo resultCarrinho = ObjectUtils.fromJSON(resultJson,CarrinhoVo.class);
+            CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
             Assert.assertEquals(new Long(1),resultCarrinho.getIdCliente());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
@@ -177,7 +177,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
         String keyDevice = "AAABBBCCCDDD";
         try{
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + keyDevice);
-            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNull(carrinhoVo.getItems());
 
@@ -202,7 +202,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
             getMvcPutResultAction("/api/v1/core/carrinho/add", content);
 
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
-            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(1,carrinhoVo.getItems().size());
 
@@ -242,21 +242,21 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
             //#2
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
-            CarrinhoVo carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
             Assert.assertTrue(carrinhoVo.getItems().size() == 1);
 
             //#3
             ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" + carrinhoVo.getItems().get(0).getId());
-            carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
             Assert.assertTrue(carrinhoVo.getItems().size() == 0);
 
             //#4
             ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
-            carrinhoVo = ObjectUtils.fromJSON(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
             Assert.assertTrue(carrinhoVo.getItems().size() == 0);
