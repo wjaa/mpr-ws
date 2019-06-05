@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 public class ObjectUtils {
     private static final Log LOG = LogFactory.getLog(ObjectUtils.class);
     private static final ObjectMapper om = new ObjectMapper();
-    private static final Gson g = new GsonBuilder().create();
+    private static final Gson g = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
 
 
     public static String toJson(Object o){

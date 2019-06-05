@@ -65,7 +65,7 @@ public class CarrinhoVo {
     }
 
     public Integer getTotalItens(){
-        return this.items.size();
+        return this.items != null ? this.items.size() : 0;
     }
 
     public Double getValorFrete(){
@@ -75,8 +75,10 @@ public class CarrinhoVo {
     public Double getValorItens(){
         Double total = 0.0;
 
-        for(ItemCarrinhoVo vo : items){
-            total += vo.getProduto().getPreco();
+        if (items != null){
+            for(ItemCarrinhoVo vo : items){
+                total += vo.getProduto().getPreco();
+            }
         }
 
         return total;

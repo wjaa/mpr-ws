@@ -45,7 +45,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
             FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
             formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
             checkoutForm.setFormaPagamento(formaPagamentoVo);
-            checkoutForm.setIdCheckout(1l);
+            checkoutForm.setIdCheckout(checkout.getId());
             PedidoEntity pedido = pedidoService.createPedido(checkoutForm);
             Assert.assertNotNull(pedido);
             Assert.assertNotNull(pedido.getCodigoPedido());
@@ -61,7 +61,9 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(pedido.getValorProdutos());
             Assert.assertEquals(new Double(28.50), pedido.getValorProdutos());
             Assert.assertEquals(new Double(19.80), pedido.getValorFrete());
-            Assert.assertEquals(DateUtils.formatddMMyyyy(DateUtils.addDays(new Date(), 8)),
+            //2 do prazo do frete + 3 da montagem configurada na tabela de parametros.
+            int days = 2 + 3;
+            Assert.assertEquals(DateUtils.formatddMMyyyy(DateUtils.addUtilDays(new Date(), days)),
                     DateUtils.formatddMMyyyy(pedido.getDataEntrega()));
             Assert.assertTrue(pedido.getValorTotal() > pedido.getValorProdutos());
             Assert.assertEquals(new Double(0.0), pedido.getValorDesconto());

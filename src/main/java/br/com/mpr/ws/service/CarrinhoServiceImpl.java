@@ -213,7 +213,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 }
             }
 
-            return this.getCarrinho(item.getIdCliente(),item.getKeyDevice(), false);
+            return this.getCarrinho(item.getIdCliente(),item.getKeyDevice(), true);
 
 
         }catch (ConstraintViolationException ex){

@@ -93,11 +93,11 @@ values(null,'PRAZO_MONTAGEM','3','2019-02-25');
 insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
 values (null,'02323000',0,19.80,'2019-05-19',1.0,2);
 insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
-values (null,'02323000',1,21.20,'2019-05-19',1.0,2);
+values (null,'02323000',1,21.20,'2019-05-19',1.0,1);
 insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
 values (null,'02323000',0,22.80,'2019-05-19',2.0,2);
 insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
-values (null,'02323000',1,23.50,'2019-05-19',2.0,2);
+values (null,'02323000',1,23.50,'2019-05-19',2.0,1);
 
 
 insert into CUPOM_DESCONTO(ID,DESCRICAO, HASH,DATA_INICIO,DATA_FIM,PROMOCAO, PORCENTAGEM, QUANTIDADE)
@@ -132,10 +132,10 @@ values (null, '1983-09-30', '11999999999', '44444444444', 'wagner@gmail.com', 'W
 
 --ENDERECO DO CLIENTE 1
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
-values (1,'01034030', 'Rua das porpetas malucas', '132a', 'sem complemento', 'bairro da pizza', 'guarulhos', 'sp', 1, 1, 'principal', 'perto da rua das coxinhas', 1);
+values (1,'02323000', 'Rua das porpetas malucas', '132a', 'sem complemento', 'bairro da pizza', 'guarulhos', 'sp', 1, 1, 'principal', 'perto da rua das coxinhas', 1);
 
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
-values (2,'01034030', 'Rua das porpetas malucas', '132a', 'sem complemento', 'bairro da pizza', 'guarulhos', 'sp', 5, 1, 'principal', 'perto da rua das coxinhas', 1);
+values (2,'02323000', 'Rua das porpetas malucas', '132a', 'sem complemento', 'bairro da pizza', 'guarulhos', 'sp', 5, 1, 'principal', 'perto da rua das coxinhas', 1);
 
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
 values (3,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 1, 1, 'secundario', 'perto da rua das enxentes', 1);
