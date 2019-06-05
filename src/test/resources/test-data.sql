@@ -84,8 +84,20 @@ insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
 values(null,'CEP_ORIGEM','07093090','2019-02-25');
 insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
 values(null,'MARGEM_PROTECAO','4','2019-02-25');
+insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
+values(null,'USA_FRETE_CACHE','true','2019-02-25');
+insert into mpr_parameter (ID,CHAVE,VALOR,DATA_ATUALIZACAO)
+values(null,'PRAZO_MONTAGEM','3','2019-02-25');
 
 
+insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
+values (null,'02323000',0,19.80,'2019-05-19',1.0,2);
+insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
+values (null,'02323000',1,21.20,'2019-05-19',1.0,2);
+insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
+values (null,'02323000',0,22.80,'2019-05-19',2.0,2);
+insert into frete_cep (ID,CEP,TIPO_FRETE,VALOR,DATA_CALCULO,PESO,DIAS)
+values (null,'02323000',1,23.50,'2019-05-19',2.0,2);
 
 
 insert into CUPOM_DESCONTO(ID,DESCRICAO, HASH,DATA_INICIO,DATA_FIM,PROMOCAO, PORCENTAGEM, QUANTIDADE)

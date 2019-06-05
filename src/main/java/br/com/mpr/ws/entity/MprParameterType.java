@@ -10,5 +10,8 @@ public enum MprParameterType {
     PS_API_TOKEN,
     PS_API_EMAIL,
     PS_API_SESSION_URL,
+    PRAZO_MONTAGEM,
+    USA_FRETE_CACHE,
     ;
+
 }

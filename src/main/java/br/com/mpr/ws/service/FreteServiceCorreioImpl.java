@@ -1,5 +1,7 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.dao.CommonDao;
+import br.com.mpr.ws.entity.FreteCepEntity;
 import br.com.mpr.ws.entity.FreteType;
 import br.com.mpr.ws.entity.MprParameterType;
 import br.com.mpr.ws.frete.correios.CResultado;
@@ -26,7 +28,6 @@ import java.util.Map;
 /**
  *
  */
-//@Profile("!test")
 @Service("FreteServiceCorreioImpl")
 public class FreteServiceCorreioImpl implements FreteService {
 
@@ -37,6 +38,10 @@ public class FreteServiceCorreioImpl implements FreteService {
 
     @Autowired
     private MprParameterService parameterService;
+
+    @Autowired
+    private CommonDao commonDao;
+
     private final int readTimeoutInMS = 10000;
     private final int connectTimeoutInMS = 10000;
     private static CalcPrecoPrazoWS ws;
@@ -49,38 +54,34 @@ public class FreteServiceCorreioImpl implements FreteService {
     @Override
     public ResultFreteVo calcFrete(FreteParam param){
 
+        //PEGANDO CONFIGURACAO DE LIGA E DESLIGA DO FRETE CACHE
+        Boolean usaFreteCache = parameterService.getParameterBoolean(MprParameterType.USA_FRETE_CACHE,false);
+
+
+        //BUSCA UM FRETE CACHE
+        FreteCepEntity freteCache = commonDao.findByPropertiesSingleResult(FreteCepEntity.class,
+                new String[]{"cep","tipoFrete","peso"},
+                new Object[]{param.getCepDestino(),param.getFreteType(),param.getPeso() <= 1 ? 1.0 : 2.0});
+
+
+        if (usaFreteCache && freteCache != null){
+            return getResultCache(freteCache);
+        }
+
 
         CResultado resultado = null;
 
         try{
             CalcPrecoPrazoWSSoap soap = ws.getCalcPrecoPrazoWSSoap();
             Map requestCtx = ((BindingProvider) soap).getRequestContext();
-            LOG.info("CXF JAX_WS Client Read_Timeout=" + readTimeoutInMS + " Connect_Timeout=" + connectTimeoutInMS);
             requestCtx.put(BindingProviderProperties.REQUEST_TIMEOUT, readTimeoutInMS);
             requestCtx.put(BindingProviderProperties.CONNECT_TIMEOUT, connectTimeoutInMS);
-            resultado = soap.calcPrecoPrazoData(
-                    "", //codigo da empresa
-                    "", //senha da empresa
-                    FreteType.ECONOMICO.equals(param.getFreteType()) ? PAC :
-                            SEDEX , //40010 sedex | 41106 pac
-                    parameterService.getParameter(MprParameterType.CEP_ORIGEM, "07093090"), //cep de origem (nosso cep)
-                    param.getCepDestino(), //cep do cliente
-                    param.getPeso() == null ? "1" : NumberUtils.formatPTbr(param.getPeso()), //peso do produto
-                    1, // 1 é pacote.
-                    param.getComp() != null ? new BigDecimal(30) : new BigDecimal(param.getComp()), //Comprimento da encomenda (incluindo embalagem),em centímetros (comp min 16cm)
-                    param.getAlt() != null ? new BigDecimal(4) : new BigDecimal(param.getAlt()), //Altura da encomenda (incluindo embalagem), em centímetros. (comp min 2cm)
-                    param.getLarg() != null ? new BigDecimal(25) : new BigDecimal(param.getLarg()), //Largura da encomenda (incluindo embalagem), em centímetros (larg min 11cm).
-                    new BigDecimal(0), //Diâmetro da encomenda (incluindo embalagem), em centímetros.
-                    "N", // Indica se a encomenda será entregue com o serviço adicional mão própria. Valores possíveis: S ou N (S – Sim, N – Não)
-                    new BigDecimal(0), //Indica se a encomenda será entregue com o serviço adicional valor declarado. Neste campo deve ser apresentado o valor declarado desejado, em Reais.
-                    "N", // Indica se a encomenda será entregue com o serviço adicional aviso de recebimento. Valores possíveis: S ou N (S – Sim, N – Não)
-                    DateUtils.formatddMMyyyy(new Date())//Data do calculo.
-            );
-            //TODO ADICIONAR MARGEM DE MONTAGEM 2 DIAS (ISSO TEM QUE SER CONFIGURAVEL).
+            resultado = this.calcPrecoFrete(param, soap);
         }catch(Exception ex){
             //TODO: NOTIFICAR SISTEMA DE MONITORACAO. ERRO CRITICO
             LOG.error("m=calcFrete, error=Erro ao calcular o frente", ex);
-            return this.getResultFreteGenerico();
+
+            return freteCache == null ? this.getResultFreteGenerico() : this.getResultCache(freteCache);
         }
 
         if (this.estaComErro(resultado)){
@@ -90,18 +91,54 @@ public class FreteServiceCorreioImpl implements FreteService {
                             "cod: " + resultado.getServicos().getCServico().get(0).getErro() +
                                     " message: " + resultado.getServicos().getCServico().get(0).getMsgErro() :
                             " Nenhum resultado foi encontrado.") );
-            return this.getResultFreteError(resultado.getServicos().getCServico().size() > 0 ?
-                    resultado.getServicos().getCServico().get(0) : null);
+
+
+            return freteCache == null ? this.getResultFreteError(resultado.getServicos().getCServico().size() > 0 ?
+                    resultado.getServicos().getCServico().get(0) : null) : this.getResultCache(freteCache);
         }
         try{
             return this.convertResultFrete(resultado, param.getFreteType());
         }catch (Exception ex){
             //TODO: NOTIFICAR SISTEMA DE MONITORACAO. ERRO CRITICO
             LOG.error("Erro ao converter o resultado do frente.", ex);
-            return this.getResultFreteGenerico();
+            return freteCache == null ? this.getResultFreteGenerico() : this.getResultCache(freteCache);
         }
 
 
+    }
+
+    private CResultado calcPrecoFrete(FreteParam param, CalcPrecoPrazoWSSoap soap) {
+        return soap.calcPrecoPrazoData(
+                "", //codigo da empresa
+                "", //senha da empresa
+                FreteType.ECONOMICO.equals(param.getFreteType()) ? PAC :
+                        SEDEX , //40010 sedex | 41106 pac
+                parameterService.getParameter(MprParameterType.CEP_ORIGEM, "07093090"), //cep de origem (nosso cep)
+                param.getCepDestino(), //cep do cliente
+                param.getPeso() == null ? "1" : NumberUtils.formatPTbr(param.getPeso()), //peso do produto
+                1, // 1 é pacote.
+                param.getComp() != null ? new BigDecimal(30) : new BigDecimal(param.getComp()), //Comprimento da encomenda (incluindo embalagem),em centímetros (comp min 16cm)
+                param.getAlt() != null ? new BigDecimal(4) : new BigDecimal(param.getAlt()), //Altura da encomenda (incluindo embalagem), em centímetros. (comp min 2cm)
+                param.getLarg() != null ? new BigDecimal(25) : new BigDecimal(param.getLarg()), //Largura da encomenda (incluindo embalagem), em centímetros (larg min 11cm).
+                new BigDecimal(0), //Diâmetro da encomenda (incluindo embalagem), em centímetros.
+                "N", // Indica se a encomenda será entregue com o serviço adicional mão própria. Valores possíveis: S ou N (S – Sim, N – Não)
+                new BigDecimal(0), //Indica se a encomenda será entregue com o serviço adicional valor declarado. Neste campo deve ser apresentado o valor declarado desejado, em Reais.
+                "N", // Indica se a encomenda será entregue com o serviço adicional aviso de recebimento. Valores possíveis: S ou N (S – Sim, N – Não)
+                DateUtils.formatddMMyyyy(new Date())//Data do calculo.
+        );
+    }
+
+    private ResultFreteVo getResultCache(FreteCepEntity freteCep) {
+        ResultFreteVo result = new ResultFreteVo();
+        result.setValor(freteCep.getValor());
+        result.setFreteType(freteCep.getTipoFrete());
+        result.setMessageError("");
+        Integer prazoEntrega = Integer.valueOf(freteCep.getDias());
+        Integer prazoMontagem = parameterService.getParameterInteger(MprParameterType.PRAZO_MONTAGEM,2);
+        Integer diasUteis = prazoEntrega + prazoMontagem;
+        result.setDiasUteis(diasUteis);
+        result.setPrevisaoEntrega(DateUtils.addUtilDays(new Date(),diasUteis));
+        return result;
     }
 
     private boolean estaComErro(CResultado resultado) {
@@ -121,10 +158,10 @@ public class FreteServiceCorreioImpl implements FreteService {
     private ResultFreteVo getResultFreteGenerico() {
         ResultFreteVo result = new ResultFreteVo();
         result.setDiasUteis(30);
-        result.setValor(50.0);
+        result.setValor(150.0);
         result.setFreteType(FreteType.ECONOMICO);
         result.setMessageError("Erro no calculo do frete, usando valor genérico.");
-        result.setPrevisaoEntrega(DateUtils.addDays(new Date(),30));
+        result.setPrevisaoEntrega(DateUtils.addUtilDays(new Date(),30));
         return result;
     }
 
@@ -139,8 +176,13 @@ public class FreteServiceCorreioImpl implements FreteService {
             }
 
             result.setValor(valor);
-            result.setDiasUteis(Integer.valueOf(servico.getPrazoEntrega()));
-            result.setPrevisaoEntrega(DateUtils.addDays(new Date(), Integer.valueOf(servico.getPrazoEntrega())));
+
+            Integer prazoEntrega = Integer.valueOf(servico.getPrazoEntrega());
+            Integer prazoMontagem = parameterService.getParameterInteger(MprParameterType.PRAZO_MONTAGEM,2);
+            Integer diasUteis = prazoEntrega + prazoMontagem;
+
+            result.setDiasUteis(diasUteis);
+            result.setPrevisaoEntrega(DateUtils.addUtilDays(new Date(), diasUteis));
             result.setFreteType(freteType);
             result.setMessageError(servico.getMsgErro());
             result.setObs(servico.getObsFim());

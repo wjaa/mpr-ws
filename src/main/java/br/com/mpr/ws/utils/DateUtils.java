@@ -96,6 +96,21 @@ public class DateUtils {
         return c.getTime();
     }
 
+    public static Date addUtilDays(Date date, int days) {
+        int adjustDays = days;
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        for (int i = 1; i <= days; i++){
+            c.add(Calendar.DATE, 1);
+            if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+                c.add(Calendar.DATE, 1);
+                i--;
+            }
+
+        }
+        return c.getTime();
+    }
+
     public static long getDiffInDays(Date d1, Date d2) {
        long time = d2.getTime() - d1.getTime();
        return time / 1000 / 60 / 60 / 24;

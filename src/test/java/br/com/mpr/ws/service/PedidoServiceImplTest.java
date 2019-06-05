@@ -60,7 +60,7 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertEquals(FreteType.ECONOMICO, pedido.getTipoFrete());
             Assert.assertNotNull(pedido.getValorProdutos());
             Assert.assertEquals(new Double(28.50), pedido.getValorProdutos());
-            Assert.assertEquals(new Double(18.50), pedido.getValorFrete());
+            Assert.assertEquals(new Double(19.80), pedido.getValorFrete());
             Assert.assertEquals(DateUtils.formatddMMyyyy(DateUtils.addDays(new Date(), 8)),
                     DateUtils.formatddMMyyyy(pedido.getDataEntrega()));
             Assert.assertTrue(pedido.getValorTotal() > pedido.getValorProdutos());

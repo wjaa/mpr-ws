@@ -22,6 +22,9 @@ public class FreteCepEntity {
     @Column(name = "VALOR", nullable = false)
     private Double valor;
 
+    @Column(name = "DIAS", nullable = false)
+    private Integer dias;
+
     @Column(name = "DATA_CALCULO", nullable = false)
     private Date dataCalculo;
 
@@ -75,5 +78,13 @@ public class FreteCepEntity {
 
     public void setPeso(Double peso) {
         this.peso = peso;
+    }
+
+    public Integer getDias() {
+        return dias;
+    }
+
+    public void setDias(Integer dias) {
+        this.dias = dias;
     }
 }
