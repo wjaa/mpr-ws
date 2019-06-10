@@ -18,7 +18,7 @@ public class ProdutoVo {
     private List<String> imagensDestaque;
     private String imgPreview;
     private String imgDestaque;
-    private String imgSemFoto;
+    private String imgPreviewCliente;
     private Double preco;
     private Double peso;
     private Integer quantidade;
@@ -27,7 +27,7 @@ public class ProdutoVo {
     private Double comp;
     private Double larg;
     private Double alt;
-    private List<ProdutoVo> produtosRelacionados;
+    private List<ProdutoVo> listVariacaoCorProduto;
 
     public ProdutoVo(){}
 
@@ -84,12 +84,12 @@ public class ProdutoVo {
         this.imgPreview = imgPreview;
     }
 
-    public String getImgSemFoto() {
-        return imgSemFoto;
+    public String getImgPreviewCliente() {
+        return imgPreviewCliente;
     }
 
-    public void setImgSemFoto(String imgSemFoto) {
-        this.imgSemFoto = imgSemFoto;
+    public void setImgPreviewCliente(String imgPreviewCliente) {
+        this.imgPreviewCliente = imgPreviewCliente;
     }
 
     public Double getPreco() {
@@ -116,12 +116,12 @@ public class ProdutoVo {
         this.hexaCor = hexaCor;
     }
 
-    public List<ProdutoVo> getProdutosRelacionados() {
-        return produtosRelacionados;
+    public List<ProdutoVo> getListVariacaoCorProduto() {
+        return listVariacaoCorProduto;
     }
 
-    public void setProdutosRelacionados(List<ProdutoVo> produtosRelacionados) {
-        this.produtosRelacionados = produtosRelacionados;
+    public void setListVariacaoCorProduto(List<ProdutoVo> listVariacaoCorProduto) {
+        this.listVariacaoCorProduto = listVariacaoCorProduto;
     }
 
     public String getNomeCor() {

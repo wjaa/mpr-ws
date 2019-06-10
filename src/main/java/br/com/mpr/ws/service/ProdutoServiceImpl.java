@@ -33,7 +33,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     private String QUERY_ALL_PRODUTO;
     @Resource(name = "ProdutoService.getProdutoById")
     private String QUERY_PRODUTO_BY_ID;
-    @Resource(name = "ProdutoService.getProdutosRelacionados")
+    @Resource(name = "ProdutoService.getListVariacaoCorProduto")
     private String QUERY_PRODUTOS_RELACIONADOS;
     @Resource(name = "ProdutoService.getProdutoEmEstoque")
     private String QUERY_PRODUTO_EM_ESTOQUE;
@@ -113,7 +113,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         if (result.size() > 0){
             vo = result.get(0);
             addImgs(vo);
-            vo.setProdutosRelacionados(this.getProdutosRelacionados(vo.getId()));
+            vo.setListVariacaoCorProduto(this.getProdutosRelacionados(vo.getId()));
         }
         return vo;
     }
@@ -246,7 +246,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     private void addImgs(ProdutoVo vo) {
             vo.setImgDestaque(properties.getBaseUrlDestaque() + vo.getImgDestaque());
             vo.setImgPreview(properties.getBaseUrlPreview() + vo.getImgPreview());
-            vo.setImgSemFoto(properties.getImgSemFoto());
+            vo.setImgPreviewCliente(properties.getImgSemFoto());
             vo.setImagensDestaque(this.getListFotoDestaque(vo.getId()));
     }
 

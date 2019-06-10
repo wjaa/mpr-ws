@@ -296,7 +296,7 @@
     </bean>
 
 
-    <bean name="ProdutoService.getProdutosRelacionados" class="java.lang.String">
+    <bean name="ProdutoService.getListVariacaoCorProduto" class="java.lang.String">
         <constructor-arg>
             <value>
                 SELECT P.ID,

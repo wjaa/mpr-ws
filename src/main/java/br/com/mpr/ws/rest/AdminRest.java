@@ -6,17 +6,17 @@ import br.com.mpr.ws.service.AdminService;
 import br.com.mpr.ws.vo.PedidoFindForm;
 import br.com.mpr.ws.vo.ProdutoFindForm;
 import br.com.mpr.ws.vo.SysCodeVo;
-import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")

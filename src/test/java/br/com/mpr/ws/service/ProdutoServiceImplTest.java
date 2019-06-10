@@ -261,13 +261,13 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         Assert.assertNotNull(produto.getDescricaoDetalhada());
         Assert.assertNotNull(produto.getImgPreview());
         Assert.assertNotNull(produto.getImgDestaque());
-        Assert.assertNotNull(produto.getImgSemFoto());
+        Assert.assertNotNull(produto.getImgPreviewCliente());
         Assert.assertNotNull(produto.getQuantidade());
         Assert.assertNotNull(produto.getHexaCor());
         Assert.assertNotNull(produto.getNomeCor());
-        Assert.assertNotNull(produto.getProdutosRelacionados());
-        Assert.assertTrue(produto.getProdutosRelacionados().size() > 0);
-        Assert.assertTrue(produto.getImgSemFoto().contains("stc.meuportaretrato.com/images"));
+        Assert.assertNotNull(produto.getListVariacaoCorProduto());
+        Assert.assertTrue(produto.getListVariacaoCorProduto().size() > 0);
+        Assert.assertTrue(produto.getImgPreviewCliente().contains("stc.meuportaretrato.com/images"));
         Assert.assertNotNull(produto.getImagensDestaque());
         Assert.assertTrue(produto.getImagensDestaque().size() > 0);
         for (String foto : produto.getImagensDestaque()){

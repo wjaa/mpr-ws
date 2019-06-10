@@ -7,7 +7,6 @@ import br.com.mpr.ws.exception.CheckoutServiceException;
 import br.com.mpr.ws.exception.RestException;
 import br.com.mpr.ws.utils.RestUtils;
 import br.com.mpr.ws.vo.*;
-import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

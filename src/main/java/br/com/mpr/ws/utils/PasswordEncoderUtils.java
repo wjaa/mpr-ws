@@ -10,7 +10,7 @@ public class PasswordEncoderUtils {
 
 
     public static void main(String [] args){
-        System.out.println(encoder("password"));
+        System.out.println(encoder("userwebsite@*753951*"));
     }
 
 }
