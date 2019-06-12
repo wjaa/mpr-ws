@@ -1,6 +1,7 @@
 package br.com.mpr.ws.entity;
 
 import br.com.mpr.ws.constants.GeneroType;
+import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.helper.JacksonDateDeserializer;
 import br.com.mpr.ws.helper.JacksonDateSerializer;
 import br.com.mpr.ws.utils.NumberUtils;
@@ -8,6 +9,9 @@ import br.com.mpr.ws.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -16,6 +20,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +30,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "CLIENTE")
-public class ClienteEntity implements Serializable {
+public class ClienteEntity implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -186,5 +192,59 @@ public class ClienteEntity implements Serializable {
         }
 
         return null;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> grants = new ArrayList<>();
+        grants.add(new SimpleGrantedAuthority("READ"));
+        grants.add(new SimpleGrantedAuthority("WRITE"));
+        return grants;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return login.getLoginType().equals(LoginType.PASSWORD) ?
+                login.getPass() :
+                login.getSocialKey();
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return ativo;
     }
 }

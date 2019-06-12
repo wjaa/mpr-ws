@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "LOGIN")
-public class LoginEntity {
+public class LoginEntity implements Serializable {
+
+    private static final long serialVersionUID = 2591614365153056592L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

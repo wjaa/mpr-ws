@@ -10,7 +10,17 @@ public class PasswordEncoderUtils {
 
 
     public static void main(String [] args){
-        System.out.println(encoder("userwebsite@*753951*"));
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
+
+        String psss1 = encoder.encode("753951");
+        System.out.println(psss1);
+        String psss2 = encoder.encode("753951");
+        System.out.println(psss2);
+
+        System.out.println(new BCryptPasswordEncoder().matches("userwebsite@*753951*",psss1));
+        System.out.println(new BCryptPasswordEncoder().matches("userwebsite@*753951*",psss2));
+
     }
 
 }

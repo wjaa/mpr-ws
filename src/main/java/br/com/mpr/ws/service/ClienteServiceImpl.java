@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Autowired
     private CommonDao commonDao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Autowired
@@ -116,7 +120,7 @@ public class ClienteServiceImpl implements ClienteService{
         login.setDataCriacao(new Date());
         login.setDataUltimoAcesso(new Date());
         if (LoginType.PASSWORD.equals(login.getLoginType())){
-            login.setSenha(br.com.mpr.ws.utils.StringUtils.createMD5(login.getPass()));
+            login.setSenha(passwordEncoder.encode(login.getPass()));
         }
         commonDao.save(login);
 

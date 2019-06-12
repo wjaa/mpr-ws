@@ -1,17 +1,27 @@
 package br.com.mpr.ws.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import br.com.mpr.ws.constants.LoginType;
 import br.com.mpr.ws.dao.CommonDao;
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.LoginEntity;
 import br.com.mpr.ws.exception.LoginServiceException;
+import br.com.mpr.ws.security.Encoders;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.LoginForm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,12 +29,15 @@ import java.util.List;
  *
  */
 @Service
-public class LoginServiceImpl implements LoginService {
+public class LoginServiceImpl implements LoginService, UserDetailsService {
 
     private static final Log LOG = LogFactory.getLog(LoginServiceImpl.class);
 
     @Autowired
     private CommonDao dao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private NotificationService notification;
@@ -48,11 +61,17 @@ public class LoginServiceImpl implements LoginService {
                return clienteEntity;
             }
             case PASSWORD:{
-                ClienteEntity clienteEntity = this.findByPassword(loginForm.getEmail(),
-                        StringUtils.createMD5(loginForm.getPassword()));
+                ClienteEntity clienteEntity = this.findByEmail(loginForm.getEmail());
+
                 if (clienteEntity == null){
                     throw new LoginServiceException("Usuário ou senha inválida!");
                 }
+
+                if ( ! passwordEncoder.matches(loginForm.getPassword(), clienteEntity.getLogin().getPass()) ){
+                    throw new LoginServiceException("Usuário ou senha inválida!");
+                }
+
+
                 return clienteEntity;
             }
         }
@@ -117,19 +136,14 @@ public class LoginServiceImpl implements LoginService {
         return null;
     }
 
-    private ClienteEntity findByPassword(String email, String pass) throws LoginServiceException {
-
-        if (org.springframework.util.StringUtils.isEmpty(email) || org.springframework.util.StringUtils.isEmpty(pass)){
-            throw new LoginServiceException("E-mail e senha são obrigatórios para o login.");
-        }
-
+    private ClienteEntity findByEmail(String email) throws LoginServiceException {
         List<ClienteEntity> clientes =  dao.findByProperties(ClienteEntity.class,
-                new String[]{"email","login.senha"},
-                new Object[]{email,pass});
+                new String[]{"email"},
+                new Object[]{email});
 
         if (clientes.size() > 2){
             LOG.error("ERRO GRAVE, FOI ENCONTRADO " + clientes.size() + " PARA O MESMO EMAIL [" +
-                    email + "] E MESMA SENHA [" + pass);
+                    email + "]");
             throw new LoginServiceException("Cliente inválido!");
         }
 
@@ -139,4 +153,25 @@ public class LoginServiceImpl implements LoginService {
 
         return null;
     }
+
+
+    /**
+     * Metodo utilizado no OAuth2 para autenticar o cliente.
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        ClienteEntity cliente = dao.findByPropertiesSingleResult(ClienteEntity.class,
+                new String[]{"email"},new Object[]{username});
+
+        if (cliente == null){
+            throw new UsernameNotFoundException("User not found.");
+        }
+
+        return cliente;
+    }
+
 }

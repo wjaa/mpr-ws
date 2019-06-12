@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,6 +25,10 @@ import javax.sql.DataSource;
 //@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private DataSource dataSource;
@@ -52,12 +57,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //PRECISO TROCAR PARA A TABELA DE LOGIN, E IMPLENTAR ALGO PARA LOGAR COM ID DO USUARIO OU
         // TOKEN DE LOGIN DA REDE SOCIAL.
         // preciso criar um userdetailsservice. já está no papo.
-        auth.jdbcAuthentication().dataSource(dataSource)
+        /*auth.jdbcAuthentication().dataSource(dataSource)
                 .passwordEncoder(passwordEncoder)
                 .usersByUsernameQuery(
                         "select username,password, enabled from users where username=?")
                 .authoritiesByUsernameQuery(
-                        "select username, role from user_roles where username=?");
+                        "select username, role from user_roles where username=?");*/
+
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+
 
     }
 
