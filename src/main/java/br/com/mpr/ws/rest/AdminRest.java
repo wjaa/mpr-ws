@@ -10,10 +10,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.jaas.AuthorityGranter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,11 +37,14 @@ public class AdminRest extends BaseRest{
     private AdminService adminService;
 
 
-
+    //@PostAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/{entity}/all",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public List<? extends Serializable> getAll(@PathVariable String entity) throws AdminServiceException {
+    public List<? extends Serializable> getAll(@PathVariable String entity, Principal principal) throws AdminServiceException {
+        for (GrantedAuthority u : ((OAuth2Authentication)principal).getAuthorities() ){
+            System.out.println(u.getAuthority());
+        }
         return this.adminService.listAllEntity(entity);
     }
 

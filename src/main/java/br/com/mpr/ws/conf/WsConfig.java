@@ -21,29 +21,5 @@ import java.util.concurrent.Executors;
 @EntityScan(basePackages = "br.com.mpr.ws.entity")
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableAsync
-@EnableScheduling
 @ImportResource(value = {"classpath:queries/queries.xml"})
-public class WsConfig implements SchedulingConfigurer {
-
-    private static Log LOG = LogFactory.getLog(WsConfig.class);
-
-
-
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(taskExecutor());
-    }
-
-    /**
-     *  Configura o scheduler para rodar oa mesmo tempo 10 tarefas.
-     * @return
-     */
-    @Bean(destroyMethod="shutdown")
-    public Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(10);
-    }
-
-
-
-}
+public class WsConfig {}

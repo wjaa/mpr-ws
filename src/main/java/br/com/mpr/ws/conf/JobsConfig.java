@@ -21,6 +21,10 @@ public class JobsConfig implements SchedulingConfigurer {
         taskRegistrar.setScheduler(taskExecutor());
     }
 
+    /**
+     *  Configura o scheduler para rodar oa mesmo tempo 10 tarefas.
+     * @return
+     */
     @Bean(destroyMethod="shutdown")
     public Executor taskExecutor() {
         return Executors.newScheduledThreadPool(10);

@@ -1,15 +1,14 @@
-package br.com.mpr.ws.conf;
+package br.com.mpr.ws.conf.security;
 
-import br.com.mpr.ws.utils.PasswordEncoderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -19,8 +18,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableAuthorizationServer
-@EnableResourceServer
-public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter {
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
     @Qualifier("authenticationManagerBean")
@@ -29,6 +27,9 @@ public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public void configure(
@@ -36,7 +37,8 @@ public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
             throws Exception {
         oauthServer
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
+                .checkTokenAccess("isAuthenticated()")
+                .passwordEncoder(passwordEncoder);
     }
 
 
@@ -79,6 +81,7 @@ public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
         endpoints
                 .tokenStore(tokenStore())
                 .authenticationManager(authenticationManager)
+                //.userDetailsService()
         ;
     }
 
