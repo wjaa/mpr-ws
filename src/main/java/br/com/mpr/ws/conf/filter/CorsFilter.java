@@ -1,4 +1,4 @@
-package br.com.mpr.ws.conf;
+package br.com.mpr.ws.conf.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

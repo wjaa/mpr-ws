@@ -267,4 +267,9 @@ public class LoginRestTest extends BaseMvcTest {
         }
     }
 
+
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
+
 }

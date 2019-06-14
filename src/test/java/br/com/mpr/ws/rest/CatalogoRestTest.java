@@ -74,4 +74,8 @@ public class CatalogoRestTest extends BaseMvcTest {
         }
 
     }
+
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
 }

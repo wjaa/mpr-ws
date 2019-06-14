@@ -1,6 +1,5 @@
-package br.com.mpr.ws.rest;
+package br.com.mpr.ws.rest.handler;
 
-import br.com.mpr.ws.exception.AdminServiceException;
 import br.com.mpr.ws.exception.ServiceException;
 import br.com.mpr.ws.vo.ErrorMessageVo;
 import org.apache.commons.logging.Log;
@@ -8,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,10 +28,17 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     private static final Log LOG = LogFactory.getLog(CustomizedResponseEntityExceptionHandler.class);
 
+
+    /****
+     *
+     * ERRO DE VALIDACAO DE OBJETOS
+     *
+     **/
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
-        LOG.error("m=handleMethodArgumentNotValid, error=" + ex.getMessage());
+        LOG.error("m=handleMethodArgumentNotValid, error=" + ex.getMessage(), ex);
         ErrorMessageVo errorDetails = new ErrorMessageVo(status.value(),new Date(), "Erro de validação",
                 getStrMessageErrors(ex.getBindingResult()));
         return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
@@ -47,27 +54,54 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return errors;
     }
 
+
+    /****
+     *
+     * ERRO DE NEGOCIO
+     *
+     **/
     @ExceptionHandler(ServiceException.class)
     public final ResponseEntity<ErrorMessageVo> handleServiceException(ServiceException ex, WebRequest request) {
-        LOG.error("m=handleAdminException, error=" + ex.getMessage());
+        LOG.error("m=handleAdminException, error=" + ex.getMessage(), ex);
         ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.BAD_REQUEST.value(),
                 new Date(),"Erro de negócio",
                 ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Throwable.class)
-    public final ResponseEntity<ErrorMessageVo> handleException(Throwable ex, WebRequest request) {
+
+    /****
+     *
+     * ACESSO NEGADO
+     *
+     **/
+    @ExceptionHandler(AccessDeniedException.class)
+    public final ResponseEntity<ErrorMessageVo> handleException(AccessDeniedException ex, WebRequest request) {
         LOG.error("m=handleException, error=" + ex.getMessage());
+        ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.FORBIDDEN.value(),
+                new Date(),"AccessDenied",
+                ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+
+    /****
+     *
+     * ERRO INTERNO
+     *
+     **/
+    @ExceptionHandler(RuntimeException.class)
+    public final ResponseEntity<ErrorMessageVo> handleException(RuntimeException ex, WebRequest request) {
+        LOG.error("m=handleException, error=" + ex.getMessage(), ex);
         ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new Date(),"Erro interno",
                 ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<ErrorMessageVo> handleException(RuntimeException ex, WebRequest request) {
-        LOG.error("m=handleException, error=" + ex.getMessage());
+    @ExceptionHandler(Throwable.class)
+    public final ResponseEntity<ErrorMessageVo> handleException(Throwable ex, WebRequest request) {
+        LOG.error("m=handleException, error=" + ex.getMessage(), ex);
         ErrorMessageVo errorDetails = new ErrorMessageVo(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new Date(),"Erro interno",
                 ex.getMessage());

@@ -1,11 +1,9 @@
 package br.com.mpr.ws;
 
 import br.com.mpr.ws.config.TestsConfiguration;
-import br.com.mpr.ws.utils.ObjectUtils;
 import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +13,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,14 +26,8 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest()
 @ActiveProfiles("test")
 @Import(TestsConfiguration.class)
 public abstract class BaseDBTest implements ApplicationContextAware {
@@ -50,7 +38,7 @@ public abstract class BaseDBTest implements ApplicationContextAware {
     @Value("classpath:test-data.sql")
     private Resource script;
 
-    private static ApplicationContext ac;
+    protected static ApplicationContext ac;
 
     private static boolean dbinit = false;
 

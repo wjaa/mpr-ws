@@ -124,4 +124,11 @@ public class DateUtils {
         }
         return null;
     }
+
+    public static Date addHour(Date date, int hours) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.HOUR, hours);
+        return c.getTime();
+    }
 }

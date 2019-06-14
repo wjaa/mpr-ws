@@ -269,4 +269,8 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
     }
 
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
+
 }

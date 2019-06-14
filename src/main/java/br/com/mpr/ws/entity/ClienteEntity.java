@@ -199,8 +199,7 @@ public class ClienteEntity implements Serializable, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grants = new ArrayList<>();
-        grants.add(new SimpleGrantedAuthority("READ"));
-        grants.add(new SimpleGrantedAuthority("WRITE"));
+        grants.add(new SimpleGrantedAuthority("USER"));
         return grants;
     }
 

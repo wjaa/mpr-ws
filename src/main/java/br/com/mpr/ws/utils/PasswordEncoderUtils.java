@@ -13,9 +13,9 @@ public class PasswordEncoderUtils {
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
 
-        String psss1 = encoder.encode("753951");
+        String psss1 = encoder.encode("1234567");
         System.out.println(psss1);
-        String psss2 = encoder.encode("753951");
+        String psss2 = encoder.encode("1234567");
         System.out.println(psss2);
 
         System.out.println(new BCryptPasswordEncoder().matches("userwebsite@*753951*",psss1));

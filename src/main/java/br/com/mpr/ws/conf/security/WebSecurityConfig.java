@@ -53,18 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //TODO ESSA AUTENTICACAO AQUI É PARA ACESSAR RECURSO DO USUARIO,
-        //PRECISO TROCAR PARA A TABELA DE LOGIN, E IMPLENTAR ALGO PARA LOGAR COM ID DO USUARIO OU
-        // TOKEN DE LOGIN DA REDE SOCIAL.
-        // preciso criar um userdetailsservice. já está no papo.
-        /*auth.jdbcAuthentication().dataSource(dataSource)
-                .passwordEncoder(passwordEncoder)
-                .usersByUsernameQuery(
-                        "select username,password, enabled from users where username=?")
-                .authoritiesByUsernameQuery(
-                        "select username, role from user_roles where username=?");*/
-
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
 
 
     }

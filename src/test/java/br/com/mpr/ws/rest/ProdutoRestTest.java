@@ -215,5 +215,8 @@ public class ProdutoRestTest extends BaseMvcTest {
         Assert.assertTrue(p.getImagensDestaque().size() > 0);
     }
 
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
 
 }

@@ -33,9 +33,8 @@ public class ProdutoRest extends BaseRest{
     @RequestMapping(value = "/produto/all/{limite}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    @PreAuthorize("hasAuthority('READ')")
     public List<ProdutoVo> getAllProduto(@PathVariable Integer limite, OAuth2Authentication principal){
-        Authentication auth = principal.getUserAuthentication();
+
         return this.produtoService.listAll(limite == null ? 10 : limite);
     }
 
@@ -106,7 +105,8 @@ public class ProdutoRest extends BaseRest{
     @RequestMapping(value = "/produto/addImagem",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
-    public ProdutoVo addImagem(){
+    public ProdutoVo addImagem(OAuth2Authentication principal){
+
         return null;//this.produtoService.getProdutoDestaque();
     }
 

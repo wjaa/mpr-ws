@@ -149,4 +149,8 @@ public class ClienteRestTest extends BaseMvcTest {
             Assert.assertTrue(ex.getMessage(),false);
         }
     }
+
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
 }

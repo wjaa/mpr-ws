@@ -49,4 +49,8 @@ public class FreteRestTest extends BaseMvcTest {
         }
     }
 
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
+
 }

@@ -1,5 +1,8 @@
 package br.com.mpr.ws.vo;
 
+import br.com.mpr.ws.helper.JacksonDateTimeSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Date;
 
 /**
@@ -10,13 +13,15 @@ public class ErrorMessageVo {
     private Integer errorCode;
     private String [] errorMessage;
     private String errorDetail;
-    private Date timestamp;
+
+    @JsonSerialize(using = JacksonDateTimeSerializer.class)
+    private Date time;
 
     public ErrorMessageVo(Integer errorCode, Date timestamp, String errorDetail, String ... errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorDetail = errorDetail;
-        this.timestamp = timestamp;
+        this.time = timestamp;
     }
 
     public ErrorMessageVo() {
@@ -25,7 +30,7 @@ public class ErrorMessageVo {
     public ErrorMessageVo(Integer errorCode, String errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = new String[]{errorMessage};
-        this.timestamp = new Date();
+        this.time = new Date();
     }
 
     public Integer getErrorCode() {
@@ -44,12 +49,12 @@ public class ErrorMessageVo {
         this.errorDetail = errorDetail;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getTime() {
+        return time;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     public String[] getErrorMessage() {

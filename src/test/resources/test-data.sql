@@ -64,6 +64,14 @@ create table IF NOT EXISTS ClientDetails (
   additionalInformation VARCHAR(4096),
   autoApproveScopes VARCHAR(255)
 );
+INSERT INTO oauth_client_details VALUES(
+'client', 'oauth2-resource', '$2a$04$l78mXYAFXn78eQLbdDYTMuO6xLdmLRXasdOzh3.AIXU7g33nI2EiW', 'read,write,trust', 'client_credentials,password,refresh_token', '', 'APP', '86400', '172800', '{}', ''
+);
+INSERT INTO oauth_client_details VALUES(
+'admin', 'oauth2-resource', '$2a$04$l78mXYAFXn78eQLbdDYTMuO6xLdmLRXasdOzh3.AIXU7g33nI2EiW', 'read,write,trust', 'client_credentials,password,refresh_token', '', 'ADMIN', '86400', '172800', '{}', ''
+);
+
+
 
 /**********************************************************************************************************************/
 
@@ -232,7 +240,7 @@ values (null, '2018-12-06', '2018-12-06', null, 'SOCIAL_KEY_GPLUS', 2, null, 'ZA
 insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
 values (null, '2018-12-06', '2018-12-06', null, 'SOCIAL_KEY_FACEBOOK', 1, null, 'ZAZAZAZA' );
 insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
-values (null, '2018-12-06', '2018-12-06', 'fcea920f7412b5da7be0cf42b8c93759', null, 0, null, 'ZAZAZAZA' );
+values (null, '2018-12-06', '2018-12-06', '$2a$04$1ZvgmEPbvt65U6Y02A81hOsps/sfSmIljJUAVyTexo4hjlHgemTZa', null, 0, null, 'ZAZAZAZA' );
 insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
 values (null, '2018-12-06', '2018-12-06', 'SOCIAL_KEY_HAHSHDHA', null, 0, null, 'XXCCVVBB' );
 

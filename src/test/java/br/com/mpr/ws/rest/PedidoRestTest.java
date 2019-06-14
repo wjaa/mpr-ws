@@ -104,4 +104,8 @@ public class PedidoRestTest extends BaseMvcTest {
         }
 
     }
+
+    protected AppUser getAppUser(){
+        return getAppUserClient();
+    }
 }

@@ -67,7 +67,7 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
                     throw new LoginServiceException("Usuário ou senha inválida!");
                 }
 
-                if ( ! passwordEncoder.matches(loginForm.getPassword(), clienteEntity.getLogin().getPass()) ){
+                if ( !passwordEncoder.matches(loginForm.getPassword(), clienteEntity.getLogin().getPass()) ){
                     throw new LoginServiceException("Usuário ou senha inválida!");
                 }
 

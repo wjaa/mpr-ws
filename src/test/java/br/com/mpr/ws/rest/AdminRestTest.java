@@ -5,10 +5,13 @@ import br.com.mpr.ws.entity.FornecedorEntity;
 import br.com.mpr.ws.service.AdminService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -17,6 +20,9 @@ public class AdminRestTest extends BaseMvcTest {
 
     @Autowired
     private AdminService adminService;
+
+
+
 
     @Test
     public void getAllFornecedor() {
@@ -84,6 +90,10 @@ public class AdminRestTest extends BaseMvcTest {
             Assert.assertTrue(ex.getMessage(),false);
         }
 
+    }
+
+    protected AppUser getAppUser(){
+        return getAppUserAdmin();
     }
 
 }
