@@ -7,6 +7,7 @@ docker
 git
 criar pasta
 /var/www/static/mpr
+
 ```sh
 sudo ./install.sh
 ```
@@ -27,9 +28,10 @@ Veja como obter o token de acesso para cada tipo de usuário.
 https://api.meuportaretrato.com/oauth/token
 
     - APP - É um Basic Authentication passando usuário e senha 'encodado' no header.
-    ```sh
-        curl -v -H "Authorization: Basic Y2xpZW50ZTpjbGllbnRl" -H "Content-Type: application/x-www-form-urlencoded"
-        -d 'grant_type=client_credentials' -X POST https://api.meuportaretrato.com/oauth/token
-    ```
 
-###continuar....
+```sh
+    curl -v -H "Authorization: Basic Y2xpZW50ZTpjbGllbnRl" -H "Content-Type: application/x-www-form-urlencoded"
+    -d 'grant_type=client_credentials' -X POST https://api.meuportaretrato.com/oauth/token
+```
+
+### Continuar....
