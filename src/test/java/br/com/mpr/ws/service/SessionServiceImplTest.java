@@ -2,9 +2,12 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.SessionEntity;
+import br.com.mpr.ws.utils.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -30,6 +33,7 @@ public class SessionServiceImplTest extends BaseDBTest {
     public void renewSession(){
         try{
             SessionEntity sessionEntity = sessionService.createSession();
+            Thread.sleep(600);
             sessionService.renewSession(sessionEntity.getSessionToken());
             SessionEntity sessionRenew = sessionService.getSessionByToken(sessionEntity.getSessionToken());
             Assert.assertEquals(sessionEntity.getSessionToken(), sessionRenew.getSessionToken());

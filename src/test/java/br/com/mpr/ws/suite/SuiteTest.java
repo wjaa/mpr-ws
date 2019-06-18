@@ -32,7 +32,11 @@ import org.junit.runners.Suite;
         PedidoRestTest.class,
 
         CatalogoServiceImplTest.class,
-        CatalogoRestTest.class
+        CatalogoRestTest.class,
+
+        SessionServiceImplTest.class,
+        SessionRestTest.class,
+
 
 })
 public class SuiteTest {

@@ -8,6 +8,7 @@ import br.com.mpr.ws.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -55,6 +56,6 @@ public class SessionServiceImpl implements SessionService {
 
 
     private Date resetExpirationDate() {
-        return DateUtils.addHour(new Date(), 1);
+        return DateUtils.addHour(Calendar.getInstance().getTime(), 1);
     }
 }

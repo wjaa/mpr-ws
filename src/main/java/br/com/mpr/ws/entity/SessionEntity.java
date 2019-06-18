@@ -26,6 +26,7 @@ public class SessionEntity {
 
     @Column(name = "EXPIRATION_DATE", nullable = false)
     @JsonSerialize(using = JacksonDateTimeSerializer.class)
+    @JsonDeserialize(using = JacksonDateTimeDeserializer.class)
     private Date expirationDate;
 
     public Long getId() {

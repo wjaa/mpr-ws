@@ -121,6 +121,29 @@ public abstract class BaseMvcTest extends BaseDBTest {
         return jsonParser.parseMap(resultString).get("access_token").toString();
     }
 
+    public String obtainAccessTokenPassword(String cliId, String cliPass) throws Exception {
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "password");
+        params.add("username", cliId);
+        params.add("password", cliPass);
+
+        AppUser user = getAppUserClient();
+
+        ResultActions result
+                = mvc.perform(post("/oauth/token")
+                .params(params)
+                .with(httpBasic(user.getUsername(),user.getPassword()))
+                .accept("application/json;charset=UTF-8"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        String resultString = result.andReturn().getResponse().getContentAsString();
+
+        JacksonJsonParser jsonParser = new JacksonJsonParser();
+        return jsonParser.parseMap(resultString).get("access_token").toString();
+    }
+
 
     public ResultActions getMvcGetResultActions(String endPoint) throws Exception {
         return mvc.perform(get(endPoint)
@@ -152,6 +175,16 @@ public abstract class BaseMvcTest extends BaseDBTest {
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
+    public ResultActions getMvcDeleteResultActions(String endPoint, String manualAccessToken) throws Exception {
+        return mvc.perform(delete(endPoint)
+                .header("Authorization", "Bearer " + manualAccessToken)
+                .header("Origin","api.meuportaretrato.com")
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
     public ResultActions getMvcPutResultAction(String endPoint, String content) throws Exception {
         return mvc.perform(put(endPoint)
                 .header("Authorization", "Bearer " + accessToken)
@@ -164,7 +197,7 @@ public abstract class BaseMvcTest extends BaseDBTest {
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
-    public ResultActions getMvcPutResultAction(String endPoint, String content, String manualAccessToken) throws Exception {
+    public ResultActions getMvcPutResultAction(String endPoint, String manualAccessToken, String content) throws Exception {
         return mvc.perform(put(endPoint)
                 .header("Authorization", "Bearer " + manualAccessToken)
                 .header("Origin","api.meuportaretrato.com")
@@ -179,6 +212,18 @@ public abstract class BaseMvcTest extends BaseDBTest {
     public ResultActions getMvcPutErrorResultAction(String endPoint, String content) throws Exception {
         return mvc.perform(put(endPoint)
                 .header("Authorization", "Bearer " + accessToken)
+                .header("Origin","api.meuportaretrato.com")
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    public ResultActions getMvcPutErrorResultAction(String endPoint, String manualAccessToken, String content) throws Exception {
+        return mvc.perform(put(endPoint)
+                .header("Authorization", "Bearer " + manualAccessToken)
                 .header("Origin","api.meuportaretrato.com")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

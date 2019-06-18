@@ -307,7 +307,8 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         if ( calculaFrete && carrinhoEntity.getIdCliente() != null){
             EnderecoEntity enderecoCliente = clienteService.getEnderecoPrincipalByIdCliente(carrinhoEntity.getIdCliente());
 
-            if (enderecoCliente != null){
+            //para calcular o frete precisa do endereco do cliente e produtos no carrinho
+            if (enderecoCliente != null && produtos.size() > 0){
                 EmbalagemEntity embalagem = embalagemService.getEmbalagem(produtos);
                 vo.setResultFrete(freteService.calcFrete(
                         new FreteService.FreteParam(FreteType.ECONOMICO,

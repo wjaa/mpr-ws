@@ -81,7 +81,7 @@ public class CarrinhoRest extends BaseRest {
         return this.carrinhoService.removeItem(idItem, cliente.getId());
     }
 
-    @PreAuthorize(value = "hasAuthority('USER')")
+
     @RequestMapping(value = "/carrinho/removeItem/{idItem}/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.DELETE)

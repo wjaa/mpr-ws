@@ -110,13 +110,6 @@ CREATE TABLE IF NOT EXISTS USER_ROLES(
   PRIMARY KEY (USER_ROLE_ID),
 );
 
-INSERT INTO users(username,password,enabled)
-VALUES ('user','$2a$10$8recqP62m2fobIBsNzGRZutoK3t0z7JWDylBunWuHW5ItjmKSWjN.', true);
-INSERT INTO user_roles (username, role)
-VALUES ('user', 'ROLE_ADMIN');
-INSERT INTO user_roles (username, role)
-VALUES ('user', 'ROLE_USER');
-
 
 /********************************************************/
 
@@ -243,6 +236,10 @@ insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGI
 values (null, '2018-12-06', '2018-12-06', '$2a$04$1ZvgmEPbvt65U6Y02A81hOsps/sfSmIljJUAVyTexo4hjlHgemTZa', null, 0, null, 'ZAZAZAZA' );
 insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
 values (null, '2018-12-06', '2018-12-06', 'SOCIAL_KEY_HAHSHDHA', null, 0, null, 'XXCCVVBB' );
+insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
+values (null, '2018-12-06', '2018-12-06', '$2a$04$1ZvgmEPbvt65U6Y02A81hOsps/sfSmIljJUAVyTexo4hjlHgemTZa', null, 0, null, 'XXCCVVBB' );
+insert into LOGIN (ID, DATA_CRIACAO, DATA_ULTIMO_ACESSO, SENHA, SOCIAL_KEY, LOGIN_TYPE, URL_FOTO, KEY_DEVICE_GCM)
+values (null, '2018-12-06', '2018-12-06', '$2a$04$1ZvgmEPbvt65U6Y02A81hOsps/sfSmIljJUAVyTexo4hjlHgemTZa', null, 0, null, 'XXCCVVBB' );
 
 --CLIENTES
 insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO, ID_LOGIN)
@@ -254,7 +251,9 @@ values (null, '1983-09-30', '11999999999', '33333333333', 'wag184@gmail.com', 'W
 insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO)
 values (null, '1983-09-30', '11999999999', '44444444444', 'wag185@gmail.com', 'CLIENTE REMOVER', 1, 'M');
 insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO, ID_LOGIN)
-values (null, '1983-09-30', '11999999999', '44444444444', 'wagner@gmail.com', 'Wagner', 1, 'M', 4);
+values (null, '1983-09-30', '11999999999', '44444444444', 'wagner@gmail.com', 'Wagner', 1, 'M', 5);
+insert into CLIENTE (ID, ANIVERSARIO, CELULAR, CPF, EMAIL, NOME, ATIVO, GENERO, ID_LOGIN)
+values (null, '1983-09-30', '11999999999', '44444444444', 'testecarrinho@gmail.com', 'Wagner', 1, 'M', 6);
 
 --ENDERECO DO CLIENTE 1
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
@@ -268,6 +267,12 @@ values (3,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', '
 
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
 values (4,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 3, 1, 'secundario', 'perto da rua das enxentes', 1);
+
+insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
+values (5,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 5, 1, 'secundario', 'perto da rua das enxentes', 1);
+
+insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
+values (6,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 6, 1, 'secundario', 'perto da rua das enxentes', 1);
 
 
 

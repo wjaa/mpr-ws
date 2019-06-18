@@ -29,7 +29,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
      *
      */
     @Test
-    public void addItemCarrinhoSemCliente(){
+    public void addItemCarrinhoClienteNaoLogado(){
 
         String sessionToken = "AAABBBCCCDDD";
         ItemCarrinhoForm item = new ItemCarrinhoForm();
@@ -68,22 +68,14 @@ public class CarrinhoRestTest extends BaseMvcTest {
      *
      */
     @Test
-    public void addItemCarrinhoComCliente(){
+    public void addItemCarrinhoClienteLogado(){
 
-        ItemCarrinhoForm item = new ItemCarrinhoForm();
-        item.setIdCliente(1l);
-        item.setIdProduto(5l);
-        item.setAnexos(new ArrayList<>());
-        AnexoVo anexoVo = new AnexoVo();
-        anexoVo.setFoto(new byte[]{0,0,0,0,0});
-        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        item.getAnexos().add(anexoVo);
+        ItemCarrinhoForm item = createItemCarrinhoFormClienteLogado();
 
         try{
             String accessToken = obtainAccessTokenPassword();
             String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content,
-                    accessToken);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", accessToken, content);
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
@@ -103,7 +95,6 @@ public class CarrinhoRestTest extends BaseMvcTest {
     }
 
 
-
     /**
      *
      * TESTANDO A VALIDACAO DO FORM.
@@ -116,6 +107,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void addItemCarrinhoValidation(){
 
+
         ItemCarrinhoForm item = new ItemCarrinhoForm();
         item.setIdCliente(1l);
         item.setAnexos(new ArrayList<>());
@@ -125,30 +117,27 @@ public class CarrinhoRestTest extends BaseMvcTest {
         item.getAnexos().add(anexoVo);
 
         try{
+
+            String accessToken = obtainAccessTokenPassword();
+
             //#1
             String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", accessToken, content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Produto é obrigatório"));
 
             //#2
             item.setIdProduto(5l);
             item.getAnexos().get(0).setFoto(null);
             content = ObjectUtils.toJson(item);
-            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add",accessToken, content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Para adicionar esse produto no carrinho, uma imagem é obrigatória"));
 
             //#3
             item.getAnexos().get(0).setFoto(new byte[]{10,10,10});
             item.getAnexos().get(0).setNomeArquivo("");
             content = ObjectUtils.toJson(item);
-            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
+            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", accessToken, content);
             Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Nome da imagem está vazio"));
-
-            //#4
-            item.setIdCliente(null);
-            content = ObjectUtils.toJson(item);
-            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", content);
-            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Id do cliente ou keyDevice é obrigatório."));
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
@@ -166,8 +155,8 @@ public class CarrinhoRestTest extends BaseMvcTest {
      *
      */
     @Test
-    public void getCarrinhoSemClienteSemProduto(){
-        String sessionToken = "AAABBBCCCDDD";
+    public void getCarrinhoClienteNaoLogadoSemProduto(){
+        String sessionToken = "XXXXZZZZZCCCDDD";
         try{
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionToken);
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
@@ -187,12 +176,12 @@ public class CarrinhoRestTest extends BaseMvcTest {
      *
      */
     @Test
-    public void getCarrinhoSemClienteComProduto(){
+    public void getCarrinhoClienteNaoLogadoComProduto(){
         try{
 
             ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
             String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), content);
 
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
@@ -207,26 +196,72 @@ public class CarrinhoRestTest extends BaseMvcTest {
     }
 
 
-    private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
-        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
-        itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
-        itemCarrinhoForm.setAnexos(new ArrayList<>());
-        AnexoVo anexoVo = new AnexoVo();
-        anexoVo.setFoto(new byte[]{0,0,0,0,0});
-        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        itemCarrinhoForm.getAnexos().add(anexoVo);
-        return itemCarrinhoForm;
+    /**
+     *
+     * 1. Buscar o carrinho do cliente logado e SEM produto.
+     *
+     */
+    @Test
+    public void getCarrinhoClienteLogadoSemProduto(){
+        try{
+            String accessToken = obtainAccessTokenPassword();
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertNull(carrinhoVo.getItems());
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+
+
     }
 
     /**
+     * 1. Adicionar produto no carrinho do cliente logado
+     * 2. Buscar o carrinho e verificar se existeum produto.
+     *
+     */
+    @Test
+    public void getCarrinhoClienteLogadoComProduto(){
+        try{
+            String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
+            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            String content = ObjectUtils.toJson(item1);
+            getMvcPutResultAction("/api/v1/core/carrinho/add",accessToken, content);
+
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(1,carrinhoVo.getItems().size());
+
+
+            ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" +
+                    carrinhoVo.getItems().get(0).getId(), accessToken);
+            carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertTrue(carrinhoVo.getItems().size() == 0);
+
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+
+
+    }
+
+
+
+
+    /**
+     * PARA UM CLIENTE NAO LOGADO.
      * 1. Adicionar produto no carrinho.
      * 2. Verificar se produto esta no carrinho
      * 3. Remover produto do carrinho.
      * 4. Buscar carrinho e verificar se está vazio.
      */
     @Test
-    public void removeCarrinho(){
+    public void removeCarrinhoClienteNaoLogado(){
         try{
             //#1
             ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
@@ -241,14 +276,15 @@ public class CarrinhoRestTest extends BaseMvcTest {
             Assert.assertTrue(carrinhoVo.getItems().size() == 1);
 
             //#3
-            ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" + carrinhoVo.getItems().get(0).getId());
+            ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" +
+                    carrinhoVo.getItems().get(0).getId() + "/" + item1.getSessionToken());
             carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
             Assert.assertTrue(carrinhoVo.getItems().size() == 0);
 
             //#4
-            ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getSessionToken());
+            ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
             carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
@@ -261,6 +297,78 @@ public class CarrinhoRestTest extends BaseMvcTest {
         }
 
     }
+
+
+    /**
+     * PARA UM CLIENTE LOGADO
+     * 1. Adicionar produto no carrinho.
+     * 2. Verificar se produto esta no carrinho
+     * 3. Remover produto do carrinho.
+     * 4. Buscar carrinho e verificar se está vazio.
+     */
+    @Test
+    public void removeCarrinhoClienteLogado(){
+        try{
+            String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
+            //#1
+            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteLogado();
+            String content = ObjectUtils.toJson(item1);
+            getMvcPutResultAction("/api/v1/core/carrinho/add/", accessToken , content);
+
+            //#2
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
+            CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
+            Assert.assertEquals(1, carrinhoVo.getItems().size());
+
+            //#3
+            ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" +
+                    carrinhoVo.getItems().get(0).getId(), accessToken);
+            carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
+            Assert.assertEquals(0, carrinhoVo.getItems().size());
+
+            //#4
+            ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
+            carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
+            Assert.assertNotNull(carrinhoVo);
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
+            Assert.assertEquals(0, carrinhoVo.getItems().size());
+
+
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+
+    }
+
+    private ItemCarrinhoForm createItemCarrinhoFormClienteLogado() {
+        ItemCarrinhoForm item = new ItemCarrinhoForm();
+        item.setIdCliente(1l);
+        item.setIdProduto(5l);
+        item.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.getAnexos().add(anexoVo);
+        return item;
+    }
+
+    private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
+        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
+        itemCarrinhoForm.setIdProduto(idProduto);
+        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
+        itemCarrinhoForm.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        itemCarrinhoForm.getAnexos().add(anexoVo);
+        return itemCarrinhoForm;
+    }
+
 
     protected AppUser getAppUser(){
         return getAppUserClient();
