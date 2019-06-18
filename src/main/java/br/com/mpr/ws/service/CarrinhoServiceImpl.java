@@ -71,7 +71,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Override
     public CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
 
-        if (StringUtils.isEmpty(item.getKeyDevice()) && item.getIdCliente() == null){
+        if (StringUtils.isEmpty(item.getSessionToken()) && item.getIdCliente() == null){
             throw new CarrinhoServiceException("Id do cliente ou keyDevice é obrigatório.");
         }
 
@@ -163,12 +163,12 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     private CarrinhoVo addTransactionCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
         try{
             //tentando procurar um carrinho do cliente.
-            CarrinhoEntity carrinhoEntity = this.findCarrinho(item);
+            CarrinhoEntity carrinhoEntity = this.findCarrinho(item.getIdCliente(), item.getSessionToken());
 
             if (carrinhoEntity == null){
                 carrinhoEntity = new CarrinhoEntity();
                 carrinhoEntity.setIdCliente(item.getIdCliente());
-                carrinhoEntity.setKeyDevice(item.getKeyDevice());
+                carrinhoEntity.setSessionToken(item.getSessionToken());
                 carrinhoEntity.setDataCriacao(new Date());
                 carrinhoEntity = commonDao.save(carrinhoEntity);
             }
@@ -213,7 +213,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 }
             }
 
-            return this.getCarrinho(item.getIdCliente(),item.getKeyDevice(), true);
+            return this.getCarrinho(item.getIdCliente(),item.getSessionToken(), true);
 
 
         }catch (ConstraintViolationException ex){
@@ -228,18 +228,18 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         }
     }
 
-    private CarrinhoEntity findCarrinho(ItemCarrinhoForm item) {
+    /*private CarrinhoEntity findCarrinho(ItemCarrinhoForm item) {
 
         if ( item.getIdCarrinho() != null ){
             return commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
         }else{
 
-            return findCarrinho(item.getIdCliente(),item.getKeyDevice());
+            return findCarrinho(item.getIdCliente(),item.getSessionToken());
 
         }
-    }
+    }*/
 
-    private CarrinhoEntity findCarrinho(Long idCliente, String keyDevice) {
+    private CarrinhoEntity findCarrinho(Long idCliente, String sessionToken) {
 
         if (idCliente != null && idCliente > 0){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
@@ -248,9 +248,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
             }
-        }else if (!StringUtils.isEmpty(keyDevice)){
+        }else if (!StringUtils.isEmpty(sessionToken)){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
-                    new String[]{"keyDevice"}, new Object[]{keyDevice});
+                    new String[]{"sessionToken"}, new Object[]{sessionToken});
 
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
@@ -266,17 +266,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     }
 
     @Override
-    public CarrinhoVo getCarrinhoByKeyDevice(String keyDevice){
-        return getCarrinho(null, keyDevice, true);
+    public CarrinhoVo getCarrinhoBySessionToken(String sessionToken){
+        return getCarrinho(null, sessionToken, true);
     }
 
-    private CarrinhoVo getCarrinho(Long idCliente, String keyDevice, Boolean calculateFrete) {
-        CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,keyDevice);
+    private CarrinhoVo getCarrinho(Long idCliente, String sessionToken, Boolean calculateFrete) {
+        CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,sessionToken);
 
         if (carrinhoEntity == null){
             CarrinhoVo vo = new CarrinhoVo();
             vo.setIdCliente(idCliente);
-            vo.setKeyDevice(keyDevice);
+            vo.setSessionToken(sessionToken);
             return vo;
         }
 
@@ -306,15 +306,19 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         //NAO PRECISA CALCULAR O FRETE PARA TODOS QUE SOLICITAM O CARRINHO VO e se o cliente ainda não tem cadastro.
         if ( calculaFrete && carrinhoEntity.getIdCliente() != null){
             EnderecoEntity enderecoCliente = clienteService.getEnderecoPrincipalByIdCliente(carrinhoEntity.getIdCliente());
-            EmbalagemEntity embalagem = embalagemService.getEmbalagem(produtos);
-            vo.setResultFrete(freteService.calcFrete(
-                    new FreteService.FreteParam(FreteType.ECONOMICO,
-                            enderecoCliente.getCep(),
-                            peso,
-                            embalagem.getComp(),
-                            embalagem.getLarg(),
-                            embalagem.getAlt()
-                    )) );
+
+            if (enderecoCliente != null){
+                EmbalagemEntity embalagem = embalagemService.getEmbalagem(produtos);
+                vo.setResultFrete(freteService.calcFrete(
+                        new FreteService.FreteParam(FreteType.ECONOMICO,
+                                enderecoCliente.getCep(),
+                                peso,
+                                embalagem.getComp(),
+                                embalagem.getLarg(),
+                                embalagem.getAlt()
+                        )) );
+            }
+
         }
 
         vo.setItems(listVos);
@@ -349,13 +353,39 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     }
 
     @Override
-    public CarrinhoVo removeItem(Long idItem) throws CarrinhoServiceException {
+    public CarrinhoVo removeItem(Long idItem, Long idCliente) throws CarrinhoServiceException {
         try{
             ItemCarrinhoEntity item = this.commonDao.get(ItemCarrinhoEntity.class, idItem);
             if (item != null){
-                this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
                 CarrinhoEntity carrinhoEntity = this.commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
-                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getKeyDevice(), false);
+
+                if (!carrinhoEntity.getIdCliente().equals(idCliente)){
+                    LOG.error("m=removeItem, ERRO BIZARRO!!!, UM CLIENTE TENTOU REMOVER UM ITEM QUE NAO É DELE.");
+                    throw new CarrinhoServiceException("Erro ao remover um item do carrinho.");
+                }
+                this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getSessionToken(), false);
+            }
+            return null;
+        }catch(Exception ex){
+            LOG.error("Erro ao remover um item do carrinho.", ex);
+            throw new CarrinhoServiceException("Erro ao remover o item do carrinho");
+        }
+    }
+
+    @Override
+    public CarrinhoVo removeItem(Long idItem, String sessionToken) throws CarrinhoServiceException {
+        try{
+            ItemCarrinhoEntity item = this.commonDao.get(ItemCarrinhoEntity.class, idItem);
+            if (item != null){
+                CarrinhoEntity carrinhoEntity = this.commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
+
+                if (!carrinhoEntity.getSessionToken().equals(sessionToken)){
+                    LOG.error("m=removeItem, ERRO BIZARRO!!!, UM CLIENTE COM SESSION_TOKEN TENTOU REMOVER UM ITEM QUE NAO É DELE.");
+                    throw new CarrinhoServiceException("Erro ao remover um item do carrinho.");
+                }
+                this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getSessionToken(), false);
             }
             return null;
         }catch(Exception ex){

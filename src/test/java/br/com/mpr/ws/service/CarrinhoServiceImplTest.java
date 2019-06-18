@@ -186,7 +186,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     private ItemCarrinhoForm createItemComFotoCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
         itemCarrinhoForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});
@@ -211,7 +211,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     private ItemCarrinhoForm createItemSemFotoCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
         itemCarrinhoForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
@@ -222,7 +222,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     private ItemCarrinhoForm createItemComCatalogoCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
         itemCarrinhoForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setIdCatalogo(1l);
@@ -242,14 +242,14 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             ItemCarrinhoForm item1 = createItemComFotoCarrinhoFormClienteDinamico(5l);
             this.carrinhoService.addCarrinho(item1);
             ItemCarrinhoForm item2 = createItemComFotoCarrinhoFormClienteDinamico(5l);
-            item2.setKeyDevice(item1.getKeyDevice());
+            item2.setSessionToken(item1.getSessionToken());
             this.carrinhoService.addCarrinho(item2);
 
 
-            CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoByKeyDevice(item1.getKeyDevice());
+            CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoBySessionToken(item1.getSessionToken());
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNotNull(carrinhoVo.getIdCarrinho());
-            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
             Assert.assertNotNull(carrinhoVo.getItems());
             Assert.assertEquals(2, carrinhoVo.getItems().size());
             for (ItemCarrinhoVo i : carrinhoVo.getItems()){
@@ -305,7 +305,7 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             Assert.assertTrue(carrinhoVo.getResultFrete().getValor() > 0);
 
             for (ItemCarrinhoVo item : carrinhoVo.getItems()){
-                this.carrinhoService.removeItem(item.getId());
+                this.carrinhoService.removeItem(item.getId(),item1.getIdCliente());
             }
 
         } catch (CarrinhoServiceException e) {
@@ -323,10 +323,10 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
     @Test
     public void getNovoCarrinho() {
 
-        CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoByKeyDevice("XXXXTTTTHHHHHH");
+        CarrinhoVo carrinhoVo = this.carrinhoService.getCarrinhoBySessionToken("XXXXTTTTHHHHHH");
         Assert.assertNotNull(carrinhoVo);
         Assert.assertNull(carrinhoVo.getIdCarrinho());
-        Assert.assertEquals("XXXXTTTTHHHHHH",carrinhoVo.getKeyDevice());
+        Assert.assertEquals("XXXXTTTTHHHHHH",carrinhoVo.getSessionToken());
 
     }
 
@@ -360,9 +360,9 @@ public class CarrinhoServiceImplTest extends BaseDBTest {
             }
 
             //REMOVENDO O ITEM DO PRIMEIRO CLIENTE.
-            CarrinhoVo carrinhoVo1 = this.carrinhoService.removeItem(carrinhoVo.getItems().get(0).getId());
+            CarrinhoVo carrinhoVo1 = this.carrinhoService.removeItem(carrinhoVo.getItems().get(0).getId(), item1.getSessionToken());
             Assert.assertNotNull(carrinhoVo1);
-            Assert.assertEquals(item1.getKeyDevice(), carrinhoVo1.getKeyDevice());
+            Assert.assertEquals(item1.getSessionToken(), carrinhoVo1.getSessionToken());
             Assert.assertNotNull(carrinhoVo1.getItems());
             Assert.assertEquals(0, carrinhoVo1.getItems().size());
 

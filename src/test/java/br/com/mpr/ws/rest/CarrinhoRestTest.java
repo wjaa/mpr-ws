@@ -1,28 +1,20 @@
 package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.BaseMvcTest;
-import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.AnexoVo;
 import br.com.mpr.ws.vo.CarrinhoVo;
-import br.com.mpr.ws.vo.ErrorMessageVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.ContentResultMatchers;
 
 import java.util.ArrayList;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  *
@@ -39,9 +31,8 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void addItemCarrinhoSemCliente(){
 
-
+        String sessionToken = "AAABBBCCCDDD";
         ItemCarrinhoForm item = new ItemCarrinhoForm();
-        item.setKeyDevice("AAABBBCCCDDD");
         item.setIdProduto(5l);
         item.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
@@ -50,16 +41,16 @@ public class CarrinhoRestTest extends BaseMvcTest {
         item.getAnexos().add(anexoVo);
         try{
             String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add/" + sessionToken, content);
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
-            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item.getKeyDevice());
+            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionToken);
 
             raGet.andExpect(content().json(resultJson));
 
             CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
-            Assert.assertEquals("AAABBBCCCDDD",resultCarrinho.getKeyDevice());
+            Assert.assertEquals(sessionToken,resultCarrinho.getSessionToken());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
 
@@ -89,17 +80,19 @@ public class CarrinhoRestTest extends BaseMvcTest {
         item.getAnexos().add(anexoVo);
 
         try{
+            String accessToken = obtainAccessTokenPassword();
             String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", content,
+                    accessToken);
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
-            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/byIdCliente/" + item.getIdCliente());
+            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
 
             raGet.andExpect(content().json(resultJson));
 
             CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
-            Assert.assertEquals(new Long(1),resultCarrinho.getIdCliente());
+            Assert.assertEquals(new Long(3),resultCarrinho.getIdCliente());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
 
@@ -174,9 +167,9 @@ public class CarrinhoRestTest extends BaseMvcTest {
      */
     @Test
     public void getCarrinhoSemClienteSemProduto(){
-        String keyDevice = "AAABBBCCCDDD";
+        String sessionToken = "AAABBBCCCDDD";
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + keyDevice);
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionToken);
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNull(carrinhoVo.getItems());
@@ -201,7 +194,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
             String content = ObjectUtils.toJson(item1);
             getMvcPutResultAction("/api/v1/core/carrinho/add", content);
 
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertEquals(1,carrinhoVo.getItems().size());
@@ -217,7 +210,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
     private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
         ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
         itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setKeyDevice(StringUtils.createRandomHash());
+        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
         itemCarrinhoForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});
@@ -238,27 +231,27 @@ public class CarrinhoRestTest extends BaseMvcTest {
             //#1
             ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
             String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add", content);
+            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), content);
 
             //#2
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
-            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
             Assert.assertTrue(carrinhoVo.getItems().size() == 1);
 
             //#3
             ra = getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" + carrinhoVo.getItems().get(0).getId());
             carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
-            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
             Assert.assertTrue(carrinhoVo.getItems().size() == 0);
 
             //#4
-            ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getKeyDevice());
+            ra = getMvcGetResultActions("/api/v1/core/carrinho/byKeyDevice/" + item1.getSessionToken());
             carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
-            Assert.assertEquals(item1.getKeyDevice(),carrinhoVo.getKeyDevice());
+            Assert.assertEquals(item1.getSessionToken(),carrinhoVo.getSessionToken());
             Assert.assertTrue(carrinhoVo.getItems().size() == 0);
 
 

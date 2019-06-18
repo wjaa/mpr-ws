@@ -12,7 +12,7 @@ public class CarrinhoVo {
 
     private Long idCarrinho;
     private Long idCliente;
-    private String keyDevice;
+    private String sessionToken;
     private List<ItemCarrinhoVo> items;
     private ResultFreteVo resultFrete;
 
@@ -40,12 +40,12 @@ public class CarrinhoVo {
         this.idCliente = idCliente;
     }
 
-    public String getKeyDevice() {
-        return keyDevice;
+    public String getSessionToken() {
+        return sessionToken;
     }
 
-    public void setKeyDevice(String keyDevice) {
-        this.keyDevice = keyDevice;
+    public void setSessionToken(String sessionToken) {
+        this.sessionToken = sessionToken;
     }
 
     public List<ItemCarrinhoVo> getItems() {

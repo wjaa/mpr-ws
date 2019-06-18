@@ -266,6 +266,9 @@ values (2,'02323000', 'Rua das porpetas malucas', '132a', 'sem complemento', 'ba
 insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
 values (3,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 1, 1, 'secundario', 'perto da rua das enxentes', 1);
 
+insert into ENDERECO (ID, CEP, LOGRADOURO, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, UF, ID_CLIENTE, ATIVO, DESCRICAO, OBSERVACAO, PRINCIPAL)
+values (4,'02323000', 'Rua da casa da mae da feeh', '132a', 'sem complemento', 'bairro dos morros', 'sao paulo', 'sp', 3, 1, 'secundario', 'perto da rua das enxentes', 1);
+
 
 
 --FORNECEDORES
@@ -470,7 +473,7 @@ values(null,6,6,0);
 /**************************
   MASSA DE TESTES PARA O CHECKOUT
 ***************************/
-insert  into CARRINHO ( ID, ID_CLIENTE, KEY_DEVICE, DATA_CRIACAO)
+insert  into CARRINHO ( ID, ID_CLIENTE, SESSION_TOKEN, DATA_CRIACAO)
 values (1,5,null,'2019-01-06');
 
 insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO)

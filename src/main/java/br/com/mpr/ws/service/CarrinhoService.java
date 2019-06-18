@@ -14,9 +14,11 @@ public interface CarrinhoService {
 
     CarrinhoVo getCarrinhoByIdCliente(Long idCliente);
 
-    CarrinhoVo getCarrinhoByKeyDevice(String keyDevice);
+    CarrinhoVo getCarrinhoBySessionToken(String sessionToken);
 
-    CarrinhoVo removeItem(Long idItem) throws CarrinhoServiceException;
+    CarrinhoVo removeItem(Long idItem, Long idCliente) throws CarrinhoServiceException;
+
+    CarrinhoVo removeItem(Long idItem, String sessionToken) throws CarrinhoServiceException;
 
     CarrinhoVo getCarrinhoById(Long idCarrinho) throws CarrinhoServiceException;
 }

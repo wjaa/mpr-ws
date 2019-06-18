@@ -20,12 +20,12 @@ public class CarrinhoEntity {
     @Transient
     private List<ItemCarrinhoEntity> itens;
 
-    @Column(name = "ID_CLIENTE")
+    @Column(name = "ID_CLIENTE", unique = true)
     private Long idCliente;
 
-    //chave do celular do cliente quando ele nao tiver login.
-    @Column(name = "KEY_DEVICE", length = 255)
-    private String keyDevice ;
+    //session do cliente quando ele nao estiver logado.
+    @Column(name = "SESSION_TOKEN", length = 64, unique = true)
+    private String sessionToken;
 
     @Column(name = "DATA_CRIACAO", nullable = false)
     private Date dataCriacao;
@@ -55,12 +55,12 @@ public class CarrinhoEntity {
         this.idCliente = idCliente;
     }
 
-    public String getKeyDevice() {
-        return keyDevice;
+    public String getSessionToken() {
+        return sessionToken;
     }
 
-    public void setKeyDevice(String keyDevice) {
-        this.keyDevice = keyDevice;
+    public void setSessionToken(String sessionToken) {
+        this.sessionToken = sessionToken;
     }
 
     public Date getDataCriacao() {

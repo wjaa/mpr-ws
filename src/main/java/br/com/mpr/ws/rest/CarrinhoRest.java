@@ -33,40 +33,60 @@ public class CarrinhoRest extends BaseRest {
     private CarrinhoService carrinhoService;
 
 
+    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/carrinho/add",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.PUT)
     public CarrinhoVo addCarrinho(@RequestBody @Valid ItemCarrinhoForm form,
                                   OAuth2Authentication principal) throws CarrinhoServiceException {
         ClienteEntity cliente = validateUser(principal);
+        form.setIdCliente(cliente.getId());
+        return this.carrinhoService.addCarrinho(form);
+    }
+
+    @RequestMapping(value = "/carrinho/add/{sessionToken}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.PUT)
+    public CarrinhoVo addCarrinho(@RequestBody @Valid ItemCarrinhoForm form,
+                                  @PathVariable String sessionToken) throws CarrinhoServiceException {
+        form.setSessionToken(sessionToken);
         return this.carrinhoService.addCarrinho(form);
     }
 
 
-    @RequestMapping(value = "/carrinho/cliente",
+    @PreAuthorize(value = "hasAuthority('USER')")
+    @RequestMapping(value = "/carrinho",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAuthority('USER')")
-    public CarrinhoVo getCarrinhoClienteById(OAuth2Authentication principal){
+    public CarrinhoVo getCarrinhoByIdCliente(OAuth2Authentication principal){
         ClienteEntity cliente = validateUser(principal);
-
         return this.carrinhoService.getCarrinhoByIdCliente(cliente.getId());
     }
 
 
-    @RequestMapping(value = "/carrinho/byKeyDevice/{keyDevice}",
+    @RequestMapping(value = "/carrinho/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoClienteByKeyDevice(@PathVariable String keyDevice){
-        return this.carrinhoService.getCarrinhoByKeyDevice(keyDevice);
+    public CarrinhoVo getCarrinhoClienteBySessionToken(@PathVariable String sessionToken){
+        return this.carrinhoService.getCarrinhoBySessionToken(sessionToken);
     }
 
 
+    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/carrinho/removeItem/{idItem}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.DELETE)
-    public CarrinhoVo removeItem(@PathVariable Long idItem) throws CarrinhoServiceException {
-        return this.carrinhoService.removeItem(idItem);
+    public CarrinhoVo removeItem(@PathVariable Long idItem, OAuth2Authentication principal) throws CarrinhoServiceException {
+        ClienteEntity cliente = validateUser(principal);
+        return this.carrinhoService.removeItem(idItem, cliente.getId());
+    }
+
+    @PreAuthorize(value = "hasAuthority('USER')")
+    @RequestMapping(value = "/carrinho/removeItem/{idItem}/{sessionToken}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.DELETE)
+    public CarrinhoVo removeItem(@PathVariable Long idItem, @PathVariable String sessionToken) throws CarrinhoServiceException {
+        return this.carrinhoService.removeItem(idItem, sessionToken);
     }
 
 
@@ -74,6 +94,14 @@ public class CarrinhoRest extends BaseRest {
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
     public CarrinhoVo alterarQtdeItem(@PathVariable Long idItem) throws CarrinhoServiceException {
+        //TODO CONTINUAR AQUI...
+        return null;
+    }
+
+    @RequestMapping(value = "/carrinho/alterarQtdeItem/{idItem}/{sessionToken",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.POST)
+    public CarrinhoVo alterarQtdeItem(@PathVariable Long idItem, @PathVariable String sessionToken) throws CarrinhoServiceException {
         //TODO CONTINUAR AQUI...
         return null;
     }
