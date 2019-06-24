@@ -1,16 +1,24 @@
 package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.BaseMvcTest;
+import br.com.mpr.ws.entity.SessionEntity;
+import br.com.mpr.ws.exception.ImagemServiceException;
+import br.com.mpr.ws.service.ImagemService;
+import br.com.mpr.ws.service.ProdutoPreviewService;
+import br.com.mpr.ws.service.SessionService;
 import br.com.mpr.ws.utils.ObjectUtils;
 import br.com.mpr.ws.utils.StringUtils;
-import br.com.mpr.ws.vo.AnexoVo;
-import br.com.mpr.ws.vo.CarrinhoVo;
-import br.com.mpr.ws.vo.ItemCarrinhoForm;
+import br.com.mpr.ws.vo.*;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,6 +30,48 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CarrinhoRestTest extends BaseMvcTest {
 
 
+    @Autowired
+    private SessionService sessionService;
+
+    @MockBean
+    private ImagemService imagemService;
+
+    @Autowired
+    private ProdutoPreviewService produtoPreviewService;
+
+
+    @Before
+    public void mockImageService(){
+        //imagemService = Mockito.spy(imagemService);
+        Mockito.when(
+                imagemService.getUrlPreviewCliente(Mockito.any(String.class))
+        ).thenReturn("http://stc.meuportaretrato.com/img/preview_cliente/1213432142134.png");
+
+        try {
+            Mockito.when(imagemService.createPreviewCliente(Mockito.any(String.class),
+                    Mockito.any(List.class),Mockito.any(List.class)))
+                    .thenReturn("previewCliente.jpg");
+
+            Mockito.when(
+                    imagemService.uploadFotoCliente(Mockito.any(),Mockito.anyString())
+            ).thenReturn("fotoCliente.png");
+
+            Mockito.when(
+                    imagemService.getUrlFotoCliente(Mockito.anyString())
+            ).thenReturn("http://stc.meuportaretrato.com/img/cliente/teste.png");
+
+            Mockito.when(
+                    imagemService.getUrlFotoCatalogo(Mockito.anyString())
+            ).thenReturn("http://stc.meuportaretrato.com/img/cliente/teste.png");
+
+
+        } catch (ImagemServiceException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     /**
      * USANDO UM CLIENTE NAO CADASTRADO
      * 1. Adicionar um produto no carrinho
@@ -31,26 +81,23 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void addItemCarrinhoClienteNaoLogado(){
 
-        String sessionToken = "AAABBBCCCDDD";
-        ItemCarrinhoForm item = new ItemCarrinhoForm();
-        item.setIdProduto(5l);
-        item.setAnexos(new ArrayList<>());
-        AnexoVo anexoVo = new AnexoVo();
-        anexoVo.setFoto(new byte[]{0,0,0,0,0});
-        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        item.getAnexos().add(anexoVo);
+
         try{
-            String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add/" + sessionToken, content);
+            PreviewForm form = createItemCarrinhoFormClienteDinamico(5l);
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(form);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
+
+            String content = ObjectUtils.toJson(form);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add/" + form.getSessionToken(), "");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
-            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionToken);
+            ResultActions raGet = getMvcGetResultActions("/api/v1/core/carrinho/" + form.getSessionToken());
 
             raGet.andExpect(content().json(resultJson));
 
             CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
-            Assert.assertEquals(sessionToken,resultCarrinho.getSessionToken());
+            Assert.assertEquals(form.getSessionToken(),resultCarrinho.getSessionToken());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
 
@@ -70,12 +117,16 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void addItemCarrinhoClienteLogado(){
 
-        ItemCarrinhoForm item = createItemCarrinhoFormClienteLogado();
+        PreviewForm item = createItemCarrinhoFormClienteLogado();
 
         try{
+
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(item);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
+
             String accessToken = obtainAccessTokenPassword();
-            String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", accessToken, content);
+            //String content = ObjectUtils.toJson(item);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", accessToken, "");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
@@ -108,7 +159,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
     public void addItemCarrinhoValidation(){
 
 
-        ItemCarrinhoForm item = new ItemCarrinhoForm();
+        PreviewForm item = new PreviewForm();
         item.setIdCliente(1l);
         item.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
@@ -156,9 +207,9 @@ public class CarrinhoRestTest extends BaseMvcTest {
      */
     @Test
     public void getCarrinhoClienteNaoLogadoSemProduto(){
-        String sessionToken = "XXXXZZZZZCCCDDD";
+        SessionEntity sessionEntity = sessionService.createSession();
         try{
-            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionToken);
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + sessionEntity.getSessionToken());
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
             Assert.assertNull(carrinhoVo.getItems());
@@ -179,9 +230,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
     public void getCarrinhoClienteNaoLogadoComProduto(){
         try{
 
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            PreviewForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
             String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), content);
+            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), "");
 
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
@@ -226,9 +279,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
     public void getCarrinhoClienteLogadoComProduto(){
         try{
             String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            PreviewForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
             String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add",accessToken, content);
+            getMvcPutResultAction("/api/v1/core/carrinho/add",accessToken,"");
 
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
@@ -264,9 +319,11 @@ public class CarrinhoRestTest extends BaseMvcTest {
     public void removeCarrinhoClienteNaoLogado(){
         try{
             //#1
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            PreviewForm item1 = createItemCarrinhoFormClienteDinamico(5l);
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
             String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), content);
+            getMvcPutResultAction("/api/v1/core/carrinho/add/" + item1.getSessionToken(), "");
 
             //#2
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho/" + item1.getSessionToken());
@@ -311,9 +368,10 @@ public class CarrinhoRestTest extends BaseMvcTest {
         try{
             String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
             //#1
-            ItemCarrinhoForm item1 = createItemCarrinhoFormClienteLogado();
-            String content = ObjectUtils.toJson(item1);
-            getMvcPutResultAction("/api/v1/core/carrinho/add/", accessToken , content);
+            PreviewForm item1 = createItemCarrinhoFormClienteLogado();
+            ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
+            Assert.assertNotNull(produtoVo.getImgPreviewCliente());
+            getMvcPutResultAction("/api/v1/core/carrinho/add/", accessToken , "");
 
             //#2
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
@@ -345,33 +403,36 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
     }
 
-    private ItemCarrinhoForm createItemCarrinhoFormClienteLogado() {
-        ItemCarrinhoForm item = new ItemCarrinhoForm();
-        item.setIdCliente(1l);
-        item.setIdProduto(5l);
-        item.setAnexos(new ArrayList<>());
+    private PreviewForm createItemCarrinhoFormClienteLogado() {
+        PreviewForm previewForm = new PreviewForm();
+        previewForm.setIdProduto(5l);
+        previewForm.setIdCliente(3l);
+        previewForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});
         anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        item.getAnexos().add(anexoVo);
-        return item;
+        previewForm.getAnexos().add(anexoVo);
+        return previewForm;
     }
 
-    private ItemCarrinhoForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
-        ItemCarrinhoForm itemCarrinhoForm = new ItemCarrinhoForm();
-        itemCarrinhoForm.setIdProduto(idProduto);
-        itemCarrinhoForm.setSessionToken(StringUtils.createRandomHash());
-        itemCarrinhoForm.setAnexos(new ArrayList<>());
+    private PreviewForm createItemCarrinhoFormClienteDinamico(Long idProduto) {
+        SessionEntity sessionEntity = sessionService.createSession();
+
+        PreviewForm previewForm = new PreviewForm();
+        previewForm.setIdProduto(idProduto);
+        previewForm.setSessionToken(sessionEntity.getSessionToken());
+        previewForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});
         anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        itemCarrinhoForm.getAnexos().add(anexoVo);
-        return itemCarrinhoForm;
+        previewForm.getAnexos().add(anexoVo);
+        return previewForm;
     }
 
 
     protected AppUser getAppUser(){
         return getAppUserClient();
     }
+
 
 }

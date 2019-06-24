@@ -229,14 +229,16 @@ CREATE TABLE produto_preview_anexo(
 
 CREATE TABLE carrinho(
     ID INT(28) NOT NULL AUTO_INCREMENT,
-    ID_CLIENTE INT(28),
-    SESSION_TOKEN VARCHAR(64),
+    ID_CLIENTE INT(28) UNIQUE,
+    ID_SESSION INT(28) UNIQUE,
     DATA_CRIACAO DATETIME NOT NULL,
     FOREIGN KEY (ID_CLIENTE)
           REFERENCES CLIENTE(ID),
+    FOREIGN KEY (ID_SESSION)
+              REFERENCES SESSION(ID),
     PRIMARY KEY (ID)
 );
-CREATE INDEX idx_carrinho_session_token ON carrinho(SESSION_TOKEN);
+
 
 CREATE TABLE item_carrinho(
     ID INT(28) NOT NULL AUTO_INCREMENT,
@@ -548,3 +550,6 @@ insert into status_pedido values (null,'Erro no pedido','Pedido recebido (aguard
 
 --EXEMPLO PARA REMOVER COLUNA
 --ALTER TABLE table DROP COLUMN column;
+
+--ALTER TABLE Orders
+--ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);

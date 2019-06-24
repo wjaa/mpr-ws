@@ -18,7 +18,7 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
@@ -48,14 +48,14 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
 
             ra = getMvcPostResultAction("/api/v1/core/checkout/addCupom/" +
                     checkout.getId() + "/" + "AABBCCDD", "");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
@@ -93,13 +93,13 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             ra = getMvcPostResultAction("/api/v1/core/checkout/alterarEndereco/" +
             checkout.getId() + "/2", "");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             Assert.assertEquals(new Long(2l),checkout.getEndereco().getId());
             Assert.assertNotNull(checkout.getEndereco());
@@ -136,13 +136,13 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             ra = getMvcPostResultAction("/api/v1/core/checkout/alterarFrete/" +
             checkout.getId() + "/" + FreteType.RAPIDO.toString(),"");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
@@ -163,7 +163,7 @@ public class CheckoutRestTest extends BaseMvcTest {
                     checkout.getId() + "/" + FreteType.ECONOMICO.toString(),"");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkoutAtual = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkoutAtual = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
             Assert.assertNotNull(checkoutAtual.getValorFrete());
             Assert.assertNotNull(checkoutAtual.getListResultFrete());
@@ -188,14 +188,14 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
 
             ra = getMvcPostErrorResultAction("/api/v1/core/checkout/addCupom/" +
                     checkout.getId() + "/" + "XXXX", "");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            ErrorMessageVo errorMessageVo = ObjectUtils.fromJSON(resultJson,ErrorMessageVo.class);
+            ErrorMessageVo errorMessageVo = ObjectUtils.toObject(resultJson,ErrorMessageVo.class);
 
             Assert.assertNotNull(errorMessageVo);
             Assert.assertEquals(errorMessageVo.getErrorMessage()[0],"Cupom não existe!");
@@ -212,14 +212,14 @@ public class CheckoutRestTest extends BaseMvcTest {
             ResultActions ra = getMvcGetResultActions("/api/v1/core/checkout/1");
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
-            CheckoutVo checkout = ObjectUtils.fromJSON(resultJson,CheckoutVo.class);
+            CheckoutVo checkout = ObjectUtils.toObject(resultJson,CheckoutVo.class);
 
 
             ra = getMvcPostErrorResultAction("/api/v1/core/checkout/addCupom/" +
                     checkout.getId() + "/" + "EEFFGGHH", "");
 
             resultJson = ra.andReturn().getResponse().getContentAsString();
-            ErrorMessageVo errorMessageVo = ObjectUtils.fromJSON(resultJson,ErrorMessageVo.class);
+            ErrorMessageVo errorMessageVo = ObjectUtils.toObject(resultJson,ErrorMessageVo.class);
 
             Assert.assertNotNull(errorMessageVo);
             Assert.assertEquals(errorMessageVo.getErrorMessage()[0],"Cupom não existe!");

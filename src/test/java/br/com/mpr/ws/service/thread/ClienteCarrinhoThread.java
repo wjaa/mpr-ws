@@ -2,7 +2,7 @@ package br.com.mpr.ws.service.thread;
 
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.vo.CarrinhoVo;
-import br.com.mpr.ws.vo.ItemCarrinhoForm;
+import br.com.mpr.ws.vo.PreviewForm;
 
 /**
  *
@@ -10,12 +10,12 @@ import br.com.mpr.ws.vo.ItemCarrinhoForm;
 public class ClienteCarrinhoThread extends Thread{
 
     private CarrinhoService carrinhoService;
-    private ItemCarrinhoForm form;
+    private PreviewForm form;
     private CarrinhoVo carrinhoVo;
     private String messageException;
 
 
-    public ClienteCarrinhoThread(CarrinhoService carrinhoService, ItemCarrinhoForm form){
+    public ClienteCarrinhoThread(CarrinhoService carrinhoService, PreviewForm form){
         this.carrinhoService = carrinhoService;
         this.form = form;
     }
@@ -23,7 +23,11 @@ public class ClienteCarrinhoThread extends Thread{
     @Override
     public void run() {
         try {
-            carrinhoVo = this.carrinhoService.addCarrinho(form);
+            if (form.getIdCliente() != null){
+                carrinhoVo = this.carrinhoService.addCarrinho(form.getIdCliente());
+            }else{
+                carrinhoVo = this.carrinhoService.addCarrinho(form.getSessionToken());
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

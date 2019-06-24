@@ -1,5 +1,6 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.ws.entity.ProdutoPreviewEntity;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
@@ -16,13 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CarrinhoThreadExecutor {
 
-    private static final Map<String,ItemCarrinhoForm> mapExecuteCarrinho = new ConcurrentHashMap<>();
+    private static final Map<String,ProdutoPreviewEntity> mapExecuteCarrinho = new ConcurrentHashMap<>();
     private static final Map<String,CarrinhoVo> mapResultCarrinho = new ConcurrentHashMap<>();
     private static final Map<String,CarrinhoServiceException> mapException = new ConcurrentHashMap<>();
     public static final Long TIMEOUT = 1000*30l; //30s
     private static boolean threadAlive = false;
 
-    public static void putExecute(String key, ItemCarrinhoForm item){
+    public static void putExecute(String key, ProdutoPreviewEntity item){
         mapExecuteCarrinho.put(key,item);
     }
 
@@ -74,7 +75,7 @@ public class CarrinhoThreadExecutor {
         CarrinhoThreadExecutor.threadAlive = alive;
     }
 
-    public static ItemCarrinhoForm getExecute(String key) {
+    public static ProdutoPreviewEntity getExecute(String key) {
         return mapExecuteCarrinho.get(key);
     }
 

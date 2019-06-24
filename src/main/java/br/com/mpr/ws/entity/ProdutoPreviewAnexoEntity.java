@@ -1,5 +1,8 @@
 package br.com.mpr.ws.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 
 /**
@@ -55,5 +58,18 @@ public class ProdutoPreviewAnexoEntity {
 
     public void setIdCatalogo(Long idCatalogo) {
         this.idCatalogo = idCatalogo;
+    }
+
+
+    @Transient
+    @JsonIgnore
+    public boolean temCatalogo(){
+        return this.idCatalogo != null;
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean temFoto(){
+        return !StringUtils.isEmpty(this.foto);
     }
 }

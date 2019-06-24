@@ -7,12 +7,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -28,9 +29,7 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Override
     public String uploadFotoCliente(byte[] img, String originName) throws ImagemServiceException {
-        File folderCliente = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderCliente());
+        File folderCliente = getFileFolderPreview(properties.getFolderCliente());
 
         if ( !folderCliente.exists() || !folderCliente.isDirectory()){
             if (!folderCliente.mkdirs()){
@@ -42,10 +41,8 @@ public class ImagemServiceImpl implements ImagemService {
     }
 
     @Override
-    public String uploadFotoProdutoDestaque(byte[] img, String originName) throws ImagemServiceException {
-        File folderDestaque = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderDestaque());
+    public String uploadFotoDestaqueProduto(byte[] img, String originName) throws ImagemServiceException {
+        File folderDestaque = getFileFolderPreview(properties.getFolderDestaque());
 
         if ( !folderDestaque.exists() || !folderDestaque.isDirectory()){
             if (!folderDestaque.mkdirs()){
@@ -59,10 +56,8 @@ public class ImagemServiceImpl implements ImagemService {
     }
 
     @Override
-    public String uploadFotoProdutoPreview(byte[] img, String originName) throws ImagemServiceException {
-        File folderPreview = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderPreview());
+    public String uploadFotoPreviewProduto(byte[] img, String originName) throws ImagemServiceException {
+        File folderPreview = getFileFolderPreview(properties.getFolderPreview());
 
         if ( !folderPreview.exists() || !folderPreview.isDirectory()){
             if (!folderPreview.mkdirs()){
@@ -75,11 +70,15 @@ public class ImagemServiceImpl implements ImagemService {
         return this.saveImages(img,originName, properties.getFolderPreview());
     }
 
+    private File getFileFolderPreview(String folder) {
+        return new File(properties.getPathImg() +
+                File.separator +
+                folder);
+    }
+
     @Override
     public String uploadFotoCatalogo(byte[] img, String originName) throws ImagemServiceException {
-        File folderCatalogo = new File(properties.getPathImg() +
-                File.separator +
-                properties.getFolderCatalogo());
+        File folderCatalogo = getFileFolderPreview(properties.getFolderCatalogo());
 
         if ( !folderCatalogo.exists() || !folderCatalogo.isDirectory()){
             if (!folderCatalogo.mkdirs()){
@@ -100,6 +99,114 @@ public class ImagemServiceImpl implements ImagemService {
         return properties.getBaseUrlCliente() + foto;
     }
 
+    @Override
+    public String getUrlPreviewProduto(String foto){
+        return properties.getBaseUrlPreview() + foto;
+    }
+
+    @Override
+    public String getUrlImagemDestaque(String foto){
+        return properties.getBaseUrlDestaque() + foto;
+    }
+
+    @Override
+    public String getUrlPreviewCliente(String foto){
+        return properties.getBaseUrlPreviewCliente() + foto;
+    }
+
+    @Override
+    public void removePreviewCliente(String foto) {
+        File imgPreviewCliente = getFileFotoPreviewCliente(foto);
+
+        if ( !imgPreviewCliente.exists()){
+            LOG.error("Imagem [" + imgPreviewCliente.getAbsolutePath() + "], não existe. Delete abortado!");
+            return;
+        }
+        imgPreviewCliente.delete();
+    }
+
+    @Override
+    public void removeFotoCliente(String foto) {
+        File fotoCliente = getFileFotoCliente(foto);
+
+        if ( !fotoCliente.exists()){
+            LOG.error("Imagem [" + fotoCliente.getAbsolutePath() + "], não existe. Delete abortado!");
+            return;
+        }
+        fotoCliente.delete();
+    }
+
+    @Override
+    public String createPreviewCliente(String foto, List<String> fotosCliente, List<String> fotosCatalogo)
+            throws ImagemServiceException {
+        File fileFotoPreview = getFilePreviewProduto(foto);
+
+        if (!fileFotoPreview.exists()){
+            throw new ImagemServiceException("Preview do produto não encontrado!");
+        }
+
+        final List<File> fotos = new ArrayList<>();
+
+        //fotos do cliente
+        if (!CollectionUtils.isEmpty(fotosCliente)){
+            for (String fotoCliente : fotosCliente){
+                File fileFotoCliente = getFileFotoCliente(fotoCliente);
+                if (!fileFotoCliente.exists()){
+                    throw new ImagemServiceException("Foto do cliente não encontrado!");
+                }
+                fotos.add(fileFotoCliente);
+            }
+        }
+
+        //fotos de catalogo.
+        if (!CollectionUtils.isEmpty(fotosCatalogo)){
+            for (String fotoCatalogo : fotosCatalogo){
+                File fileFotoCatalogo = getFileFotoCatalogo(fotoCatalogo);
+                if (!fileFotoCatalogo.exists()){
+                    throw new ImagemServiceException("Foto do catalogo não encontrado!");
+                }
+                fotos.add(fileFotoCatalogo);
+            }
+        }
+
+        return createPreviewCliente(fileFotoPreview, fotos);
+    }
+
+    private String createPreviewCliente(File fileFotoPreview, List<File> fotos) {
+
+        //TODO: ESSE CARA IRÁ CHAMAR MPR-IMAGE RESPONSAVEL POR GERAR PREVIEW.
+
+        return "no-image.jpg";
+    }
+
+    public File getFilePreviewProduto(String foto) {
+        File folder = getFileFolderPreview(properties.getFolderPreview());
+        return new File(folder.getAbsoluteFile() + File.separator + foto);
+    }
+
+    @Override
+    public File getFileFotoCatalogo(String foto) {
+        File folder = getFileFolderPreview(properties.getFolderCatalogo());
+        return new File(folder.getAbsoluteFile() + File.separator + foto);
+    }
+
+    @Override
+    public File getFileFotoCliente(String foto) {
+        File folder = getFileFolderPreview(properties.getFolderCliente());
+        return new File(folder.getAbsoluteFile() + File.separator + foto);
+    }
+
+    @Override
+    public File getFileDestaqueProduto(String foto) {
+        File folder = getFileFolderPreview(properties.getFolderDestaque());
+        return new File(folder.getAbsoluteFile() + File.separator + foto);
+    }
+
+    @Override
+    public File getFileFotoPreviewCliente(String foto) {
+        File folder = getFileFolderPreview(properties.getFolderPreviewCliente());
+        return new File(folder.getAbsoluteFile() + File.separator + foto);
+    }
 
     private String saveImages(byte[] data, String originName, String folder ) throws ImagemServiceException {
 

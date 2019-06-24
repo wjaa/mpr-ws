@@ -15,4 +15,5 @@ public interface SessionService {
 
     SessionEntity getSessionByToken(String sessionToken);
 
+    String getSessionTokenById(Long idSession);
 }

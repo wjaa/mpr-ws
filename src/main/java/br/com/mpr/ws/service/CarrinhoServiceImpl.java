@@ -51,6 +51,45 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private SessionService sessionService;
+
+    @Autowired
+    private ProdutoPreviewService produtoPreviewService;
+
+
+    @Override
+    public CarrinhoVo addCarrinho(String sessionToken) throws CarrinhoServiceException {
+        if (StringUtils.isEmpty(sessionToken)){
+            throw new CarrinhoServiceException("SessionToken é obrigatório.");
+        }
+
+        ProdutoPreviewEntity produtoPreviewEntity = produtoPreviewService
+                .getProdutoPreviewBySessionToken(sessionToken);
+
+        if (produtoPreviewEntity == null){
+            throw new CarrinhoServiceException("Preview do cliente não encontrado, ou a sessão está expirada.");
+        }
+
+        return addCarrinho(produtoPreviewEntity);
+    }
+
+    @Override
+    public CarrinhoVo addCarrinho(Long idCliente) throws CarrinhoServiceException {
+
+        if (idCliente == null){
+            throw new CarrinhoServiceException("Id do cliente é obrigatório.");
+        }
+        ProdutoPreviewEntity produtoPreviewEntity = produtoPreviewService
+                .getProdutoPreviewByIdCliente(idCliente);
+
+        if (produtoPreviewEntity == null){
+            throw new CarrinhoServiceException("Preview do cliente não encontrado!");
+        }
+
+        return addCarrinho(produtoPreviewEntity);
+    }
+
     /**
      * Esse metodo cria uma fila de threads e executa 1 a 1 em startThreadAddCarrinho
      *
@@ -68,12 +107,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      * @return Vo com dados do carrinho do cliente.
      * @throws CarrinhoServiceException
      */
-    @Override
-    public CarrinhoVo addCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
-
-        if (StringUtils.isEmpty(item.getSessionToken()) && item.getIdCliente() == null){
-            throw new CarrinhoServiceException("Id do cliente ou keyDevice é obrigatório.");
-        }
+    private CarrinhoVo addCarrinho(ProdutoPreviewEntity item) throws CarrinhoServiceException {
 
         //chave da thread em questao.
         String key = br.com.mpr.ws.utils.StringUtils.createRandomHash();
@@ -118,7 +152,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      * Metodo para controlar a executacao das Threads.
      *
      * Esse metodo é executado apenas por uma Thread.
-     * O metodo addCarrinho, vai empinhando os parametros das Thread, e quando esse metodo for liberado,
+     * O metodo addCarrinho, vai empilhando os parametros das Thread, e quando esse metodo for liberado,
      * a Thread que conseguir chama-la executa a pilha inteira.
      *
      * A pilha fica armazenada em CarrinhoThreadExecutor.getIterator();
@@ -134,7 +168,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 while (it.hasNext()){
                     String key = it.next();
                     try {
-                        ItemCarrinhoForm itemCarrinho = CarrinhoThreadExecutor.getExecute(key);
+                        ProdutoPreviewEntity itemCarrinho = CarrinhoThreadExecutor.getExecute(key);
                         if (itemCarrinho == null){
                             continue;
                         }
@@ -156,21 +190,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
     /**
      * Metodo que adiciona um item no carrinho do cliente.
-     * @param item Form do item do carrinho
+     * @param item Produto preview
      * @return
      * @throws CarrinhoServiceException
      */
-    private CarrinhoVo addTransactionCarrinho(ItemCarrinhoForm item) throws CarrinhoServiceException {
+    private CarrinhoVo addTransactionCarrinho(ProdutoPreviewEntity item) throws CarrinhoServiceException {
         try{
             //tentando procurar um carrinho do cliente.
-            CarrinhoEntity carrinhoEntity = this.findCarrinho(item.getIdCliente(), item.getSessionToken());
+            CarrinhoEntity carrinhoEntity = this.findCarrinho(item.getIdCliente(), item.getIdSession());
 
             if (carrinhoEntity == null){
-                carrinhoEntity = new CarrinhoEntity();
-                carrinhoEntity.setIdCliente(item.getIdCliente());
-                carrinhoEntity.setSessionToken(item.getSessionToken());
-                carrinhoEntity.setDataCriacao(new Date());
-                carrinhoEntity = commonDao.save(carrinhoEntity);
+                carrinhoEntity = this.createCarrinho(item.getIdCliente(),item.getIdSession());
             }
 
             ItemCarrinhoEntity itemCarrinhoEntity = new ItemCarrinhoEntity();
@@ -185,35 +215,40 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                 throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
             }
 
-            for (AnexoVo anexoVo : item.getAnexos()) {
+            for (ProdutoPreviewAnexoEntity anexoVo : item.getAnexos()) {
                 if (!anexoVo.temFoto() && !anexoVo.temCatalogo()) {
-                    throw new CarrinhoServiceException("Para adicionar esse produto no carrinho, uma imagem é obrigatória!");
+                    throw new CarrinhoServiceException("Imagem não encontrada no preview do carrinho.");
                 }
             }
 
             itemCarrinhoEntity.setIdEstoqueItem(estoqueItemEntity.getId());
+            itemCarrinhoEntity.setFotoPreview(item.getFotoPreview());
             itemCarrinhoEntity = commonDao.save(itemCarrinhoEntity);
 
             //CLIENTES PODEM ADICIONAR ACESSORIOS, SE NAO FOR UM ACESSORIO ENTÃO TEM FOTO.
             if ( !produtoService.isAcessorio(item.getIdProduto()) ){
-                for (AnexoVo anexoVo : item.getAnexos()){
-                    ItemCarrinhoAnexoEntity anexo = new ItemCarrinhoAnexoEntity();
+                for (ProdutoPreviewAnexoEntity previewAnexo : item.getAnexos()){
+                    ItemCarrinhoAnexoEntity carrinhoAnexo = new ItemCarrinhoAnexoEntity();
 
-                    if (anexoVo.temFoto()){
-                        anexo.setFoto(imagemService.uploadFotoCliente(anexoVo.getFoto(),anexoVo.getNomeArquivo()));
+                    if (previewAnexo.temFoto()){
+                        carrinhoAnexo.setFoto(previewAnexo.getFoto());
                     }
 
-                    if (anexoVo.temCatalogo()){
-                        CatalogoEntity catalogo = commonDao.get(CatalogoEntity.class,anexoVo.getIdCatalogo());
-                        anexo.setFoto(catalogo.getImg());
+                    if (previewAnexo.temCatalogo()){
+                        CatalogoEntity catalogo = commonDao.get(CatalogoEntity.class,previewAnexo.getIdCatalogo());
+                        carrinhoAnexo.setFoto(catalogo.getImg());
                     }
-                    anexo.setIdCatalogo(anexoVo.getIdCatalogo());
-                    anexo.setIdItemCarrinho(itemCarrinhoEntity.getId());
-                    commonDao.save(anexo);
+                    carrinhoAnexo.setIdCatalogo(previewAnexo.getIdCatalogo());
+                    carrinhoAnexo.setIdItemCarrinho(itemCarrinhoEntity.getId());
+                    commonDao.save(carrinhoAnexo);
                 }
             }
 
-            return this.getCarrinho(item.getIdCliente(),item.getSessionToken(), true);
+
+
+
+            return this.getCarrinho(item.getIdCliente(),item.getIdSession(),
+                                        true);
 
 
         }catch (ConstraintViolationException ex){
@@ -222,24 +257,27 @@ public class CarrinhoServiceImpl implements CarrinhoService {
         }catch (DataIntegrityViolationException ex){
             LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", ex);
             throw new CarrinhoServiceException("Infelizmente não temos mais esse produto em estoque.");
-        } catch (ImagemServiceException e) {
-            LOG.error("m=addCarrinho, Erro ao adicionar um item no carrinho", e);
-            throw new CarrinhoServiceException(e.getMessage());
         }
     }
 
-    /*private CarrinhoEntity findCarrinho(ItemCarrinhoForm item) {
+    private CarrinhoEntity createCarrinho(Long idCliente, Long idSession){
+        CarrinhoEntity carrinhoEntity;
+        carrinhoEntity = new CarrinhoEntity();
+        carrinhoEntity.setIdCliente(idCliente);
+        carrinhoEntity.setIdSession(idSession);
+        carrinhoEntity.setDataCriacao(new Date());
+        carrinhoEntity = commonDao.save(carrinhoEntity);
+        return carrinhoEntity;
+    }
 
-        if ( item.getIdCarrinho() != null ){
-            return commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
-        }else{
-
-            return findCarrinho(item.getIdCliente(),item.getSessionToken());
-
+    private SessionEntity getSession(String sessionToken) {
+        if (sessionToken == null){
+            return null;
         }
-    }*/
+        return sessionService.getSessionByToken(sessionToken);
+    }
 
-    private CarrinhoEntity findCarrinho(Long idCliente, String sessionToken) {
+    private CarrinhoEntity findCarrinho(Long idCliente, Long idSession) {
 
         if (idCliente != null && idCliente > 0){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
@@ -248,9 +286,9 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
             }
-        }else if (!StringUtils.isEmpty(sessionToken)){
+        }else if (idSession != null && idSession > 0){
             List<CarrinhoEntity> listCarrinho = commonDao.findByProperties(CarrinhoEntity.class,
-                    new String[]{"sessionToken"}, new Object[]{sessionToken});
+                    new String[]{"idSession"}, new Object[]{idSession});
 
             if (listCarrinho.size() > 0){
                 return listCarrinho.get(0);
@@ -266,30 +304,40 @@ public class CarrinhoServiceImpl implements CarrinhoService {
     }
 
     @Override
-    public CarrinhoVo getCarrinhoBySessionToken(String sessionToken){
-        return getCarrinho(null, sessionToken, true);
+    public CarrinhoVo getCarrinhoBySessionToken(String sessionToken) throws CarrinhoServiceException {
+        SessionEntity sessionEntity = getSession(sessionToken);
+        if ( sessionEntity == null ){
+            throw new CarrinhoServiceException("Sessão do cliente não encontrada.");
+        }
+        return getCarrinho(null, sessionEntity.getId(), true);
     }
 
-    private CarrinhoVo getCarrinho(Long idCliente, String sessionToken, Boolean calculateFrete) {
-        CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,sessionToken);
+    private CarrinhoVo getCarrinho(Long idCliente, Long idSession, Boolean calculateFrete) {
+        CarrinhoEntity carrinhoEntity = this.findCarrinho(idCliente,idSession);
 
         if (carrinhoEntity == null){
             CarrinhoVo vo = new CarrinhoVo();
             vo.setIdCliente(idCliente);
-            vo.setSessionToken(sessionToken);
+            if (idSession != null){
+                String sessionToken = sessionService.getSessionTokenById(idSession);
+                vo.setSessionToken(sessionToken);
+            }
+
             return vo;
         }
 
-        return this.getCarrinhoVo(carrinhoEntity, calculateFrete);
+        CarrinhoVo vo = this.getCarrinhoVo(carrinhoEntity, calculateFrete);
+        if (idSession != null){
+            String sessionToken = sessionService.getSessionTokenById(idSession);
+            vo.setSessionToken(sessionToken);
+        }
+
+        return vo;
     }
 
     private CarrinhoVo getCarrinhoVo(CarrinhoEntity carrinhoEntity, Boolean calculaFrete) {
         CarrinhoVo vo = CarrinhoVo.toVo(carrinhoEntity);
-        List<ItemCarrinhoEntity> items =
-                commonDao.findByProperties(
-                        ItemCarrinhoEntity.class,
-                        new String[]{"idCarrinho"},
-                        new Object[]{carrinhoEntity.getId()});
+        List<ItemCarrinhoEntity> items = this.getItensCarrinho(carrinhoEntity.getId());
 
 
         List<ItemCarrinhoVo> listVos = new ArrayList<>();
@@ -324,6 +372,13 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
         vo.setItems(listVos);
         return vo;
+    }
+
+    private List<ItemCarrinhoEntity> getItensCarrinho(Long idCarrinho) {
+        return commonDao.findByProperties(
+                ItemCarrinhoEntity.class,
+                new String[]{"idCarrinho"},
+                new Object[]{idCarrinho});
     }
 
     private ItemCarrinhoVo getItemCarrinhoVo(ItemCarrinhoEntity i) {
@@ -365,7 +420,7 @@ public class CarrinhoServiceImpl implements CarrinhoService {
                     throw new CarrinhoServiceException("Erro ao remover um item do carrinho.");
                 }
                 this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
-                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getSessionToken(), false);
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getIdSession(), false);
             }
             return null;
         }catch(Exception ex){
@@ -380,13 +435,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
             ItemCarrinhoEntity item = this.commonDao.get(ItemCarrinhoEntity.class, idItem);
             if (item != null){
                 CarrinhoEntity carrinhoEntity = this.commonDao.get(CarrinhoEntity.class,item.getIdCarrinho());
+                SessionEntity sessionEntity = getSession(sessionToken);
+                if (sessionEntity == null){
+                    throw new CarrinhoServiceException("Sessão do cliente não encontrada!");
+                }
 
-                if (!carrinhoEntity.getSessionToken().equals(sessionToken)){
+                if (!carrinhoEntity.getIdSession().equals(sessionEntity.getId())){
                     LOG.error("m=removeItem, ERRO BIZARRO!!!, UM CLIENTE COM SESSION_TOKEN TENTOU REMOVER UM ITEM QUE NAO É DELE.");
                     throw new CarrinhoServiceException("Erro ao remover um item do carrinho.");
                 }
                 this.commonDao.remove(ItemCarrinhoEntity.class, idItem);
-                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getSessionToken(), false);
+                return this.getCarrinho(carrinhoEntity.getIdCliente(),carrinhoEntity.getIdSession(), false);
             }
             return null;
         }catch(Exception ex){
@@ -405,4 +464,38 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 
         return this.getCarrinhoVo(carrinhoEntity, true);
     }
+
+    @Override
+    public void moveCarSessionParaCarLogado(String sessionToken, Long idCliente) throws CarrinhoServiceException {
+        CarrinhoVo carrinhoSession = getCarrinhoBySessionToken(sessionToken);
+        if (carrinhoSession.getIdCarrinho() == null){
+            throw new CarrinhoServiceException("Nenhum carrinho encontrado para a sessionToken = " + sessionToken);
+        }
+
+        if (CollectionUtils.isEmpty(carrinhoSession.getItems())){
+            throw new CarrinhoServiceException("O carrinho da session do cliente está vazio.");
+        }
+
+        CarrinhoVo carrinhoCliente = getCarrinhoByIdCliente(idCliente);
+        CarrinhoEntity carrinhoClienteEntity = null;
+
+        if (carrinhoCliente.getIdCarrinho() == null){
+            carrinhoClienteEntity = this.createCarrinho(idCliente, null);
+        }
+
+        final Long idCarrinhoCliente = carrinhoClienteEntity == null ? carrinhoCliente.getIdCarrinho() :
+                carrinhoClienteEntity.getId();
+
+        //movendo os itens do carrinho da sessao para carrinho logado.
+        this.getItensCarrinho(carrinhoSession.getIdCarrinho()).stream().forEach( item -> {
+            item.setIdCarrinho(idCarrinhoCliente);
+            commonDao.update(item);
+        });
+
+        //removendo o carrinho de sessao.
+        commonDao.remove(CarrinhoEntity.class,carrinhoSession.getIdCarrinho());
+
+    }
+
+
 }

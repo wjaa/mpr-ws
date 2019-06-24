@@ -478,11 +478,11 @@ values(null,6,6,0);
 /**************************
   MASSA DE TESTES PARA O CHECKOUT
 ***************************/
-insert  into CARRINHO ( ID, ID_CLIENTE, SESSION_TOKEN, DATA_CRIACAO)
+insert  into CARRINHO ( ID, ID_CLIENTE, ID_SESSION, DATA_CRIACAO)
 values (1,5,null,'2019-01-06');
 
-insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO)
-values (null,1,1);
+insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO, FOTO_PREVIEW)
+values (null,1,1,'fotopreview.jpg');
 
 insert into item_carrinho_anexo (ID, ID_ITEM_CARRINHO, FOTO, ID_CATALOGO)
 values (null,1,'FOTO CLIENTE', null);

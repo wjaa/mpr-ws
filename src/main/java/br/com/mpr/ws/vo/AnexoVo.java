@@ -13,6 +13,16 @@ public class AnexoVo {
     private String urlFoto;
     private Long idCatalogo;
 
+    public AnexoVo(byte[] foto, String nomeArquivo) {
+        this.foto = foto;
+        this.nomeArquivo = nomeArquivo;
+    }
+
+    public AnexoVo(Long idCatalogo) {
+        this.idCatalogo = idCatalogo;
+    }
+
+    public AnexoVo(){}
 
     public byte[] getFoto() {
         return foto;

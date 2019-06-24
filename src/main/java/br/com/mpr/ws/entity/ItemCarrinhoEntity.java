@@ -26,6 +26,9 @@ public class ItemCarrinhoEntity {
     @Column(name = "ID_CARRINHO", nullable = false)
     private Long idCarrinho;
 
+    @Column(name = "FOTO_PREVIEW", nullable = false)
+    private String fotoPreview;
+
     @Transient
     private List<ItemCarrinhoAnexoEntity> anexos;
 
@@ -67,5 +70,13 @@ public class ItemCarrinhoEntity {
 
     public void setAnexos(List<ItemCarrinhoAnexoEntity> anexos) {
         this.anexos = anexos;
+    }
+
+    public String getFotoPreview() {
+        return fotoPreview;
+    }
+
+    public void setFotoPreview(String fotoPreview) {
+        this.fotoPreview = fotoPreview;
     }
 }

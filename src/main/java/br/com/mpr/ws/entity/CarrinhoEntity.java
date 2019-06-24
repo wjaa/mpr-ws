@@ -24,8 +24,8 @@ public class CarrinhoEntity {
     private Long idCliente;
 
     //session do cliente quando ele nao estiver logado.
-    @Column(name = "SESSION_TOKEN", length = 64, unique = true)
-    private String sessionToken;
+    @Column(name = "ID_SESSION", unique = true)
+    private Long idSession;
 
     @Column(name = "DATA_CRIACAO", nullable = false)
     private Date dataCriacao;
@@ -55,12 +55,12 @@ public class CarrinhoEntity {
         this.idCliente = idCliente;
     }
 
-    public String getSessionToken() {
-        return sessionToken;
+    public Long getIdSession() {
+        return idSession;
     }
 
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
+    public void setIdSession(Long idSession) {
+        this.idSession = idSession;
     }
 
     public Date getDataCriacao() {

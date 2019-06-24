@@ -17,16 +17,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by wagner on 6/25/18.
@@ -441,7 +436,7 @@ public class AdminServiceImpl implements AdminService {
                     //se o byte nao estiver vazio é porque tem nova imagem de destaque.
                     if (imgDestaque.getByteImgDestaque() != null){
 
-                        String finalName = imagemService.uploadFotoProdutoDestaque(imgDestaque.getByteImgDestaque(),
+                        String finalName = imagemService.uploadFotoDestaqueProduto(imgDestaque.getByteImgDestaque(),
                                 imgDestaque.getNameImgDestaque());
                         imgDestaque.setImg(finalName);
                         imgDestaque.setProduto(produto);
@@ -450,14 +445,14 @@ public class AdminServiceImpl implements AdminService {
             }
 
             if (produto.getByteImgDestaque() != null){
-                String finalName = imagemService.uploadFotoProdutoDestaque(produto.getByteImgDestaque(),
+                String finalName = imagemService.uploadFotoDestaqueProduto(produto.getByteImgDestaque(),
                         produto.getNameImgDestaque());
                 produto.setImgDestaque(finalName);
 
             }
 
             if (produto.getByteImgPreview() != null){
-                String finalName = imagemService.uploadFotoProdutoPreview(produto.getByteImgPreview(),
+                String finalName = imagemService.uploadFotoPreviewProduto(produto.getByteImgPreview(),
                         produto.getNameImgPreview());
                 produto.setImgPreview(finalName);
 

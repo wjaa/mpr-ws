@@ -54,6 +54,14 @@ public class SessionServiceImpl implements SessionService {
 
     }
 
+    @Override
+    public String getSessionTokenById(Long idSession) {
+        SessionEntity sessionEntity = commonDao.get(SessionEntity.class,idSession);
+        if (sessionEntity != null){
+            return sessionEntity.getSessionToken();
+        }
+        return null;
+    }
 
     private Date resetExpirationDate() {
         return DateUtils.addHour(Calendar.getInstance().getTime(), 1);

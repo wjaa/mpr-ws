@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
         FreteServiceCorreioImplTest.class,
 
         CheckoutServiceImplTest.class,
+        CheckoutRestTest.class,
 
         MprParameterServiceImplTest.class,
 
@@ -36,6 +37,9 @@ import org.junit.runners.Suite;
 
         SessionServiceImplTest.class,
         SessionRestTest.class,
+
+        ProdutoPreviewServiceImplTest.class,
+        ProdutoPreviewRestTest.class,
 
 
 })

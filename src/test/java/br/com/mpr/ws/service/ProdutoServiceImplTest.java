@@ -2,6 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.helper.ProdutoHelper;
 import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.junit.Assert;
@@ -334,6 +335,11 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
     }
 
+    @Test
+    public void getImagemPreviewProdutoById() {
+        Assert.assertTrue("Precisa implementar", false);
+    }
+
     private void validarInfoProduto(List<ProdutoVo> produtos) {
         for (ProdutoVo p : produtos){
             validarInfoProduto(p);
@@ -341,12 +347,7 @@ public class ProdutoServiceImplTest extends BaseDBTest {
     }
 
     private void validarInfoProduto(ProdutoVo p) {
-        Assert.assertNotNull(p.getDescricao());
-        Assert.assertNotNull(p.getPreco());
-        Assert.assertNotNull(p.getImgDestaque());
-        Assert.assertNotNull(p.getDescricaoDetalhada());
-        Assert.assertNotNull(p.getImagensDestaque());
-        Assert.assertTrue(p.getImagensDestaque().size() > 0);
+        ProdutoHelper.validarInfoProduto(p);
     }
 
 }

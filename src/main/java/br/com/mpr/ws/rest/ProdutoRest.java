@@ -102,14 +102,4 @@ public class ProdutoRest extends BaseRest{
     }
 
 
-    @RequestMapping(value = "/produto/addImagem",
-            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
-            method = RequestMethod.POST)
-    public ProdutoVo addImagem(OAuth2Authentication principal){
-
-        return null;//this.produtoService.getProdutoDestaque();
-    }
-
-
-
 }

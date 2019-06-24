@@ -16,7 +16,7 @@ import java.util.List;
 public interface ProdutoService {
 
 
-
+    String getImagemPreviewProdutoById(Long idProduto);
 
     enum OrderBy {MAIOR_PRECO, MENOR_PRECO;
 

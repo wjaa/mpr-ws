@@ -33,7 +33,7 @@ public class SessionServiceImplTest extends BaseDBTest {
     public void renewSession(){
         try{
             SessionEntity sessionEntity = sessionService.createSession();
-            Thread.sleep(600);
+            Thread.sleep(1000);
             sessionService.renewSession(sessionEntity.getSessionToken());
             SessionEntity sessionRenew = sessionService.getSessionByToken(sessionEntity.getSessionToken());
             Assert.assertEquals(sessionEntity.getSessionToken(), sessionRenew.getSessionToken());

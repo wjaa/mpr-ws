@@ -57,17 +57,17 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
-    public CheckoutVo checkout(Long idCarrinho) throws CheckoutServiceException {
+    public CheckoutVo checkout(Long idCliente) throws CheckoutServiceException {
         CheckoutVo vo = new CheckoutVo();
 
         //BUSCANDO O CARRINHO PARA PEGAR OS PRODUTOS DO CLIENTE.
-        CarrinhoVo carrinhoVo = this.getCarrinhoVo(idCarrinho);
+        CarrinhoVo carrinhoVo = this.getCarrinhoByIdCliente(idCliente);
         vo.setCarrinho(carrinhoVo);
 
         //BUSCANDO UM CHECKOUT JÁ CRIADO ANTERIORMENTE PARA ESSE CARRINHO
         CheckoutEntity checkout = commonDao.findByPropertiesSingleResult(CheckoutEntity.class,
                 new String[]{"idCarrinho"},
-                new Object[]{idCarrinho});
+                new Object[]{carrinhoVo.getIdCarrinho()});
 
         //PEGANDO O ENDERECO PRINCIPAL DO CLIENTE, OU O ENDERECO JÁ GRAVADO NO CHECKOUT (CASO ELE TENHA TROCADO).
         vo.setEndereco(this.getEnderecoVo(checkout, carrinhoVo.getIdCliente()));
@@ -189,12 +189,21 @@ public class CheckoutServiceImpl implements CheckoutService {
         return enderecoVo;
     }
 
-    private CarrinhoVo getCarrinhoVo(Long idCarrinho) throws CheckoutServiceException {
+    private CarrinhoVo getCarrinhoByIdCliente(Long idCliente) throws CheckoutServiceException {
+        CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoByIdCliente(idCliente);
+
+        if (carrinhoVo == null || carrinhoVo.getItems() == null || carrinhoVo.getItems().size() == 0){
+            throw new CheckoutServiceException("Carrinho está vazio ou não existe!");
+        }
+        return carrinhoVo;
+    }
+
+    private CarrinhoVo getCarrinhoById(Long idCarrinho) throws CheckoutServiceException {
         CarrinhoVo carrinhoVo = null;
         try {
             carrinhoVo = carrinhoService.getCarrinhoById(idCarrinho);
         } catch (CarrinhoServiceException e) {
-            LOG.error("Erro ao buscar o carrinho do pagamento", e);
+            LOG.error("Erro ao Buscar um carrinho pelo seu ID = " + idCarrinho);
         }
 
         if (carrinhoVo == null || carrinhoVo.getItems() == null || carrinhoVo.getItems().size() == 0){
@@ -300,8 +309,13 @@ public class CheckoutServiceImpl implements CheckoutService {
     }
 
     @Override
-    public CheckoutVo adicionarCupom(Long idCheckout, String codigoCupom) throws CheckoutServiceException {
-        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
+    public CheckoutVo adicionarCupom(Long idCliente, String codigoCupom) throws CheckoutServiceException {
+        CarrinhoEntity carrinhoEntity = commonDao.findByPropertiesSingleResult(CarrinhoEntity.class,
+                new String[]{"idCliente"},new Object[]{idCliente});
+        Assert.notNull(carrinhoEntity,"Carrinho do cliente não existe!");
+
+        CheckoutEntity checkoutEntity = commonDao.findByPropertiesSingleResult(CheckoutEntity.class,
+                new String[]{"idCarrinho"},new Object[]{carrinhoEntity.getId()});
         Assert.notNull(checkoutEntity,"Checkout não encontrado!");
 
         CupomEntity cupomEntity = cupomService.findCupomByCode(codigoCupom);
@@ -342,7 +356,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         try {
             CheckoutEntity checkout = commonDao.get(CheckoutEntity.class, idCheckout);
             BeanUtils.copyProperties(checkout,vo);
-            CarrinhoVo carrinhoVo = this.getCarrinhoVo(checkout.getIdCarrinho());
+            CarrinhoVo carrinhoVo = this.getCarrinhoById(checkout.getIdCarrinho());
             vo.setCarrinho(carrinhoVo);
             ClienteEntity cliente = clienteService.getClienteById(carrinhoVo.getIdCliente());
             vo.setCliente(new ClienteVo(cliente));

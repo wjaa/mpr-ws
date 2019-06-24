@@ -3,6 +3,7 @@ package br.com.mpr.ws.rest;
 
 import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
+import br.com.mpr.ws.rest.aop.SessionController;
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
@@ -37,20 +38,17 @@ public class CarrinhoRest extends BaseRest {
     @RequestMapping(value = "/carrinho/add",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.PUT)
-    public CarrinhoVo addCarrinho(@RequestBody @Valid ItemCarrinhoForm form,
-                                  OAuth2Authentication principal) throws CarrinhoServiceException {
+    public CarrinhoVo addCarrinho(OAuth2Authentication principal) throws CarrinhoServiceException {
         ClienteEntity cliente = validateUser(principal);
-        form.setIdCliente(cliente.getId());
-        return this.carrinhoService.addCarrinho(form);
+
+        return this.carrinhoService.addCarrinho(cliente.getId());
     }
 
     @RequestMapping(value = "/carrinho/add/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.PUT)
-    public CarrinhoVo addCarrinho(@RequestBody @Valid ItemCarrinhoForm form,
-                                  @PathVariable String sessionToken) throws CarrinhoServiceException {
-        form.setSessionToken(sessionToken);
-        return this.carrinhoService.addCarrinho(form);
+    public CarrinhoVo addCarrinho(@PathVariable String sessionToken) throws CarrinhoServiceException {
+        return this.carrinhoService.addCarrinho(sessionToken);
     }
 
 
@@ -58,7 +56,7 @@ public class CarrinhoRest extends BaseRest {
     @RequestMapping(value = "/carrinho",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoByIdCliente(OAuth2Authentication principal){
+    public CarrinhoVo getCarrinhoCliente(OAuth2Authentication principal){
         ClienteEntity cliente = validateUser(principal);
         return this.carrinhoService.getCarrinhoByIdCliente(cliente.getId());
     }
@@ -67,7 +65,8 @@ public class CarrinhoRest extends BaseRest {
     @RequestMapping(value = "/carrinho/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
-    public CarrinhoVo getCarrinhoClienteBySessionToken(@PathVariable String sessionToken){
+    @SessionController
+    public CarrinhoVo getCarrinhoClienteBySessionToken(@PathVariable String sessionToken) throws CarrinhoServiceException {
         return this.carrinhoService.getCarrinhoBySessionToken(sessionToken);
     }
 
@@ -106,12 +105,5 @@ public class CarrinhoRest extends BaseRest {
         return null;
     }
 
-    private ClienteEntity validateUser(OAuth2Authentication principal) {
-        Authentication user = principal.getUserAuthentication();
-        if (user == null){
-            throw new AccessDeniedException("Usuário não autenticado");
-        }
-        return (ClienteEntity) user.getPrincipal();
-    }
 
 }

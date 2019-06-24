@@ -16,11 +16,13 @@ public class MprWsProperties {
     private String folderDestaque;
     private String folderCatalogo;
     private String folderCliente;
+    private String folderPreviewCliente;
     private String imgSemFoto;
     private String baseUrlDestaque;
     private String baseUrlPreview;
     private String baseUrlCliente;
     private String baseUrlCatalogo;
+    private String baseUrlPreviewCliente;
     private String notificationUrl;
     private String notificationEmail;
     private String linkPedido;
@@ -180,5 +182,21 @@ public class MprWsProperties {
 
     public void setCallbackNotification(String callbackNotification) {
         this.callbackNotification = callbackNotification;
+    }
+
+    public String getFolderPreviewCliente() {
+        return folderPreviewCliente;
+    }
+
+    public void setFolderPreviewCliente(String folderPreviewCliente) {
+        this.folderPreviewCliente = folderPreviewCliente;
+    }
+
+    public String getBaseUrlPreviewCliente() {
+        return baseUrlPreviewCliente;
+    }
+
+    public void setBaseUrlPreviewCliente(String baseUrlPreviewCliente) {
+        this.baseUrlPreviewCliente = baseUrlPreviewCliente;
     }
 }

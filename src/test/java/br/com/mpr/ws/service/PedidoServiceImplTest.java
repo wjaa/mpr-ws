@@ -5,6 +5,7 @@ import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.CheckoutServiceException;
 import br.com.mpr.ws.exception.PedidoServiceException;
+import br.com.mpr.ws.exception.ProdutoPreviewServiceException;
 import br.com.mpr.ws.helper.PedidoHelper;
 import br.com.mpr.ws.utils.DateUtils;
 import br.com.mpr.ws.vo.*;
@@ -106,6 +107,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertTrue(e.getMessage(), false);
         } catch (CarrinhoServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
         }
     }
 
@@ -127,6 +130,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
         } catch (CheckoutServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         }
 
@@ -150,6 +155,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
         }
     }
 
@@ -167,6 +174,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
         } catch (CheckoutServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         }
     }
@@ -207,6 +216,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
         }
     }
 
@@ -228,6 +239,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
         }
     }
 
@@ -245,6 +258,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
         } catch (CheckoutServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         } catch (PedidoServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         }
     }
@@ -266,6 +281,8 @@ public class PedidoServiceImplTest extends BaseDBTest {
         } catch (CarrinhoServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         } catch (CheckoutServiceException e) {
+            Assert.assertTrue(e.getMessage(), false);
+        } catch (ProdutoPreviewServiceException e) {
             Assert.assertTrue(e.getMessage(), false);
         }
 

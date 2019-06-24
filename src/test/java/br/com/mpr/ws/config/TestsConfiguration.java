@@ -1,10 +1,9 @@
 package br.com.mpr.ws.config;
 
+import br.com.mpr.ws.service.ImagemService;
 import org.hibernate.SessionFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+import org.mockito.Mockito;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -79,13 +78,6 @@ public class TestsConfiguration {
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
     }
-
-   /* @Bean
-    public HibernateTransactionManager transactionManager(){
-        HibernateTransactionManager htm = new HibernateTransactionManager(this.getSessionFactory());
-
-        return htm;
-    }*/
 
 
     Properties additionalProperties() {

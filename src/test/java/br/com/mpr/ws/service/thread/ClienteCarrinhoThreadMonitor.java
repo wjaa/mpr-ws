@@ -2,6 +2,7 @@ package br.com.mpr.ws.service.thread;
 
 import br.com.mpr.ws.service.CarrinhoService;
 import br.com.mpr.ws.vo.ItemCarrinhoForm;
+import br.com.mpr.ws.vo.PreviewForm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class ClienteCarrinhoThreadMonitor {
     private List<ClienteCarrinhoThread> poolThread = new ArrayList<>();
 
 
-    public void addThread(CarrinhoService carrinhoService, ItemCarrinhoForm form){
+    public void addThread(CarrinhoService carrinhoService, PreviewForm form){
         this.poolThread.add(new ClienteCarrinhoThread(carrinhoService, form));
     }
 
