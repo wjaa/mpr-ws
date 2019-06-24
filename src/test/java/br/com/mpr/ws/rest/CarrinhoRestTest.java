@@ -117,14 +117,14 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void addItemCarrinhoClienteLogado(){
 
-        PreviewForm item = createItemCarrinhoFormClienteLogado();
+        PreviewForm item = createItemCarrinhoFormClienteLogado(6l);
 
         try{
 
             ProdutoVo produtoVo = produtoPreviewService.addFoto(item);
             Assert.assertNotNull(produtoVo.getImgPreviewCliente());
 
-            String accessToken = obtainAccessTokenPassword();
+            String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
             //String content = ObjectUtils.toJson(item);
             ResultActions ra = getMvcPutResultAction("/api/v1/core/carrinho/add", accessToken, "");
 
@@ -135,68 +135,27 @@ public class CarrinhoRestTest extends BaseMvcTest {
             raGet.andExpect(content().json(resultJson));
 
             CarrinhoVo resultCarrinho = ObjectUtils.toObject(resultJson,CarrinhoVo.class);
-            Assert.assertEquals(new Long(3),resultCarrinho.getIdCliente());
+            Assert.assertEquals(new Long(6),resultCarrinho.getIdCliente());
             Assert.assertNotNull(resultCarrinho.getIdCarrinho());
             Assert.assertEquals(1, resultCarrinho.getItems().size());
 
+            resultCarrinho.getItems().forEach(i ->
+            {
+                try {
+                    getMvcDeleteResultActions("/api/v1/core/carrinho/removeItem/" + i.getId(),accessToken);
+                } catch (Exception e) {
+                    Assert.assertTrue(e.getMessage(),false);
+                }
+            });
+
+
+
+
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage(),false);
         }
 
     }
-
-
-    /**
-     *
-     * TESTANDO A VALIDACAO DO FORM.
-     * 1. Adicionar um produto no carrinho sem produto
-     * 2. Adicionar um produto no carrinho sem foto e sem foto de catalogo.
-     * 3. Adicionar um produto no carrinho com foto e sem nome
-     * 4. Adicionar um produto no carrinho sem keydevice e sem idCliente
-     *
-     */
-    @Test
-    public void addItemCarrinhoValidation(){
-
-
-        PreviewForm item = new PreviewForm();
-        item.setIdCliente(1l);
-        item.setAnexos(new ArrayList<>());
-        AnexoVo anexoVo = new AnexoVo();
-        anexoVo.setFoto(new byte[]{0,0,0,0,0});
-        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
-        item.getAnexos().add(anexoVo);
-
-        try{
-
-            String accessToken = obtainAccessTokenPassword();
-
-            //#1
-            String content = ObjectUtils.toJson(item);
-            ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", accessToken, content);
-            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Produto é obrigatório"));
-
-            //#2
-            item.setIdProduto(5l);
-            item.getAnexos().get(0).setFoto(null);
-            content = ObjectUtils.toJson(item);
-            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add",accessToken, content);
-            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Para adicionar esse produto no carrinho, uma imagem é obrigatória"));
-
-            //#3
-            item.getAnexos().get(0).setFoto(new byte[]{10,10,10});
-            item.getAnexos().get(0).setNomeArquivo("");
-            content = ObjectUtils.toJson(item);
-            ra = getMvcPutErrorResultAction("/api/v1/core/carrinho/add", accessToken, content);
-            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString().contains("Nome da imagem está vazio"));
-
-        }catch(Exception ex){
-            Assert.assertTrue(ex.getMessage(),false);
-        }
-
-
-    }
-
 
 
 
@@ -257,7 +216,7 @@ public class CarrinhoRestTest extends BaseMvcTest {
     @Test
     public void getCarrinhoClienteLogadoSemProduto(){
         try{
-            String accessToken = obtainAccessTokenPassword();
+            String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
             CarrinhoVo carrinhoVo = ObjectUtils.toObject(ra.andReturn().getResponse().getContentAsString(),CarrinhoVo.class);
             Assert.assertNotNull(carrinhoVo);
@@ -282,7 +241,6 @@ public class CarrinhoRestTest extends BaseMvcTest {
             PreviewForm item1 = createItemCarrinhoFormClienteDinamico(5l);
             ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
             Assert.assertNotNull(produtoVo.getImgPreviewCliente());
-            String content = ObjectUtils.toJson(item1);
             getMvcPutResultAction("/api/v1/core/carrinho/add",accessToken,"");
 
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
@@ -368,10 +326,10 @@ public class CarrinhoRestTest extends BaseMvcTest {
         try{
             String accessToken = obtainAccessTokenPassword("testecarrinho@gmail.com","1234567");
             //#1
-            PreviewForm item1 = createItemCarrinhoFormClienteLogado();
+            PreviewForm item1 = createItemCarrinhoFormClienteLogado(6l);
             ProdutoVo produtoVo = produtoPreviewService.addFoto(item1);
             Assert.assertNotNull(produtoVo.getImgPreviewCliente());
-            getMvcPutResultAction("/api/v1/core/carrinho/add/", accessToken , "");
+            getMvcPutResultAction("/api/v1/core/carrinho/add", accessToken , "");
 
             //#2
             ResultActions ra = getMvcGetResultActions("/api/v1/core/carrinho", accessToken);
@@ -403,10 +361,10 @@ public class CarrinhoRestTest extends BaseMvcTest {
 
     }
 
-    private PreviewForm createItemCarrinhoFormClienteLogado() {
+    private PreviewForm createItemCarrinhoFormClienteLogado(Long idCliente) {
         PreviewForm previewForm = new PreviewForm();
         previewForm.setIdProduto(5l);
-        previewForm.setIdCliente(3l);
+        previewForm.setIdCliente(idCliente);
         previewForm.setAnexos(new ArrayList<>());
         AnexoVo anexoVo = new AnexoVo();
         anexoVo.setFoto(new byte[]{0,0,0,0,0});

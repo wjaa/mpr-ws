@@ -33,6 +33,17 @@ public class StringUtils {
         return hash;
     }
 
+
+    public static String createRandomNumber() {
+        String hash = "";
+        for (int i = 0; i < 10; i++){
+            String c;
+            int rand = ThreadLocalRandom.current().nextInt(0,10);
+            hash += rand;
+        }
+        return hash;
+    }
+
     public static String getNumber(String numberStr) {
         Pattern p = Pattern.compile("([0-9]+)");
         Matcher m = p.matcher(numberStr);

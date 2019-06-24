@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -337,7 +338,9 @@ public class ProdutoServiceImplTest extends BaseDBTest {
 
     @Test
     public void getImagemPreviewProdutoById() {
-        Assert.assertTrue("Precisa implementar", false);
+        String imagemPreview = produtoService.getImagemPreviewProdutoById(5l);
+        Assert.assertNotNull(imagemPreview);
+        Assert.assertFalse(StringUtils.isEmpty(imagemPreview));
     }
 
     private void validarInfoProduto(List<ProdutoVo> produtos) {

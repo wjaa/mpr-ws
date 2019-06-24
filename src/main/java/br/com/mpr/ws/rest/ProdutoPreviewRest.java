@@ -25,7 +25,7 @@ public class ProdutoPreviewRest extends BaseRest {
     @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/preview/addImagem",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
-            method = RequestMethod.POST)
+            method = RequestMethod.PUT)
     public ProdutoVo addImagem(@RequestBody @Valid PreviewForm previewForm, OAuth2Authentication user)
             throws ProdutoPreviewServiceException {
 
@@ -38,7 +38,7 @@ public class ProdutoPreviewRest extends BaseRest {
 
     @RequestMapping(value = "/preview/addImagem/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
-            method = RequestMethod.POST)
+            method = RequestMethod.PUT)
     @SessionController
     public ProdutoVo addImagem(@RequestBody @Valid PreviewForm previewForm, @PathVariable String sessionToken)
             throws ProdutoPreviewServiceException {

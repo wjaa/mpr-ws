@@ -479,7 +479,7 @@ values(null,6,6,0);
   MASSA DE TESTES PARA O CHECKOUT
 ***************************/
 insert  into CARRINHO ( ID, ID_CLIENTE, ID_SESSION, DATA_CRIACAO)
-values (1,5,null,'2019-01-06');
+values (1,3,null,'2019-01-06');
 
 insert into item_carrinho (ID, ID_ESTOQUE_ITEM, ID_CARRINHO, FOTO_PREVIEW)
 values (null,1,1,'fotopreview.jpg');

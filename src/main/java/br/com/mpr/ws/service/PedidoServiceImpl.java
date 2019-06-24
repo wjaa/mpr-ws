@@ -62,8 +62,8 @@ public class PedidoServiceImpl implements PedidoService{
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
     public PedidoEntity createPedido(CheckoutForm checkoutForm) throws PedidoServiceException {
-        LOG.info("m=createPedido, idCheckout=" + checkoutForm.getIdCheckout());
-        CheckoutVo checkout = checkoutService.getCheckout(checkoutForm.getIdCheckout());
+        LOG.info("m=createPedido, idCliente=" + checkoutForm.getIdCliente());
+        CheckoutVo checkout = checkoutService.getCheckoutByIdCliente(checkoutForm.getIdCliente());
         PedidoEntity pedido = this.createPedido("START", checkout, checkoutForm.getFormaPagamento());
         pedido = commonDao.save(pedido);
         pedido.setItens(this.createItens(checkout.getCarrinho(), pedido.getId()));

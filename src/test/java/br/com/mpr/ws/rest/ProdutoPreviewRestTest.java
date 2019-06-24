@@ -8,6 +8,7 @@ import br.com.mpr.ws.service.ImagemService;
 import br.com.mpr.ws.service.ProdutoService;
 import br.com.mpr.ws.service.SessionService;
 import br.com.mpr.ws.utils.ObjectUtils;
+import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.AnexoVo;
 import br.com.mpr.ws.vo.CarrinhoVo;
 import br.com.mpr.ws.vo.PreviewForm;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class ProdutoPreviewRestTest extends BaseMvcTest {
     @Autowired
     private SessionService sessionService;
 
-    @Autowired
+    @MockBean
     private ImagemService imagemService;
 
     @Autowired
@@ -69,7 +71,7 @@ public class ProdutoPreviewRestTest extends BaseMvcTest {
 
 
             String content = ObjectUtils.toJson(previewForm);
-            ResultActions ra = getMvcPostResultAction("/api/v1/core/preview/addImagem", accessToken, content);
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/preview/addImagem", accessToken, content);
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
 
@@ -104,7 +106,7 @@ public class ProdutoPreviewRestTest extends BaseMvcTest {
             ).thenReturn("fotoCliente.png");
 
             String content = ObjectUtils.toJson(previewForm);
-            ResultActions ra = getMvcPostResultAction("/api/v1/core/preview/addImagem/" +
+            ResultActions ra = getMvcPutResultAction("/api/v1/core/preview/addImagem/" +
                     sessionEntity.getSessionToken(), content);
 
             String resultJson = ra.andReturn().getResponse().getContentAsString();
@@ -118,6 +120,74 @@ public class ProdutoPreviewRestTest extends BaseMvcTest {
         }
 
     }
+
+
+    /**
+     *
+     * TESTANDO A VALIDACAO DO FORM.
+     * 1. Adicionar uma imagem sem produto associado
+     * 2. Adicionar uma imagem sem foto(byte) e sem foto de catalogo(id_catalogo).
+     * 3. Adicionar uma imagem com foto(byte) e sem nome do arquivo
+     *
+     */
+    @Test
+    public void addImagemValidation(){
+
+
+
+
+        PreviewForm item = new PreviewForm();
+        item.setIdCliente(1l);
+        item.setAnexos(new ArrayList<>());
+        AnexoVo anexoVo = new AnexoVo();
+        anexoVo.setFoto(new byte[]{0,0,0,0,0});
+        anexoVo.setNomeArquivo(StringUtils.createRandomHash() + ".png");
+        item.getAnexos().add(anexoVo);
+
+        try{
+
+            Mockito.when(
+                    imagemService.createPreviewCliente(Mockito.anyString(),Mockito.anyList(),
+                            Mockito.anyList())
+            ).thenReturn("fotoPreviewCliente.png");
+
+            Mockito.when(
+                    imagemService.uploadFotoCliente(Mockito.any(),Mockito.anyString())
+            ).thenReturn("fotoCliente.png");
+
+
+            String content = ObjectUtils.toJson(item);
+            String accessToken = obtainAccessTokenPassword();
+            //#1
+            ResultActions ra = getMvcPutErrorResultAction("/api/v1/core/preview/addImagem",
+                    accessToken, content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString(),
+                    ra.andReturn().getResponse().getContentAsString().contains("Produto é obrigatório"));
+
+            //#2
+            item.setIdProduto(5l);
+            item.getAnexos().get(0).setFoto(null);
+            content = ObjectUtils.toJson(item);
+            ra = getMvcPutErrorResultAction("/api/v1/core/preview/addImagem",accessToken, content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString(),
+                    ra.andReturn().getResponse().getContentAsString().contains("Algum anexo está sem foto"));
+
+            //#3
+            item.getAnexos().get(0).setFoto(new byte[]{10,10,10});
+            item.getAnexos().get(0).setNomeArquivo("");
+            content = ObjectUtils.toJson(item);
+            ra = getMvcPutErrorResultAction("/api/v1/core/preview/addImagem", accessToken, content);
+            Assert.assertTrue(ra.andReturn().getResponse().getContentAsString(),
+                    ra.andReturn().getResponse().getContentAsString().contains("Nome da imagem está vazio"));
+
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+
+
+    }
+
+
 
     @Override
     protected AppUser getAppUser() {

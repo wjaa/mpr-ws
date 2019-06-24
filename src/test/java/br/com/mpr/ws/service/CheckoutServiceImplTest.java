@@ -20,7 +20,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     public void testCheckout(){
 
         try {
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
+            CheckoutVo checkout = this.checkoutService.checkout(3l);
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
@@ -51,10 +51,10 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     @Test
     public void testAlterarEndereco(){
         try{
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
-            checkout = checkoutService.alterarEndereco(checkout.getId(),2l);
+            CheckoutVo checkout = this.checkoutService.checkout(3l);
+            checkout = checkoutService.alterarEndereco(3l,4l);
 
-            Assert.assertEquals(new Long(2l),checkout.getEndereco().getId());
+            Assert.assertEquals(new Long(4l),checkout.getEndereco().getId());
             Assert.assertNotNull(checkout.getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getEndereco());
             Assert.assertNotNull(checkout.getEndereco().getDescricao());
@@ -83,10 +83,10 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     @Test
     public void testAdicionarCupom(){
         try{
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
+            CheckoutVo checkout = this.checkoutService.checkout(3l);
             Assert.assertNull(checkout.getCupom());
 
-            checkout = checkoutService.adicionarCupom(checkout.getId(),"AABBCCDD");
+            checkout = checkoutService.adicionarCupom(3l,"AABBCCDD");
 
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
@@ -123,8 +123,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     @Test
     public void testAdicionarCupomNaoExiste(){
         try{
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
-            checkoutService.adicionarCupom(checkout.getId(),"XXXXX");
+            checkoutService.adicionarCupom(3l,"XXXXX");
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage().contains("Cupom não existe"));
@@ -134,8 +133,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     @Test
     public void testAdicionarCupomExpirado(){
         try{
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
-            checkoutService.adicionarCupom(checkout.getId(),"EEFFGGHH");
+            checkoutService.adicionarCupom(3l,"EEFFGGHH");
 
         }catch(Exception ex){
             Assert.assertTrue(ex.getMessage().contains("Cupom não existe"));
@@ -146,10 +144,10 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     @Test
     public void testAlterarFrete(){
         try{
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
+            CheckoutVo checkout = this.checkoutService.checkout(3l);
             Assert.assertEquals(FreteType.ECONOMICO, checkout.getFreteSelecionado().getFreteType());
 
-            checkout = checkoutService.alterarFrete(checkout.getId(), FreteType.RAPIDO);
+            checkout = checkoutService.alterarFrete(3l, FreteType.RAPIDO);
             Assert.assertEquals(new Double(28.50), checkout.getValorProdutos());
             Assert.assertTrue(checkout.getValorFrete() > 0);
             Assert.assertTrue(checkout.getValorTotal() > checkout.getValorProdutos());
@@ -167,7 +165,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
             Assert.assertNotNull(checkout.getCheckoutToken());
             Assert.assertEquals(32,checkout.getCheckoutToken().length());
 
-            CheckoutVo checkoutAtual = checkoutService.alterarFrete(checkout.getId(), FreteType.ECONOMICO);
+            CheckoutVo checkoutAtual = checkoutService.alterarFrete(3l, FreteType.ECONOMICO);
             Assert.assertNotNull(checkoutAtual.getValorFrete());
             Assert.assertNotNull(checkoutAtual.getListResultFrete());
             Assert.assertEquals(2, checkoutAtual.getListResultFrete().size());
@@ -202,7 +200,7 @@ public class CheckoutServiceImplTest extends BaseDBTest {
     public void testGetCheckout(){
 
         try {
-            CheckoutVo checkout = this.checkoutService.checkout(1l);
+            CheckoutVo checkout = this.checkoutService.checkout(3l);
 
             checkout = this.checkoutService.getCheckout(checkout.getId());
 

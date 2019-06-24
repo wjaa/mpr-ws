@@ -442,4 +442,17 @@
         </constructor-arg>
     </bean>
 
+
+    <bean name="CheckoutService.findIdCheckoutByCliente" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                select ch.ID long_value
+                from checkout ch
+                join carrinho car on car.id = ch.ID_CARRINHO
+                where car.ID_CLIENTE = :idCliente
+            </value>
+        </constructor-arg>
+    </bean>
+
+
 </beans>

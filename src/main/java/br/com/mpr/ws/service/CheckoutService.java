@@ -10,18 +10,20 @@ import br.com.mpr.ws.vo.CheckoutVo;
 public interface CheckoutService {
 
     /**
-     * @param idCarrinho
+     * @param idCliente
      * @return
      */
-    CheckoutVo checkout(Long idCarrinho) throws CheckoutServiceException;
+    CheckoutVo checkout(Long idCliente) throws CheckoutServiceException;
 
-    CheckoutVo alterarEndereco(Long idCheckout, Long idEndereco) throws CheckoutServiceException;
+    CheckoutVo alterarEndereco(Long idCliente, Long idEndereco) throws CheckoutServiceException;
 
-    CheckoutVo adicionarCupom(Long idCheckout, String codigoCupom) throws CheckoutServiceException;
+    CheckoutVo adicionarCupom(Long idCliente, String codigoCupom) throws CheckoutServiceException;
 
-    CheckoutVo alterarFrete(Long idCheckout, FreteType freteType) throws CheckoutServiceException;
+    CheckoutVo alterarFrete(Long idCliente, FreteType freteType) throws CheckoutServiceException;
 
     CheckoutVo getCheckout(Long idCheckout);
+
+    CheckoutVo getCheckoutByIdCliente(Long idCliente);
 
     String getCheckoutToken() throws CheckoutServiceException;
 }

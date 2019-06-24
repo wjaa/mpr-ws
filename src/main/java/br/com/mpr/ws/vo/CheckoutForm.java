@@ -1,12 +1,14 @@
 package br.com.mpr.ws.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.NotNull;
 
 public class CheckoutForm {
 
-    @NotNull(message = "Id do checkout é obrigatório!")
-    private Long idCheckout;
+    @JsonIgnore
+    private Long idCliente;
 
     @NotNull(message = "Forma de pagamento é obrigatória!")
     private FormaPagamentoVo formaPagamento;
@@ -14,12 +16,12 @@ public class CheckoutForm {
     @NotNull(message = "SenderHash é obrigatório!")
     private String senderHash;
 
-    public Long getIdCheckout() {
-        return idCheckout;
+    public Long getIdCliente() {
+        return idCliente;
     }
 
-    public void setIdCheckout(Long idCheckout) {
-        this.idCheckout = idCheckout;
+    public void setIdCliente(Long idCliente) {
+        this.idCliente = idCliente;
     }
 
     public FormaPagamentoVo getFormaPagamento() {
@@ -41,7 +43,7 @@ public class CheckoutForm {
     @Override
     public String toString() {
         return "CheckoutForm{" +
-                "idCheckout=" + idCheckout +
+                "idCliente=" + idCliente +
                 ", formaPagamento=" + formaPagamento +
                 ", senderHash='" + senderHash + '\'' +
                 '}';

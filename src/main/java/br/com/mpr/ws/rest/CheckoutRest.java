@@ -58,6 +58,7 @@ public class CheckoutRest extends BaseRest {
      * @return
      * @throws CheckoutServiceException
      */
+    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/checkout/{sessionToken}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
@@ -69,6 +70,7 @@ public class CheckoutRest extends BaseRest {
         return this.checkoutService.checkout(cliente.getId());
     }
 
+    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/checkout/addCupom/{cupom}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
@@ -77,22 +79,25 @@ public class CheckoutRest extends BaseRest {
         return this.checkoutService.adicionarCupom(cliente.getId(),cupom);
     }
 
-    @RequestMapping(value = "/checkout/alterarEndereco/{idCheckout}/{idEndereco}",
+    @PreAuthorize(value = "hasAuthority('USER')")
+    @RequestMapping(value = "/checkout/alterarEndereco/{idEndereco}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
-    public CheckoutVo alterarEndereco(@PathVariable Long idCheckout,
-                                      @PathVariable Long idEndereco) throws CheckoutServiceException {
-        return this.checkoutService.alterarEndereco(idCheckout, idEndereco);
+    public CheckoutVo alterarEndereco(@PathVariable Long idEndereco, OAuth2Authentication user ) throws CheckoutServiceException {
+        ClienteEntity cliente = validateUser(user);
+        return this.checkoutService.alterarEndereco(cliente.getId(), idEndereco);
     }
 
-    @RequestMapping(value = "/checkout/alterarFrete/{idCheckout}/{freteType}",
+    @PreAuthorize(value = "hasAuthority('USER')")
+    @RequestMapping(value = "/checkout/alterarFrete/{freteType}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
-    public CheckoutVo alterarFrete(@PathVariable Long idCheckout,
-                                      @PathVariable FreteType freteType) throws CheckoutServiceException {
-        return this.checkoutService.alterarFrete(idCheckout, freteType);
+    public CheckoutVo alterarFrete(@PathVariable FreteType freteType, OAuth2Authentication user) throws CheckoutServiceException {
+        ClienteEntity cliente = validateUser(user);
+        return this.checkoutService.alterarFrete(cliente.getId(), freteType);
     }
 
+    @PreAuthorize(value = "hasAuthority('USER')")
     @RequestMapping(value = "/checkout/token",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)

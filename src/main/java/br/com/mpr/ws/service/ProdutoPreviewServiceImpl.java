@@ -12,6 +12,7 @@ import br.com.mpr.ws.vo.PreviewForm;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +128,9 @@ public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
                 previewAnexo.setIdCatalogo(a.getIdCatalogo());
             }else if (a.getFoto() != null && a.getFoto().length > 0){
                 try {
+                    if (StringUtils.isEmpty(a.getNomeArquivo())){
+                        throw new ProdutoPreviewServiceException("Nome da imagem está vazio");
+                    }
                     String urlImagem = imagemService.uploadFotoCliente(a.getFoto(),a.getNomeArquivo());
                     previewAnexo.setFoto(urlImagem);
                 } catch (ImagemServiceException e) {

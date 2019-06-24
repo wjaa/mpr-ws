@@ -41,7 +41,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     private static final Log LOG = LogFactory.getLog(PagamentoServicePagseguroImpl.class);
 
 
-    private PagSeguro pagSeguro;
+    protected PagSeguro pagSeguro;
 
     @Autowired
     private CheckoutService checkoutService;
@@ -91,7 +91,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
         LOG.info("m=checkoutCartaoCredito, form=" + form);
 
         LOG.debug("m=checkoutCartaoCredito, pegando informacoes para criar a transacao.");
-        CheckoutVo checkout = checkoutService.getCheckout(form.getIdCheckout());
+        CheckoutVo checkout = checkoutService.getCheckoutByIdCliente(form.getIdCliente());
         ClienteEntity cliente = clienteService.getClienteById(checkout.getCliente().getId());
         EnderecoEntity enderecoEntrega = commonDao.get(EnderecoEntity.class, checkout.getEndereco().getId());
         EnderecoEntity enderecoCliente = cliente.getEnderecoPrincipal();
@@ -225,7 +225,7 @@ public class PagamentoServicePagseguroImpl implements PagamentoService {
     private ResultadoPagamentoVo checkoutBoleto(CheckoutForm form) throws PedidoServiceException {
         LOG.info("m=checkoutBoleto, form=" + form);
         LOG.debug("m=checkoutBoleto, pegando informacoes para criar a transacao.");
-        CheckoutVo checkout = checkoutService.getCheckout(form.getIdCheckout());
+        CheckoutVo checkout = checkoutService.getCheckoutByIdCliente(form.getIdCliente());
         ClienteEntity cliente = clienteService.getClienteById(checkout.getCliente().getId());
         EnderecoEntity enderecoEntrega = commonDao.get(EnderecoEntity.class, checkout.getEndereco().getId());
 

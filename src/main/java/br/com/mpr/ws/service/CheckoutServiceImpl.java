@@ -1,6 +1,7 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
+import br.com.mpr.ws.dao.GerericDataVo;
 import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.CarrinhoServiceException;
 import br.com.mpr.ws.exception.CheckoutServiceException;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -32,6 +34,11 @@ import java.util.Map;
 public class CheckoutServiceImpl implements CheckoutService {
 
     private static final Log LOG = LogFactory.getLog(CheckoutServiceImpl.class);
+
+
+    @Resource(name = "CheckoutService.findIdCheckoutByCliente")
+    private String QUERY_FIND_IDCHECKOUT_BY_CLIENTE;
+
 
     @Autowired
     private CarrinhoService carrinhoService;
@@ -55,13 +62,9 @@ public class CheckoutServiceImpl implements CheckoutService {
     private MprParameterService parameterService;
 
 
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
-    public CheckoutVo checkout(Long idCliente) throws CheckoutServiceException {
-        CheckoutVo vo = new CheckoutVo();
 
-        //BUSCANDO O CARRINHO PARA PEGAR OS PRODUTOS DO CLIENTE.
-        CarrinhoVo carrinhoVo = this.getCarrinhoByIdCliente(idCliente);
+    private CheckoutVo checkout(CarrinhoVo carrinhoVo) throws CheckoutServiceException {
+        CheckoutVo vo = new CheckoutVo();
         vo.setCarrinho(carrinhoVo);
 
         //BUSCANDO UM CHECKOUT JÁ CRIADO ANTERIORMENTE PARA ESSE CARRINHO
@@ -112,6 +115,14 @@ public class CheckoutServiceImpl implements CheckoutService {
         this.saveCheckout(checkout, vo);
 
         return vo;
+
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
+    public CheckoutVo checkout(Long idCliente) throws CheckoutServiceException {
+        //BUSCANDO O CARRINHO PARA PEGAR OS PRODUTOS DO CLIENTE.
+        return checkout(this.getCarrinhoByIdCliente(idCliente));
     }
 
     private List<ResultFreteVo> getListResultFrete(CheckoutEntity checkout) {
@@ -213,48 +224,50 @@ public class CheckoutServiceImpl implements CheckoutService {
     }
 
     @Override
-    public CheckoutVo alterarEndereco(Long idCheckout, Long idEndereco) throws CheckoutServiceException {
-        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
+    public CheckoutVo alterarEndereco(Long idCliente, Long idEndereco) throws CheckoutServiceException {
+        CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoByIdCliente(idCliente);
+
+        if (carrinhoVo == null){
+            throw new CheckoutServiceException("Carrinho não encontrado para o cliente");
+        }
+
+        CheckoutEntity checkoutEntity = commonDao.findByPropertiesSingleResult(CheckoutEntity.class,
+                new String[]{"idCarrinho"},
+                new Object[]{carrinhoVo.getIdCarrinho()});
         Assert.notNull(checkoutEntity,"Checkout não encontrado!");
 
+        ClienteEntity cliente = clienteService.getClienteById(carrinhoVo.getIdCliente());
+        if (this.enderecoNaoEhDoCliente(cliente.getEnderecos(),idEndereco) ){
+            throw new CheckoutServiceException("O endereco informado não é do cliente.");
+        }
 
-        try {
-            CarrinhoVo carrinhoVo = carrinhoService.getCarrinhoById(checkoutEntity.getIdCarrinho());
-            ClienteEntity cliente = clienteService.getClienteById(carrinhoVo.getIdCliente());
-            if (this.enderecoNaoEhDoCliente(cliente.getEnderecos(),idEndereco) ){
-                throw new CheckoutServiceException("O endereco informado não é do cliente.");
-            }
+        checkoutEntity.setIdEndereco(idEndereco);
 
-            checkoutEntity.setIdEndereco(idEndereco);
-
-            //RECALCULANDO OS FRETES ECONOMICO E RAPIDO.
-            List<ResultFreteVo> novoResultList = this.calcularFretes(this.getNovoCep(cliente.getEnderecos(),idEndereco),
-                    checkoutEntity.getFreteType(),carrinhoVo.getItems());
+        //RECALCULANDO OS FRETES ECONOMICO E RAPIDO.
+        List<ResultFreteVo> novoResultList = this.calcularFretes(this.getNovoCep(cliente.getEnderecos(),idEndereco),
+                checkoutEntity.getFreteType(),carrinhoVo.getItems());
 
 
-            //COPIANDO OS VALORES PARA A LISTA DE FRETES DO CHECKOUT.
-            for (CheckoutFreteEntity checkoutFrete : checkoutEntity.getListFrete() ){
-                for (ResultFreteVo resultFrete : novoResultList){
-                    //ALTERANDO OS VALORES DOS RESULTADOS ANTERIORES
-                    if (resultFrete.getFreteType().equals(checkoutFrete.getFreteType())){
-                        BeanUtils.copyProperties(resultFrete,checkoutFrete, "id", "checkout");
-                    }
-                    //ALTERANDO OS VALORES DO CHECKOUT.
-                    if (resultFrete.getFreteType().equals(checkoutEntity.getFreteType())){
-                        checkoutEntity.setDiasEntrega(resultFrete.getDiasUteis());
-                        checkoutEntity.setValorFrete(resultFrete.getValor());
-                    }
+        //COPIANDO OS VALORES PARA A LISTA DE FRETES DO CHECKOUT.
+        for (CheckoutFreteEntity checkoutFrete : checkoutEntity.getListFrete() ){
+            for (ResultFreteVo resultFrete : novoResultList){
+                //ALTERANDO OS VALORES DOS RESULTADOS ANTERIORES
+                if (resultFrete.getFreteType().equals(checkoutFrete.getFreteType())){
+                    BeanUtils.copyProperties(resultFrete,checkoutFrete, "id", "checkout");
+                }
+                //ALTERANDO OS VALORES DO CHECKOUT.
+                if (resultFrete.getFreteType().equals(checkoutEntity.getFreteType())){
+                    checkoutEntity.setDiasEntrega(resultFrete.getDiasUteis());
+                    checkoutEntity.setValorFrete(resultFrete.getValor());
                 }
             }
-
-            //ATUALIZANDO O CHECKOUT.
-            commonDao.update(checkoutEntity);
-
-            return this.checkout(checkoutEntity.getIdCarrinho());
-
-        } catch (CarrinhoServiceException e) {
-            throw new CheckoutServiceException("Carrinho não encontrado para o checkout informado.");
         }
+
+        //ATUALIZANDO O CHECKOUT.
+        commonDao.update(checkoutEntity);
+
+        return this.checkout(carrinhoVo.getIdCliente());
+
 
     }
 
@@ -326,14 +339,20 @@ public class CheckoutServiceImpl implements CheckoutService {
         checkoutEntity.setIdCupom(cupomEntity.getId());
         commonDao.update(checkoutEntity);
 
-        return this.checkout(checkoutEntity.getIdCarrinho());
+        return this.checkout(carrinhoEntity.getIdCliente());
 
     }
 
     @Override
-    public CheckoutVo alterarFrete(Long idCheckout, FreteType freteType) throws CheckoutServiceException {
+    public CheckoutVo alterarFrete(Long idCliente, FreteType freteType) throws CheckoutServiceException {
 
-        CheckoutEntity checkoutEntity = commonDao.get(CheckoutEntity.class, idCheckout);
+        CarrinhoVo carrinhoVo = getCarrinhoByIdCliente(idCliente);
+
+        Assert.notNull(carrinhoVo,"Carrinho não encontrado para o cliente");
+
+        CheckoutEntity checkoutEntity = commonDao.findByPropertiesSingleResult(CheckoutEntity.class,
+                new String[]{"idCarrinho"},
+                new Object[]{carrinhoVo.getIdCarrinho()});
         Assert.notNull(checkoutEntity,"Checkout não encontrado!");
 
         checkoutEntity.setFreteType(freteType);
@@ -346,7 +365,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
         commonDao.update(checkoutEntity);
 
-        return this.checkout(checkoutEntity.getIdCarrinho());
+        return this.checkout(getCarrinhoById(checkoutEntity.getIdCarrinho()));
     }
 
     @Override
@@ -374,6 +393,20 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
 
         return vo;
+    }
+
+    @Override
+    public CheckoutVo getCheckoutByIdCliente(Long idCliente) {
+        GerericDataVo vo = commonDao.findByNativeQuerySingleResult(QUERY_FIND_IDCHECKOUT_BY_CLIENTE,
+                GerericDataVo.class,
+                new String[]{"idCliente"},
+                new Object[]{idCliente});
+
+        if (vo != null){
+            return getCheckout(vo.getLongValue());
+        }
+
+        return new CheckoutVo();
     }
 
     private void saveCheckout(CheckoutEntity checkout, CheckoutVo vo) {

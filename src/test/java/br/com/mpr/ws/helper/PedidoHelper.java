@@ -25,12 +25,32 @@ public class PedidoHelper {
     @Autowired
     private ProdutoPreviewService produtoPreviewService;
 
-    public static final Long ID_CLIENTE = 1L;
+    public static final Long ID_CLIENTE = 3L;
     public static final Long ID_PRODUTO = 4L;
 
 
 
-    public CheckoutForm createCheckoutForm() throws CheckoutServiceException, ProdutoPreviewServiceException, CarrinhoServiceException {
+    public CheckoutForm createCheckoutFormCC() throws CheckoutServiceException,
+            ProdutoPreviewServiceException, CarrinhoServiceException {
+        CheckoutForm checkoutForm = createCheckoutForm();
+        FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
+        formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
+        checkoutForm.setFormaPagamento(formaPagamentoVo);
+        return checkoutForm;
+    }
+
+    public CheckoutForm createCheckoutFormBoleto() throws CheckoutServiceException,
+            ProdutoPreviewServiceException, CarrinhoServiceException {
+        CheckoutForm checkoutForm = createCheckoutForm();
+        FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
+        formaPagamentoVo.setPagamentoType(PagamentoType.BOLETO);
+        checkoutForm.setFormaPagamento(formaPagamentoVo);
+        return checkoutForm;
+    }
+
+
+    private CheckoutForm createCheckoutForm() throws CheckoutServiceException,
+            ProdutoPreviewServiceException, CarrinhoServiceException {
         PreviewForm form = new PreviewForm();
         form.setIdCliente(ID_CLIENTE);
         form.setIdProduto(ID_PRODUTO);
@@ -47,12 +67,9 @@ public class PedidoHelper {
         //TODO CONTINUAR AQUI CRIANDO UM NOVO CARRINHO PQ O TESTE DE CIMA REMOVE O CARRINHO NO FINAL.
         //PRECISA TER UM CARRINHO PARA CADA TESTE.
 
-        CheckoutVo checkout = this.checkoutService.checkout(carrinho.getIdCarrinho());
+        CheckoutVo checkout = this.checkoutService.checkout(carrinho.getIdCliente());
         CheckoutForm checkoutForm = new CheckoutForm();
-        FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
-        formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
-        checkoutForm.setFormaPagamento(formaPagamentoVo);
-        checkoutForm.setIdCheckout(checkout.getId());
+        checkoutForm.setIdCliente(form.getIdCliente());
         return checkoutForm;
     }
 
