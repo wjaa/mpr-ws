@@ -29,15 +29,6 @@ public class LoginRest extends BaseRest {
     @Autowired
     private LoginService loginService;
 
-
-    @RequestMapping(value = "/login",
-            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
-            method = RequestMethod.POST)
-    public ClienteEntity login(@RequestBody @Valid LoginForm loginForm) throws LoginServiceException {
-        return this.loginService.login(loginForm);
-    }
-
-
     @RequestMapping(value = "/login/reset",
                    produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
                    method = RequestMethod.POST)

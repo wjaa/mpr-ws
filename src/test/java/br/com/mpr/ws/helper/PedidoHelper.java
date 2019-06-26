@@ -35,6 +35,9 @@ public class PedidoHelper {
         CheckoutForm checkoutForm = createCheckoutForm();
         FormaPagamentoVo formaPagamentoVo = new FormaPagamentoVo();
         formaPagamentoVo.setPagamentoType(PagamentoType.CARTAO_CREDITO);
+        CartaoCreditoVo cartaoCreditoVo = new CartaoCreditoVo();
+        cartaoCreditoVo.setQuantity(1);
+        formaPagamentoVo.setCartaoCredito(cartaoCreditoVo);
         checkoutForm.setFormaPagamento(formaPagamentoVo);
         return checkoutForm;
     }

@@ -10,6 +10,7 @@ import br.com.mpr.ws.entity.LoginEntity;
 import br.com.mpr.ws.exception.LoginServiceException;
 import br.com.mpr.ws.security.Encoders;
 import br.com.mpr.ws.utils.DateUtils;
+import br.com.mpr.ws.utils.PasswordEncoderUtils;
 import br.com.mpr.ws.utils.StringUtils;
 import br.com.mpr.ws.vo.LoginForm;
 import org.apache.commons.logging.Log;
@@ -114,7 +115,7 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
             throw new LoginServiceException("Código para troca de senha expirou, solicite uma nova troca de senha.");
         }
 
-        login.setSenha(novaSenha);
+        login.setSenha(PasswordEncoderUtils.encoder(novaSenha));
         dao.update(login);
     }
 

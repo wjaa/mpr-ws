@@ -26,6 +26,16 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo());
     }
 
+   /* @Bean
+    public Docket oauth() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.springframework.security.oauth2.provider.endpoint"))
+                .paths(PathSelectors.ant("/oauth/**"))
+                .build()
+                .apiInfo(oauthInfo());
+    }
+*/
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "API MeuPortaRetrato.com",
@@ -35,6 +45,16 @@ public class SwaggerConfig {
                 new Contact("Wagner Jeronimo", "meuportaretrato.com", "wagner@meuportaretrato.com"),
                 "License of API", "API license URL", Collections.emptyList());
     }
+
+   /* private ApiInfo oauthInfo() {
+        return new ApiInfo(
+                "OAuth2 MeuPortaRetrato.com",
+                "OAuth2 da API",
+                "OAuth 2",
+                "Terms of service",
+                new Contact("Wagner Jeronimo", "meuportaretrato.com", "wagner@meuportaretrato.com"),
+                "License of API", "API license URL", Collections.emptyList());
+    }*/
 
 
 

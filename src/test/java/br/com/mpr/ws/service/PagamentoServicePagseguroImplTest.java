@@ -131,7 +131,6 @@ public class PagamentoServicePagseguroImplTest extends BaseDBTest {
         PedidoEntity pedidoEntity = pedidoService.getPedido(result.getIdPedido());
         Assert.assertEquals(pedidoEntity.getCodigoPedido(), result.getCodigoPedido());
         Assert.assertEquals(pedidoEntity.getData(), result.getDataPedido());
-        Assert.assertEquals(pedidoEntity.getUrlBoleto(), result.getPaymentLink());
         Assert.assertEquals(pedidoEntity.getStatusAtual().getNomeCliente(), result.getStatusPedido());
         Assert.assertEquals("Pedido recebido (aguardando pgto).", result.getStatusPedido());
         Assert.assertEquals(pedidoEntity.getPagamentoType(),result.getPagamentoType());

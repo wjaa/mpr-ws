@@ -3,6 +3,8 @@ package br.com.mpr.ws.rest;
 import br.com.mpr.ws.service.ProdutoService;
 import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/core")
+@Api("Busca de produtos")
 public class ProdutoRest extends BaseRest{
 
     private static final Log LOG = LogFactory.getLog(ProdutoRest.class);
@@ -30,6 +33,7 @@ public class ProdutoRest extends BaseRest{
     private ProdutoService produtoService;
 
 
+    @ApiOperation("Busca todos os produtos com um limite máximo de retorno")
     @RequestMapping(value = "/produto/all/{limite}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)

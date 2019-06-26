@@ -1,5 +1,7 @@
 package br.com.mpr.ws.rest;
 
+import br.com.mpr.ws.entity.MprParameterType;
+import br.com.mpr.ws.service.MprParameterService;
 import br.com.uol.pagseguro.api.PagSeguro;
 import br.com.uol.pagseguro.api.PagSeguroEnv;
 import br.com.uol.pagseguro.api.credential.Credential;
@@ -21,10 +23,19 @@ public class PagseguroNotificationRest {
 
     private PagSeguro pagSeguro;
 
+    @Autowired
+    private MprParameterService mprParameterService;
+
+    @Autowired
+    private PagSeguroNotificationHandler pagseguroNotification;
+
     @PostConstruct
     private void init(){
-        //Credential credential = Credential.applicationCredential("app3620108836", "2E3924589797D5A8848FCF8A50692011");
-        Credential credential = Credential.sellerCredential("admin@meuportaretrato.com", "9F613A6E90C447599BA6BA793221620B");
+
+        String psApiEmail = mprParameterService.getParameter(MprParameterType.PS_API_EMAIL,"");
+        String psApiToken = mprParameterService.getParameter(MprParameterType.PS_API_TOKEN,"");
+
+        Credential credential = Credential.sellerCredential(psApiEmail, psApiToken);
         PagSeguroEnv environment = PagSeguroEnv.SANDBOX;
         pagSeguro = PagSeguro.instance(new SimpleLoggerFactory(),
                 new JSEHttpClient(),
@@ -32,8 +43,7 @@ public class PagseguroNotificationRest {
 
     }
 
-    @Autowired
-    private PagSeguroNotificationHandler pagseguroNotification;
+
 
     @RequestMapping(value = "/notification",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",

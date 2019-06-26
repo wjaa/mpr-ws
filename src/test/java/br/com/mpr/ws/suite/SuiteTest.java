@@ -41,6 +41,8 @@ import org.junit.runners.Suite;
         ProdutoPreviewServiceImplTest.class,
         ProdutoPreviewRestTest.class,
 
+        PagamentoServicePagseguroImplTest.class,
+
 
 })
 public class SuiteTest {
