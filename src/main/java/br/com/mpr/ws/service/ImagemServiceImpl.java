@@ -37,6 +37,7 @@ public class ImagemServiceImpl implements ImagemService {
                         folderCliente.getAbsolutePath() + "]");
             }
         }
+
         return this.saveImages(img,originName, properties.getFolderCliente());
     }
 

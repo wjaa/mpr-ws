@@ -211,6 +211,15 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- TODO ARRUMAR ISSO AQUI -->
+		<dependency>
+			<groupId>br.com.mpr</groupId>
+			<artifactId>image</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/image.jar</systemPath>
+		</dependency>
+
 
 	</dependencies>
 
@@ -243,6 +252,14 @@
 
 		</plugins>
 	</build>
+
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 
 </project>

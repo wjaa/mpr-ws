@@ -45,4 +45,6 @@ public interface ImagemService {
 
     String createPreviewCliente(String previewProduto, List<String> fotosCliente, List<String> fotosCatalogo)
             throws ImagemServiceException;
+
+
 }
