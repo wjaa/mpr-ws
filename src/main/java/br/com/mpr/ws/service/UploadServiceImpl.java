@@ -3,6 +3,7 @@ package br.com.mpr.ws.service;
 import br.com.mpr.image.service.ImageService;
 import br.com.mpr.ws.entity.UploadEntity;
 import br.com.mpr.ws.vo.UploadForm;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,8 +21,11 @@ public class UploadServiceImpl implements UploadService {
         ImageService imageService = new ImageService();
         form.getImagens().forEach( i -> {
             try {
-                imageService.adjustAndResize(i.getInputStream(),200,
-                        new File("/home/wagner/Downloads/" + i.getOriginalFilename()));
+                File fileImage = File.createTempFile("mpr-image",".tmp");
+                FileUtils.copyInputStreamToFile(i.getInputStream(),
+                        fileImage);
+                imageService.adjustAndResize(fileImage,200,
+                        new File("/home/wagner/Downloads/" + i.getOriginalFilename()+ ".jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
             }

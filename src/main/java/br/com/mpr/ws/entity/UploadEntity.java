@@ -2,18 +2,23 @@ package br.com.mpr.ws.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
 
-//@Entity
+@Entity
+@Table(name = "UPLOAD")
 public class UploadEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     private Long id;
+
+    @Column(name = "TOKEN", nullable = false)
     private String token;
 
     @JsonIgnore
+    @Transient
     private List<ImagemEntity> imagens;
 
     public Long getId() {

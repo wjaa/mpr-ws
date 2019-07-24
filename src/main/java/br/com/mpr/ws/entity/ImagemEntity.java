@@ -1,15 +1,24 @@
 package br.com.mpr.ws.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-//@Entity
+@Entity
+@Table(name = "IMAGEM")
 public class ImagemEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     private Long id;
+
+    @Column(name = "TOKEN", nullable = false)
     private Long idUpload;
-    private String imagem;
+
+    @Column(name = "IMAGEM_HI", nullable = false)
+    private String imagemHi;
+
+    @Column(name = "IMAGEM_THUMB", nullable = false)
+    private String imagemThumb;
 
     public Long getId() {
         return id;
@@ -27,11 +36,19 @@ public class ImagemEntity {
         this.idUpload = idUpload;
     }
 
-    public String getImagem() {
-        return imagem;
+    public String getImagemHi() {
+        return imagemHi;
     }
 
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
+    public void setImagemHi(String imagemHi) {
+        this.imagemHi = imagemHi;
+    }
+
+    public String getImagemThumb() {
+        return imagemThumb;
+    }
+
+    public void setImagemThumb(String imagemThumb) {
+        this.imagemThumb = imagemThumb;
     }
 }
