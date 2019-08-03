@@ -1,21 +1,21 @@
 package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.dao.CommonDao;
-import br.com.mpr.ws.entity.CatalogoEntity;
-import br.com.mpr.ws.entity.ProdutoPreviewAnexoEntity;
-import br.com.mpr.ws.entity.ProdutoPreviewEntity;
-import br.com.mpr.ws.entity.SessionEntity;
+import br.com.mpr.ws.entity.*;
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.exception.ProdutoPreviewServiceException;
 import br.com.mpr.ws.vo.AnexoVo;
+import br.com.mpr.ws.vo.ImagemPreviewVo;
 import br.com.mpr.ws.vo.PreviewForm;
 import br.com.mpr.ws.vo.ProdutoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
@@ -30,6 +30,9 @@ public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
 
     @Autowired
     private ProdutoService produtoService;
+
+    @Autowired
+    private UploadService uploadService;
 
     @Autowired
     private CommonDao commonDao;
@@ -115,6 +118,50 @@ public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
             return findProdutoPreviewByIdSession(sessionEntity.getId());
         }
         return null;
+    }
+
+    @Override
+    public ImagemPreviewVo generatePreview(String uploadToken, String produtoRef) throws ProdutoPreviewServiceException {
+        ImagemPreviewVo imagemPreviewVo = new ImagemPreviewVo();
+
+        UploadEntity uploadEntity = uploadService.getUploadByToken(uploadToken);
+        Assert.notNull(uploadEntity,"UploadToken não encontrado!!!");
+
+        ProdutoEntity produto = produtoService.getProdutoByRef(produtoRef);
+        Assert.notNull(produto,"Produto não encontrado, com a referência informada!!!");
+
+        UploadPreviewEntity uploadPreview = getPreviousPreview(produto.getId(),uploadEntity.getId());
+
+        //SE EXISTIR UM PREVIEW ANTERIOR DO MESMO UPLOAD E MESMO PRODUTO, ENTAO NAO PRECISA GERAR NOVAMENTE.
+        if (uploadPreview != null){
+            imagemPreviewVo.setUrl(imagemService.getUrlPreviewCliente(uploadPreview.getImagem()));
+            return imagemPreviewVo;
+        }
+
+        List<String> images = uploadEntity
+                .getImagens()
+                .stream()
+                .map( i -> i.getImagemThumb()).collect(Collectors.toList());
+        try{
+            String imagePreviewName = imagemService.createPreviewCliente(produto.getImgPreview(),images, null);
+            imagemPreviewVo.setUrl(imagemService.getUrlPreviewCliente(imagePreviewName));
+
+            UploadPreviewEntity previewEntity = new UploadPreviewEntity();
+            previewEntity.setIdProduto(produto.getId());
+            previewEntity.setIdUpload(uploadEntity.getId());
+            previewEntity.setImagem(imagePreviewName);
+            commonDao.save(previewEntity);
+
+            return imagemPreviewVo;
+        } catch (ImagemServiceException e) {
+            throw new ProdutoPreviewServiceException(e.getMessage(),e);
+        }
+    }
+
+    private UploadPreviewEntity getPreviousPreview(Long idProduto, Long idUpload) {
+        return commonDao.findByPropertiesSingleResult(UploadPreviewEntity.class,
+                new String[]{"idProduto","idUpload"},
+                new Object[]{idProduto,idUpload});
     }
 
     private List<ProdutoPreviewAnexoEntity> createAnexos(PreviewForm form, ProdutoPreviewEntity preview)

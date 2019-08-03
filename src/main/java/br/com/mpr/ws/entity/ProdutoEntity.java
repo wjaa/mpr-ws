@@ -99,6 +99,9 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "DESTAQUE")
     private Boolean destaque;
 
+    @Column(name = "REF")
+    private String ref;
+
     @Transient
     private byte [] byteImgPreview;
 
@@ -333,5 +336,13 @@ public class ProdutoEntity implements Serializable {
 
     public void setDestaque(Boolean destaque) {
         this.destaque = destaque;
+    }
+
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 }

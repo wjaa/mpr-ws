@@ -1,8 +1,10 @@
 package br.com.mpr.ws.service;
 
+import br.com.mpr.image.service.ImageService;
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +29,13 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Autowired
     private MprWsProperties properties;
+
+    private ImageService imgService;
+
+    @PostConstruct
+    private void postConstruct(){
+        imgService = new ImageService();
+    }
 
 
     @Override
@@ -170,14 +181,23 @@ public class ImagemServiceImpl implements ImagemService {
             }
         }
 
-        return createPreviewCliente(fileFotoPreview, fotos);
+        File fileResult = getFileFolderPreview(properties.getFolderPreviewCliente() + File.separator +
+                this.createFileName(fileFotoPreview.getName()));
+
+        return createPreviewCliente(fileFotoPreview,fotos,fileResult);
     }
 
-    private String createPreviewCliente(File fileFotoPreview, List<File> fotos) {
+    @Override
+    public String createThumbnailFotoCliente(File file, int maxSize) {
+        File fileThumb = new File(file.getParent() + File.separator + "THUMB-" + file.getName());
+        imgService.adjustAndResize(file,maxSize, fileThumb);
+        return fileThumb.getName();
+    }
 
-        //TODO: ESSE CARA IRÁ CHAMAR MPR-IMAGE RESPONSAVEL POR GERAR PREVIEW.
-
-        return "no-image.jpg";
+    private String createPreviewCliente(File fileFotoPreview, List<File> fotos, File fileResult) {
+        File [] fotoFiles = fotos.toArray(new File[]{});
+        imgService.merge(fotoFiles,fileFotoPreview, fileResult);
+        return fileResult.getName();
     }
 
     public File getFilePreviewProduto(String foto) {
@@ -264,4 +284,5 @@ public class ImagemServiceImpl implements ImagemService {
         //criando um nome aleatorio da imagem.
         return StringUtils.createMD5(nameImg + new Date().getTime() + StringUtils.createRandomHash());
     }
+
 }

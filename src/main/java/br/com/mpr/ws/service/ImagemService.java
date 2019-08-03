@@ -47,4 +47,5 @@ public interface ImagemService {
             throws ImagemServiceException;
 
 
+    String createThumbnailFotoCliente(File file, int i);
 }

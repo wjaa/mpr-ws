@@ -1,21 +1,15 @@
 package br.com.mpr.ws.rest;
 
-import br.com.mpr.ws.entity.ClienteEntity;
 import br.com.mpr.ws.entity.UploadEntity;
-import br.com.mpr.ws.exception.ProdutoPreviewServiceException;
-import br.com.mpr.ws.rest.aop.SessionController;
-import br.com.mpr.ws.service.ProdutoPreviewService;
+import br.com.mpr.ws.exception.UploadServiceException;
 import br.com.mpr.ws.service.UploadService;
-import br.com.mpr.ws.vo.PreviewForm;
-import br.com.mpr.ws.vo.ProdutoVo;
 import br.com.mpr.ws.vo.UploadForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/core")
@@ -30,7 +24,7 @@ public class UploadRest extends BaseRest {
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.POST)
     public UploadEntity upload(@ModelAttribute UploadForm form)
-            throws ProdutoPreviewServiceException {
+            throws UploadServiceException {
 
         return uploadService.upload(form);
     }

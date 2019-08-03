@@ -11,7 +11,7 @@ public class ImagemEntity {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "TOKEN", nullable = false)
+    @Column(name = "ID_UPLOAD", nullable = false)
     private Long idUpload;
 
     @Column(name = "IMAGEM_HI", nullable = false)

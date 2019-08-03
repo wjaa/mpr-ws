@@ -171,6 +171,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    public ProdutoEntity getProdutoByRef(String produtoRef) {
+        ProdutoEntity produtoEntity = commonDao.findByPropertiesSingleResult(ProdutoEntity.class,
+                new String[]{"ref"},new Object[]{produtoRef});
+        return produtoEntity;
+    }
+
+    @Override
     public ProdutoEntity getProdutoEntityById(Long idProduto) {
         return commonDao.get(ProdutoEntity.class, idProduto);
     }

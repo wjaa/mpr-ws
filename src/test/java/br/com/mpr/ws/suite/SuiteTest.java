@@ -39,7 +39,6 @@ import org.junit.runners.Suite;
         SessionRestTest.class,
 
         ProdutoPreviewServiceImplTest.class,
-        ProdutoPreviewRestTest.class,
 
         PagamentoServicePagseguroImplTest.class,
 
