@@ -4,7 +4,6 @@ import br.com.mpr.image.service.ImageService;
 import br.com.mpr.ws.exception.ImagemServiceException;
 import br.com.mpr.ws.properties.MprWsProperties;
 import br.com.mpr.ws.utils.StringUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.util.FileCopyUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +38,7 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Override
     public String uploadFotoCliente(byte[] img, String originName) throws ImagemServiceException {
-        File folderCliente = getFileFolderPreview(properties.getFolderCliente());
+        File folderCliente = getRootFolder(properties.getFolderCliente());
 
         if ( !folderCliente.exists() || !folderCliente.isDirectory()){
             if (!folderCliente.mkdirs()){
@@ -54,7 +52,7 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Override
     public String uploadFotoDestaqueProduto(byte[] img, String originName) throws ImagemServiceException {
-        File folderDestaque = getFileFolderPreview(properties.getFolderDestaque());
+        File folderDestaque = getRootFolder(properties.getFolderDestaque());
 
         if ( !folderDestaque.exists() || !folderDestaque.isDirectory()){
             if (!folderDestaque.mkdirs()){
@@ -69,7 +67,7 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Override
     public String uploadFotoPreviewProduto(byte[] img, String originName) throws ImagemServiceException {
-        File folderPreview = getFileFolderPreview(properties.getFolderPreview());
+        File folderPreview = getRootFolder(properties.getFolderPreview());
 
         if ( !folderPreview.exists() || !folderPreview.isDirectory()){
             if (!folderPreview.mkdirs()){
@@ -82,7 +80,7 @@ public class ImagemServiceImpl implements ImagemService {
         return this.saveImages(img,originName, properties.getFolderPreview());
     }
 
-    private File getFileFolderPreview(String folder) {
+    private File getRootFolder(String folder) {
         return new File(properties.getPathImg() +
                 File.separator +
                 folder);
@@ -90,7 +88,7 @@ public class ImagemServiceImpl implements ImagemService {
 
     @Override
     public String uploadFotoCatalogo(byte[] img, String originName) throws ImagemServiceException {
-        File folderCatalogo = getFileFolderPreview(properties.getFolderCatalogo());
+        File folderCatalogo = getRootFolder(properties.getFolderCatalogo());
 
         if ( !folderCatalogo.exists() || !folderCatalogo.isDirectory()){
             if (!folderCatalogo.mkdirs()){
@@ -181,8 +179,8 @@ public class ImagemServiceImpl implements ImagemService {
             }
         }
 
-        File fileResult = getFileFolderPreview(properties.getFolderPreviewCliente() + File.separator +
-                this.createFileName(fileFotoPreview.getName()));
+        File fileResult = getRootFolder(properties.getFolderPreviewCliente() + File.separator +
+                this.createFileName(fileFotoPreview.getName()) + ".jpg");
 
         return createPreviewCliente(fileFotoPreview,fotos,fileResult);
     }
@@ -201,31 +199,31 @@ public class ImagemServiceImpl implements ImagemService {
     }
 
     public File getFilePreviewProduto(String foto) {
-        File folder = getFileFolderPreview(properties.getFolderPreview());
+        File folder = getRootFolder(properties.getFolderPreview());
         return new File(folder.getAbsoluteFile() + File.separator + foto);
     }
 
     @Override
     public File getFileFotoCatalogo(String foto) {
-        File folder = getFileFolderPreview(properties.getFolderCatalogo());
+        File folder = getRootFolder(properties.getFolderCatalogo());
         return new File(folder.getAbsoluteFile() + File.separator + foto);
     }
 
     @Override
     public File getFileFotoCliente(String foto) {
-        File folder = getFileFolderPreview(properties.getFolderCliente());
+        File folder = getRootFolder(properties.getFolderCliente());
         return new File(folder.getAbsoluteFile() + File.separator + foto);
     }
 
     @Override
     public File getFileDestaqueProduto(String foto) {
-        File folder = getFileFolderPreview(properties.getFolderDestaque());
+        File folder = getRootFolder(properties.getFolderDestaque());
         return new File(folder.getAbsoluteFile() + File.separator + foto);
     }
 
     @Override
     public File getFileFotoPreviewCliente(String foto) {
-        File folder = getFileFolderPreview(properties.getFolderPreviewCliente());
+        File folder = getRootFolder(properties.getFolderPreviewCliente());
         return new File(folder.getAbsoluteFile() + File.separator + foto);
     }
 
