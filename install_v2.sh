@@ -4,7 +4,7 @@ echo "PARANDO OS CONTAINERS"
 docker stop ws && docker stop nginx
 
 #pull e build do mpr-ws
-git pull && mvn clean install
+git pull && mvn clean install -DskipTests=true
 
 path=target/ws.jar
 
