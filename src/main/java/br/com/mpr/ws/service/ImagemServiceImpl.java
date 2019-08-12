@@ -194,7 +194,12 @@ public class ImagemServiceImpl implements ImagemService {
 
     private String createPreviewCliente(File fileFotoPreview, List<File> fotos, File fileResult) {
         File [] fotoFiles = fotos.toArray(new File[]{});
-        imgService.merge(fotoFiles,fileFotoPreview, fileResult);
+
+        if (fotoFiles.length == 1){
+            imgService.merge(fotoFiles[0],fileFotoPreview, fileResult);
+        }else{
+            imgService.merge(fotoFiles,fileFotoPreview, fileResult);
+        }
         return fileResult.getName();
     }
 
