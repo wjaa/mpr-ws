@@ -36,10 +36,10 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public UploadEntity upload(UploadForm form) throws UploadServiceException {
+        Assert.notNull(form.getImagens(),"Imagens do upload estão vazias!!!");
 
         List<ImagemEntity> imagens = new ArrayList<>(form.getImagens().size());
         try {
-            Assert.notNull(form.getImagens(),"Imagens do upload estão vazias!!!");
 
             for (MultipartFile i : form.getImagens()) {
                 ImagemEntity imagemEntity = new ImagemEntity();
