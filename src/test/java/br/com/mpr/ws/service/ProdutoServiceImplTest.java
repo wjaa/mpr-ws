@@ -2,6 +2,7 @@ package br.com.mpr.ws.service;
 
 import br.com.mpr.ws.BaseDBTest;
 import br.com.mpr.ws.entity.EstoqueItemEntity;
+import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.helper.ProdutoHelper;
 import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
@@ -343,6 +344,14 @@ public class ProdutoServiceImplTest extends BaseDBTest {
         Assert.assertFalse(StringUtils.isEmpty(imagemPreview));
     }
 
+    @Test
+    public void getProdutoByRef(){
+        ProdutoEntity produto = produtoService.getProdutoByRef("xrp2");
+        Assert.assertNotNull(produto);
+        Assert.assertEquals("xrp2",produto.getReferencia());
+        Assert.assertEquals(new Integer(1), produto.getQtdeFotos());
+    }
+
     private void validarInfoProduto(List<ProdutoVo> produtos) {
         for (ProdutoVo p : produtos){
             validarInfoProduto(p);
@@ -352,5 +361,8 @@ public class ProdutoServiceImplTest extends BaseDBTest {
     private void validarInfoProduto(ProdutoVo p) {
         ProdutoHelper.validarInfoProduto(p);
     }
+
+
+
 
 }

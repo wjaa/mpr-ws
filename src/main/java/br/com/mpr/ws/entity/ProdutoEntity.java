@@ -99,8 +99,8 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "DESTAQUE")
     private Boolean destaque;
 
-    @Column(name = "REF")
-    private String ref;
+    @Column(name = "QTDE_FOTOS")
+    private Integer qtdeFotos;
 
     @Transient
     private byte [] byteImgPreview;
@@ -338,11 +338,11 @@ public class ProdutoEntity implements Serializable {
         this.destaque = destaque;
     }
 
-    public String getRef() {
-        return ref;
+    public Integer getQtdeFotos() {
+        return qtdeFotos;
     }
 
-    public void setRef(String ref) {
-        this.ref = ref;
+    public void setQtdeFotos(Integer qtdeFotos) {
+        this.qtdeFotos = qtdeFotos;
     }
 }

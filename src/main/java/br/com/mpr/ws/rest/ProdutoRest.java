@@ -1,5 +1,6 @@
 package br.com.mpr.ws.rest;
 
+import br.com.mpr.ws.entity.ProdutoEntity;
 import br.com.mpr.ws.service.ProdutoService;
 import br.com.mpr.ws.vo.PageVo;
 import br.com.mpr.ws.vo.ProdutoVo;
@@ -59,7 +60,6 @@ public class ProdutoRest extends BaseRest{
                 ProdutoService.OrderBy.byId(orderBy));
     }
 
-
     @RequestMapping(value = "/produto/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
             method = RequestMethod.GET)
@@ -67,6 +67,12 @@ public class ProdutoRest extends BaseRest{
         return this.produtoService.getProdutoById(id);
     }
 
+    @RequestMapping(value = "/produto/byRef/{referencia}",
+            produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",
+            method = RequestMethod.GET)
+    public ProdutoEntity getProdutoById(@PathVariable String referencia){
+        return this.produtoService.getProdutoByRef(referencia);
+    }
 
     @RequestMapping(value = "/produto/lancamento/{limite}",
             produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8",

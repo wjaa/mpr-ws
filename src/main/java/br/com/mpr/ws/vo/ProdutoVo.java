@@ -27,6 +27,8 @@ public class ProdutoVo {
     private Double comp;
     private Double larg;
     private Double alt;
+    private String referencia;
+    private Integer qtdeFotos;
     private List<ProdutoVo> listVariacaoCorProduto;
 
     public ProdutoVo(){}
@@ -162,5 +164,21 @@ public class ProdutoVo {
 
     public void setAlt(Double alt) {
         this.alt = alt;
+    }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+    public Integer getQtdeFotos() {
+        return qtdeFotos;
+    }
+
+    public void setQtdeFotos(Integer qtdeFotos) {
+        this.qtdeFotos = qtdeFotos;
     }
 }

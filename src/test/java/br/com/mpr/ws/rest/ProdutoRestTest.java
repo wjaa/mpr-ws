@@ -117,6 +117,18 @@ public class ProdutoRestTest extends BaseMvcTest {
         }
     }
 
+    @Test
+    public void getProdutoByRef() {
+
+        String ref = "xrp2";;
+        try{
+            ResultActions ra = getMvcGetResultActions("/api/v1/core/produto/byRef/" + ref);
+            ra.andExpect(content().json(ObjectUtils.toJson(produtoService.getProdutoByRef(ref))));
+        }catch(Exception ex){
+            Assert.assertTrue(ex.getMessage(),false);
+        }
+    }
+
 
     @Test
     public void getProdutoDestaque(){
