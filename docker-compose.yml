@@ -6,6 +6,7 @@ services:
     container_name: nginx
     build: nginx/.
     image: mpr/nginx
+    restart: unless-stopped
     ports:
     - "80:80"
     - "443:443"
@@ -19,6 +20,7 @@ services:
   certbot:
     container_name: certbot
     image: certbot/certbot
+    restart: unless-stopped
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
