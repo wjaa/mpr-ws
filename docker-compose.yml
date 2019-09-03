@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   nginx:
     depends_on:
@@ -8,11 +8,19 @@ services:
     image: mpr/nginx
     ports:
     - "80:80"
+    - "443:443"
     stdin_open: true
     tty: true
     volumes:
-    - /var/www/static/mpr:/var/www/static/mpr
+      - /var/www/static/mpr:/var/www/static/mpr
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     domainname: meuportaretrato.com
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
   ws:
     container_name: ws
     build: .

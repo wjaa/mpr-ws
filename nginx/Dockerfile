@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.15-alpine
 
 MAINTAINER Wagner Jeronimo A. Araujo
 
