@@ -45,4 +45,13 @@ As pastas das imagens estão dentro da estrutura de estáticos.
    - Cliente: ${raiz}/cliente
    - Preview Cliente: ${raiz}/preview_cliente
    
-A classe **ImageService** é responsavel por centralizar a escrita e montagem do path das imagens.   
+A classe **ImageService** é responsavel por centralizar a escrita e montagem do path das imagens.
+
+
+### SSL
+Utilizamos o letsencrypt + certbot para gerar o certificado da api.meuportaretrato.com e stc.meuportaretrato.com
+
+Toda a configuração dela está no docker-compose e confs dos nginx.
+
+IMPORTANTE: Quando houver a migração de servidores, precisamos copiar a pasta **_data_** que está na raiz do projeto no servidor, ou teremos que rodar o script **_init-letsencrypt.sh_**. Ele é responsável por criar um certificado fake até o nginx iniciar e depois faz requisições para letsencrypt gerar e validar um novo certificado.
+   
