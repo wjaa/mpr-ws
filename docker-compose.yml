@@ -17,6 +17,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
     domainname: meuportaretrato.com
   certbot:
+    container_name: certbot
     image: certbot/certbot
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
