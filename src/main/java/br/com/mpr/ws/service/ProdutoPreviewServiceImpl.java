@@ -93,8 +93,10 @@ public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
         });
 
         String previewProduto = produtoService.getImagemPreviewProdutoById(preview.getIdProduto());
+        String previewPaisagemProduto = produtoService.getImagemPreviewProdutoById(preview.getIdProduto());
         try {
-            preview.setFotoPreview(imagemService.createPreviewCliente(previewProduto,fotosCliente,fotosCatalogo));
+            preview.setFotoPreview(imagemService.createPreviewCliente(previewProduto,previewPaisagemProduto,
+                    fotosCliente,fotosCatalogo));
         } catch (ImagemServiceException e) {
             throw new ProdutoPreviewServiceException("Erro ao gerar o preview do cliente: " + e.getMessage(), e);
         }
@@ -143,7 +145,9 @@ public class ProdutoPreviewServiceImpl implements ProdutoPreviewService {
                 .stream()
                 .map( i -> i.getImagemThumb()).collect(Collectors.toList());
         try{
-            String imagePreviewName = imagemService.createPreviewCliente(produto.getImgPreview(),images, null);
+            String imagePreviewName = imagemService.createPreviewCliente(produto.getImgPreview(),
+                    produto.getImgPreviewPaisagem(),
+                    images, null);
             imagemPreviewVo.setUrl(imagemService.getUrlPreviewCliente(imagePreviewName));
 
             UploadPreviewEntity previewEntity = new UploadPreviewEntity();

@@ -51,6 +51,9 @@ public class ProdutoEntity implements Serializable {
     @Column(name = "IMG_PREVIEW", nullable = false, length = 100)
     private String imgPreview;
 
+    @Column(name = "IMG_PREVIEW_PAISAGEM", length = 100)
+    private String imgPreviewPaisagem;
+
     @Column(name = "IMG_DESTAQUE", nullable = false, length = 100)
     private String imgDestaque;
 
@@ -106,7 +109,13 @@ public class ProdutoEntity implements Serializable {
     private byte [] byteImgPreview;
 
     @Transient
+    private byte [] byteImgPreviewPaisagem;
+
+    @Transient
     private String nameImgPreview;
+
+    @Transient
+    private String nameImgPreviewPaisagem;
 
     @Transient
     private byte [] byteImgDestaque;
@@ -344,5 +353,29 @@ public class ProdutoEntity implements Serializable {
 
     public void setQtdeFotos(Integer qtdeFotos) {
         this.qtdeFotos = qtdeFotos;
+    }
+
+    public String getImgPreviewPaisagem() {
+        return imgPreviewPaisagem;
+    }
+
+    public void setImgPreviewPaisagem(String imgPreviewPaisagem) {
+        this.imgPreviewPaisagem = imgPreviewPaisagem;
+    }
+
+    public byte[] getByteImgPreviewPaisagem() {
+        return byteImgPreviewPaisagem;
+    }
+
+    public void setByteImgPreviewPaisagem(byte[] byteImgPreviewPaisagem) {
+        this.byteImgPreviewPaisagem = byteImgPreviewPaisagem;
+    }
+
+    public String getNameImgPreviewPaisagem() {
+        return nameImgPreviewPaisagem;
+    }
+
+    public void setNameImgPreviewPaisagem(String nameImgPreviewPaisagem) {
+        this.nameImgPreviewPaisagem = nameImgPreviewPaisagem;
     }
 }

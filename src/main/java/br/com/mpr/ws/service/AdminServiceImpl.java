@@ -377,9 +377,11 @@ public class AdminServiceImpl implements AdminService {
 
         }else{
             ProdutoEntity produtoMerge = commonDao.get(ProdutoEntity.class, produto.getId());
-            BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview","listImgDestaque");
+            BeanUtils.copyProperties(produto,produtoMerge,"imgDestaque","imgPreview",
+                    "imgPreviewPaisagem","listImgDestaque");
             this.mesclaImagemDestaque(produto,produtoMerge);
-            if (produto.getByteImgPreview() != null || produto.getByteImgDestaque() != null ||
+            if (produto.getByteImgPreviewPaisagem() != null || produto.getByteImgPreview() != null ||
+                    produto.getByteImgDestaque() != null ||
                     this.temNovaImagemDestaque(produto.getListImgDestaque()) ){
 
                 this.saveImages(produtoMerge);
@@ -455,6 +457,13 @@ public class AdminServiceImpl implements AdminService {
                 String finalName = imagemService.uploadFotoPreviewProduto(produto.getByteImgPreview(),
                         produto.getNameImgPreview());
                 produto.setImgPreview(finalName);
+
+            }
+
+            if (produto.getByteImgPreviewPaisagem() != null){
+                String finalName = imagemService.uploadFotoPreviewProduto(produto.getByteImgPreviewPaisagem(),
+                        produto.getNameImgPreviewPaisagem());
+                produto.setImgPreviewPaisagem(finalName);
 
             }
 

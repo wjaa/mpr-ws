@@ -147,12 +147,15 @@ public class ImagemServiceImpl implements ImagemService {
     }
 
     @Override
-    public String createPreviewCliente(String foto, List<String> fotosCliente, List<String> fotosCatalogo)
+    public String createPreviewCliente(String previewProduto, String previewProdutoPaisagem,
+                                       List<String> fotosCliente, List<String> fotosCatalogo)
             throws ImagemServiceException {
-        File fileFotoPreview = getFilePreviewProduto(foto);
+        File fileFotoPreview = getFilePreviewProduto(previewProduto);
+        File fileFotoPreviewPaisagem = previewProdutoPaisagem != null && !previewProdutoPaisagem.equals("") ?
+                getFilePreviewProduto(previewProdutoPaisagem) : null;
 
         if (!fileFotoPreview.exists()){
-            throw new ImagemServiceException("Preview do produto não encontrado!");
+            throw new ImagemServiceException("Preview principal do produto não encontrado!");
         }
 
         final List<File> fotos = new ArrayList<>();
@@ -182,7 +185,7 @@ public class ImagemServiceImpl implements ImagemService {
         File fileResult = getRootFolder(properties.getFolderPreviewCliente() + File.separator +
                 this.createFileName(fileFotoPreview.getName()) + ".jpg");
 
-        return createPreviewCliente(fileFotoPreview,fotos,fileResult);
+        return createPreviewCliente(fileFotoPreview,fileFotoPreviewPaisagem,fotos,fileResult);
     }
 
     @Override
@@ -192,11 +195,15 @@ public class ImagemServiceImpl implements ImagemService {
         return fileThumb.getName();
     }
 
-    private String createPreviewCliente(File fileFotoPreview, List<File> fotos, File fileResult) {
+    private String createPreviewCliente(File fileFotoPreview, File fileFotoPreviewPaisagem, List<File> fotos, File fileResult) {
         File [] fotoFiles = fotos.toArray(new File[]{});
 
         if (fotoFiles.length == 1){
-            imgService.merge(fotoFiles[0],fileFotoPreview, fileResult);
+            if (fileFotoPreviewPaisagem != null){
+                imgService.merge(fotoFiles[0],fileFotoPreview,fileFotoPreviewPaisagem,fileResult);
+            }else{
+                imgService.merge(fotoFiles[0],fileFotoPreview, fileResult);
+            }
         }else{
             imgService.merge(fotoFiles,fileFotoPreview, fileResult);
         }

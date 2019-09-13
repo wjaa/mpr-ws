@@ -54,6 +54,8 @@ public interface ProdutoService {
 
     String getImagemPreviewProdutoById(Long idProduto);
 
+    String getImagemPreviewPaisagemProdutoById(Long idProduto);
+
     ProdutoEntity getProdutoByRef(String produtoRef);
 
 }

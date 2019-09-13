@@ -43,7 +43,8 @@ public interface ImagemService {
 
     void removeFotoCliente(String foto);
 
-    String createPreviewCliente(String previewProduto, List<String> fotosCliente, List<String> fotosCatalogo)
+    String createPreviewCliente(String previewProduto, String previewProdutoPaisagem,
+                                       List<String> fotosCliente, List<String> fotosCatalogo)
             throws ImagemServiceException;
 
 

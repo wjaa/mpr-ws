@@ -46,7 +46,7 @@ public class ProdutoPreviewServiceImplTest extends BaseDBTest {
         ).thenReturn("http://stc.meuportaretrato.com/img/preview_cliente/1213432142134.png");
 
         try {
-            Mockito.when(imagemService.createPreviewCliente(Mockito.any(String.class),
+            Mockito.when(imagemService.createPreviewCliente(Mockito.any(String.class),Mockito.any(String.class),
                     Mockito.any(List.class),Mockito.any(List.class)))
                     .thenReturn("previewCliente.jpg");
 

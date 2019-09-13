@@ -165,7 +165,16 @@ public class ProdutoServiceImpl implements ProdutoService {
     public String getImagemPreviewProdutoById(Long idProduto) {
         ProdutoEntity produtoEntity = commonDao.get(ProdutoEntity.class,idProduto);
         if (produtoEntity != null){
-            return produtoEntity.getImgDestaque();
+            return produtoEntity.getImgPreview();
+        }
+        return "";
+    }
+
+    @Override
+    public String getImagemPreviewPaisagemProdutoById(Long idProduto) {
+        ProdutoEntity produtoEntity = commonDao.get(ProdutoEntity.class,idProduto);
+        if (produtoEntity != null){
+            return produtoEntity.getImgPreviewPaisagem();
         }
         return "";
     }
